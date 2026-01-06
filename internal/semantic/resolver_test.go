@@ -74,7 +74,10 @@ func TestResolveIntent(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ast := parser.Parse(tt.input)
+			ast, err := parser.Parse(tt.input)
+			if err != nil {
+				t.Fatal(err)
+			}
 			intent := semantic.Resolve(ast)
 
 			if intent != tt.expect {

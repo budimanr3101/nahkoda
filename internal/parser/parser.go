@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -13,7 +14,7 @@ type AST struct {
 	Filter  string
 }
 
-func Parse(input string) AST {
+func Parse(input string) (AST, error) {
 	// v0 parser: super naif, tapi sesuai SPEC
 	tokens := split(input)
 	ast := AST{}
@@ -38,7 +39,10 @@ func Parse(input string) AST {
 			fmt.Printf("DEBUG AST: %#v\n", ast)
 		}
 	}
-	return ast
+	if ast.Aksi == "" {
+		return ast, errors.New("aksi tidak dikenali")
+	}
+	return ast, nil
 }
 
 func split(s string) []string {

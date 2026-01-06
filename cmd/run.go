@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"strings"
 
 	"nahkoda/internal/exec"
@@ -17,7 +18,12 @@ var runCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		input := strings.Join(args, " ")
 
-		ast := parser.Parse(input)
+		ast, err := parser.Parse(input)
+		if err != nil {
+			fmt.Println("❌", err.Error())
+			return
+		}
+
 		intent := semantic.Resolve(ast)
 		exec.Execute(intent)
 	},
