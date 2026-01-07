@@ -1,8 +1,8 @@
-# ⚓ Nahkoda
+# ⚓ Nahkoda v0.2.0
 
-> **Human‑friendly command layer di atas kubectl, pakai bahasa Indonesia.**
+> **Human-friendly command layer di atas kubectl, pakai bahasa Indonesia.**
 
-Nahkoda adalah **CLI tool + Domain Specific Language (DSL)** yang bikin interaksi dengan Kubernetes jadi lebih santai, lebih kebaca, tapi tetap akurat.
+Nahkoda adalah **CLI tool + Domain Specific Language (DSL)** yang memungkinkan kamu berinteraksi dengan Kubernetes menggunakan **bahasa manusia**, tanpa kehilangan presisi teknis.
 
 Kalau biasanya kamu ngetik:
 
@@ -10,60 +10,106 @@ Kalau biasanya kamu ngetik:
 kubectl get pods -n auth --field-selector status.phase!=Running
 ```
 
-Dengan Nahkoda, cukup:
+Dengan Nahkoda:
 
 ```bash
 nahkoda liat kru rusak di geladak auth
 ```
 
-Output-nya tetap presisi. Bedanya, **otak kamu tidak ikut capek**.
+Hasilnya tetap akurat.
+Bedanya: **lebih kebaca, lebih santai, dan lebih manusiawi.**
 
 ---
 
-## 🤔 Masalah yang Diselesaikan
+## 🎯 Tujuan Proyek
 
 Kubernetes itu powerful, tapi:
 
-* Command panjang dan ribet
-* Banyak flag sulit diingat
-* Tidak ramah dibaca manusia
+* Command panjang & sulit diingat
+* Flag banyak & rawan typo
+* Sulit dibaca manusia
 
-Nahkoda hadir sebagai **human‑friendly command layer di atas kubectl**.
+Nahkoda hadir sebagai **lapisan semantic di atas kubectl**.
 
-Bukan untuk mengganti kubectl, tapi **menerjemahkan bahasa manusia ke bahasa mesin**.
+👉 **Bukan pengganti kubectl**,
+👉 tapi **penerjemah bahasa manusia ke perintah Kubernetes**.
 
 ---
 
-## 🧠 Cara Berpikir Nahkoda
+## 🧠 Filosofi v0.2.0 — *Semantic Strict Mode*
 
-Nahkoda dibangun dengan prinsip sederhana:
+Mulai **v0.2.0**, Nahkoda berjalan dalam **STRICT SEMANTIC MODE**.
 
-* User bicara pakai bahasa natural
-* Sistem yang mikir bagaimana eksekusinya
-* Default boleh ada, tapi **tidak boleh bohong**
+Artinya:
 
-Secara internal, Nahkoda bekerja seperti compiler mini:
+* ❌ Kata tidak dikenal → **ERROR**
+* ❌ Aksi tidak valid → **ERROR**
+* ❌ Ambigu → **ERROR**
+* ✅ Default boleh ada, tapi **harus jujur**
+* ✅ Tidak ada silent fallback
+
+Contoh:
+
+```bash
+nahkoda liat kru xyz
+❌ kata tidak dikenali: "xyz"
+```
+
+```bash
+nahkoda terbangkan kapal
+❌ aksi tidak dikenali
+```
+
+Ini desain **sengaja ketat**, supaya:
+
+* CLI bisa diprediksi
+* Aman dipakai automation
+* Engineer percaya output-nya
+
+---
+
+## 🧠 Cara Kerja Nahkoda
+
+Nahkoda bekerja seperti **mini compiler**:
 
 ```
-Teks Perintah → Parser → Semantic Resolver → Intent → (kubectl)
+Teks Perintah
+   ↓
+Parser (AST)
+   ↓
+Semantic Resolver (strict)
+   ↓
+Intent
+   ↓
+Planner
+   ↓
+Executor (kubectl – planned)
 ```
+
+Tidak ada:
+
+* logika kubectl di parser
+* asumsi tersembunyi
+* output ambigu
 
 ---
 
 ## 🗣️ Vocabulary Nahkoda
 
-Nahkoda pakai istilah yang dekat dengan analogi kapal:
+Nahkoda menggunakan analogi kapal agar lebih natural:
 
-| Nahkoda   | Kubernetes        |
-| --------- | ----------------- |
-| kru       | pod               |
-| geladak   | namespace         |
-| rusak     | pod tidak Running |
-| sehat     | pod Running       |
-| bocor     | OOMKilled         |
-| terdampar | Pending           |
+| Nahkoda   | Kubernetes          |
+| --------- | ------------------- |
+| kru       | pod                 |
+| geladak   | namespace           |
+| rusak     | status != Running   |
+| sehat     | status = Running    |
+| bocor     | OOMKilled           |
+| terdampar | Pending *(planned)* |
 
-Tujuannya satu: **perintah gampang dibaca tanpa kehilangan makna teknis**.
+Tujuannya:
+
+> **perintah gampang dibaca, makna teknis tetap presisi**
 
 ---
 
@@ -78,8 +124,10 @@ nahkoda liat kru
 Output:
 
 ```
-Filter : status=Running (aturan default: kru sehat)
+Filter : status=Running
 ```
+
+(Default ini **eksplisit & jujur**)
 
 ---
 
@@ -90,40 +138,56 @@ nahkoda liat kru rusak
 ```
 
 ```
-Kondisi: rusak
 Filter : status!=Running
 ```
 
 ---
 
-### Pakai lokasi
+### Dengan lokasi (namespace)
 
 ```bash
 nahkoda liat kru bocor di geladak auth
 ```
 
 ```
-Lokasi : geladak auth
-Kondisi: bocor
-Filter : reason=OOMKilled
+Namespace : auth
+Filter    : reason=OOMKilled
 ```
+
+---
+
+## 🚫 Contoh Error (STRICT)
+
+```bash
+nahkoda liat kru xyz
+❌ kata tidak dikenali: "xyz"
+```
+
+```bash
+nahkoda terbangkan kapal
+❌ aksi tidak dikenali
+```
+
+Tidak ada guessing.
+Tidak ada asumsi.
 
 ---
 
 ## 🧩 Arsitektur Internal
 
-Struktur Nahkoda dibuat rapi dan bisa tumbuh:
+Struktur dibuat modular & scalable:
 
-* **Parser**
-  Ngubah teks jadi AST (apa yang user tulis)
+* **parser/**
+  Tokenizer & AST
 
-* **Semantic Resolver**
-  Menentukan maksud, default, dan filter
+* **semantic/**
+  Resolver intent, default, dan validasi
 
-* **Executor (planned)**
-  Menerjemahkan intent ke kubectl
+* **planner/**
+  Translasi intent → execution plan
 
-Tidak ada logika kubectl di parser. Tidak ada asumsi di output.
+* **exec/**
+  Executor (simulasi, kubectl planned)
 
 ---
 
@@ -131,11 +195,12 @@ Tidak ada logika kubectl di parser. Tidak ada asumsi di output.
 
 ```
 nahkoda/
-├── cmd/              # CLI entrypoint
+├── cmd/              # CLI entrypoint (cobra)
 ├── internal/
 │   ├── parser/       # Tokenizer & AST
-│   ├── semantic/     # Resolver & condition mapping
-│   └── executor/     # (planned) kubectl execution
+│   ├── semantic/     # Strict semantic resolver
+│   ├── planner/      # Execution planning
+│   └── exec/         # Executor (simulasi)
 ├── TODO.md
 ├── README.md
 └── main.go
@@ -145,44 +210,47 @@ nahkoda/
 
 ## 🧪 Testing
 
-Fokus utama ada di semantic layer:
+Fokus utama ada di **semantic layer**:
 
 ```bash
 go test ./internal/semantic -v
 ```
 
-Kalau semantic-nya benar, output CLI pasti konsisten.
+Jika semantic benar, seluruh CLI behavior konsisten.
 
 ---
 
-## 🛣️ Roadmap
+## 🛣️ Roadmap (Next)
 
-Rencana selanjutnya bisa dilihat di [`TODO.md`](./TODO.md):
+Lihat detail di [`TODO.md`](./TODO.md):
 
-* Executor kubectl
-* Explain mode (`nahkoda explain`)
-* Shortcut syntax
-* Pipeline support
+* kubectl executor
+* typo handling (`krue` → `kru`)
+* ambiguity resolver
+* explain mode (`nahkoda explain`)
+* shell completion
 
 ---
 
 ## 🚧 Status Proyek
 
 * ✅ DSL v1 stabil
-* ✅ Semantic resolver solid
-* ⏳ Executor sedang disiapkan
+* ✅ Strict semantic resolver (v0.2.0)
+* ✅ Deterministic output
+* ⏳ kubectl executor (next)
 
-Nahkoda masih berkembang, tapi fondasinya sudah siap dipakai serius.
+Nahkoda **sudah aman dipamerkan**,
+dan **fondasinya siap untuk production-grade CLI**.
 
 ---
 
-## 📜 Lisensi
+## 📜 License
 
 MIT License
 
 ---
 
 > Nahkoda tidak menggantikan kubectl.
-> Ia membuat kubectl lebih enak dipakai.
+> Ia membuat kubectl **lebih manusiawi**.
 
-⚓ Happy sailing dengan cluster kamu.
+⚓ **Happy sailing, Captain.**
