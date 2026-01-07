@@ -1,4 +1,4 @@
-# ⚓ Nahkoda v0.2.0
+# ⚓ Nahkoda v0.3.0
 
 > **Human-friendly command layer di atas kubectl, pakai bahasa Indonesia.**
 
@@ -36,9 +36,9 @@ Nahkoda hadir sebagai **lapisan semantic di atas kubectl**.
 
 ---
 
-## 🧠 Filosofi v0.2.0 — *Semantic Strict Mode*
+## 🧠 Filosofi v0.3.0 — *Semantic Strict Mode*
 
-Mulai **v0.2.0**, Nahkoda berjalan dalam **STRICT SEMANTIC MODE**.
+Mulai **v0.3.0**, Nahkoda berjalan dalam **STRICT SEMANTIC MODE**.
 
 Artinya:
 
@@ -156,6 +156,20 @@ Filter    : reason=OOMKilled
 
 ---
 
+### Cek detail kru (Describe)
+
+```bash
+nahkoda cek kru payments-pod-1
+```
+
+```
+Operation : describe
+Resource  : pod
+Target    : payments-pod-1
+```
+
+---
+
 ## 🚫 Contoh Error (STRICT)
 
 ```bash
@@ -235,7 +249,7 @@ Lihat detail di [`TODO.md`](./TODO.md):
 ## 🚧 Status Proyek
 
 * ✅ DSL v1 stabil
-* ✅ Strict semantic resolver (v0.2.0)
+* ✅ Strict semantic resolver (v0.3.0)
 * ✅ Deterministic output
 * ⏳ kubectl executor (next)
 
