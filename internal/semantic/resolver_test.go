@@ -1,17 +1,22 @@
 package semantic_test
 
 import (
+	"testing"
+
 	"nahkoda/internal/parser"
 	"nahkoda/internal/semantic"
-	"testing"
 )
 
-func TestResolveIntent(t *testing.T) {
+func TestResolveIntent_Strict(t *testing.T) {
 	tests := []struct {
-		name   string
-		input  string
-		expect semantic.Intent
+		name      string
+		input     string
+		expect    semantic.Intent
+		expectErr bool
 	}{
+		// =============================
+		// ✅ VALID CASES
+		// =============================
 		{
 			name:  "liat kru default",
 			input: "liat kru",
@@ -22,6 +27,7 @@ func TestResolveIntent(t *testing.T) {
 				Filter:          "status=Running",
 				IsDefaultFilter: true,
 			},
+			expectErr: false,
 		},
 		{
 			name:  "liat kru di geladak auth",
@@ -33,6 +39,7 @@ func TestResolveIntent(t *testing.T) {
 				Filter:          "status=Running",
 				IsDefaultFilter: true,
 			},
+			expectErr: false,
 		},
 		{
 			name:  "liat kru rusak",
@@ -45,6 +52,7 @@ func TestResolveIntent(t *testing.T) {
 				Filter:          "status!=Running",
 				IsDefaultFilter: false,
 			},
+			expectErr: false,
 		},
 		{
 			name:  "liat kru rusak di geladak auth",
@@ -57,9 +65,23 @@ func TestResolveIntent(t *testing.T) {
 				Filter:          "status!=Running",
 				IsDefaultFilter: false,
 			},
+			expectErr: false,
 		},
 		{
-			name:  "kondisi sehat (dulu tidak dikenal, sekarang default explicit)",
+			name:  "liat kru bocor",
+			input: "liat kru bocor",
+			expect: semantic.Intent{
+				Aksi:            "liat",
+				Objek:           "kru",
+				Lokasi:          "semua geladak",
+				Kondisi:         "bocor",
+				Filter:          "reason=OOMKilled",
+				IsDefaultFilter: false,
+			},
+			expectErr: false,
+		},
+		{
+			name:  "liat kru sehat explicit",
 			input: "liat kru sehat",
 			expect: semantic.Intent{
 				Aksi:            "liat",
@@ -69,6 +91,31 @@ func TestResolveIntent(t *testing.T) {
 				Filter:          "status=Running",
 				IsDefaultFilter: false,
 			},
+			expectErr: false,
+		},
+
+		// =============================
+		// ❌ INVALID / STRICT FAILS
+		// =============================
+		{
+			name:      "kata tidak dikenali",
+			input:     "liat kru xyz",
+			expectErr: true,
+		},
+		{
+			name:      "aksi tidak dikenali",
+			input:     "terbangkan kapal",
+			expectErr: true,
+		},
+		{
+			name:      "kondisi tidak dikenali",
+			input:     "liat kru aneh",
+			expectErr: true,
+		},
+		{
+			name:      "lokasi rusak struktur",
+			input:     "liat kru di auth",
+			expectErr: true,
 		},
 	}
 
@@ -76,13 +123,28 @@ func TestResolveIntent(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ast, err := parser.Parse(tt.input)
 			if err != nil {
-				t.Fatal(err)
+				if tt.expectErr {
+					return
+				}
+				t.Fatalf("unexpected parser error: %v", err)
 			}
-			intent := semantic.Resolve(ast)
+
+			intent, err := semantic.Resolve(ast)
+
+			if tt.expectErr {
+				if err == nil {
+					t.Fatalf("expected error, got success: %#v", intent)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
 
 			if intent != tt.expect {
 				t.Errorf(
-					"\ninput : %q\nexpect: %#v\ngot   : %#v",
+					"\nINPUT : %q\nEXPECT: %#v\nGOT   : %#v",
 					tt.input,
 					tt.expect,
 					intent,

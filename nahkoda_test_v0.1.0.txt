@@ -1,5 +1,5 @@
 ⚓ Nahkoda Test Run
-Timestamp: Wed Jan  7 12:30:54 WIB 2026
+Timestamp: Wed Jan  7 14:46:28 WIB 2026
 ==============================
 
 🔨 Building binary...
@@ -15,11 +15,8 @@ Contoh perintah:
   nahkoda liat kru di geladak auth
   nahkoda liat kru bocor di geladak payment
 
-Analogi:
-  kru       → pod
-  geladak   → namespace
-  rusak     → status!=Running
-  bocor     → OOMKilled
+Nahkoda menerjemahkan bahasa manusia
+menjadi intent operasional Kubernetes.
 
 Usage:
   nahkoda [kalimat] [flags]
@@ -84,24 +81,11 @@ Filters:
 
 ▶ COMMAND: liat kru xyz
 ------------------------------
-⚓ Rencana eksekusi:
-Operation : list
-Resource  : pod
-Namespace : all
-Filters:
-  - status=Running
-
-(simulasi eksekusi, belum menyentuh Kubernetes)
+❌ kata tidak dikenali: "xyz"
+❌ command failed
 
 ▶ COMMAND: terbangkan kapal
 ------------------------------
-Error: aksi tidak dikenali
-Usage:
-  nahkoda [kalimat] [flags]
-
-Flags:
-  -h, --help   help for nahkoda
-
 ❌ aksi tidak dikenali
 ❌ command failed
 

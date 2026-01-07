@@ -15,7 +15,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "nahkoda [kalimat]",
-	Short: "Nahkoda — Natural language CLI for Kubernetes",
+	Short: "Nahkoda — Bahasa manusia untuk Kubernetes",
 	Long: `⚓ Nahkoda — Bahasa manusia untuk Kubernetes
 
 Contoh perintah:
@@ -24,31 +24,40 @@ Contoh perintah:
   nahkoda liat kru di geladak auth
   nahkoda liat kru bocor di geladak payment
 
-Analogi:
-  kru       → pod
-  geladak   → namespace
-  rusak     → status!=Running
-  bocor     → OOMKilled
+Nahkoda menerjemahkan bahasa manusia
+menjadi intent operasional Kubernetes.
 `,
 	Args: cobra.MinimumNArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
+	Run: func(cmd *cobra.Command, args []string) {
 		input := strings.Join(args, " ")
 
+		// 1️⃣ PARSER
 		ast, err := parser.Parse(input)
 		if err != nil {
-			return err
+			fmt.Println("❌", err.Error())
+			os.Exit(1)
 		}
 
-		intent := semantic.Resolve(ast)
+		// 2️⃣ SEMANTIC (STRICT)
+		intent, err := semantic.Resolve(ast)
+		if err != nil {
+			fmt.Println("❌", err.Error())
+			os.Exit(1)
+		}
+
+		// 3️⃣ PLANNER
 		plan := planner.Build(intent)
 
-		return exec.Execute(plan)
+		// 4️⃣ EXECUTOR
+		if err := exec.Execute(plan); err != nil {
+			fmt.Println("❌", err.Error())
+			os.Exit(1)
+		}
 	},
 }
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println("❌", err.Error())
 		os.Exit(1)
 	}
 }

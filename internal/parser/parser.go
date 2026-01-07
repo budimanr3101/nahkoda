@@ -38,7 +38,7 @@ func Parse(input string) (AST, error) {
 		// ===== LOKASI =====
 		case "di":
 			if i+2 < len(tokens) && tokens[i+1] == "geladak" {
-				ast.Lokasi = tokens[i+2]
+				ast.Lokasi = "geladak " + tokens[i+2]
 				i += 2
 			} else {
 				ast.Unknown = append(ast.Unknown, tok)
