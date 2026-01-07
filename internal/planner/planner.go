@@ -16,7 +16,7 @@ func Build(intent semantic.Intent) Plan {
 	// ===============================
 	switch intent.Aksi {
 	case "liat":
-		plan.Operation = "list"
+		plan.Operation = "get"
 	case "cek":
 		plan.Operation = "describe"
 	case "hapus":
@@ -81,7 +81,7 @@ func splitFilter(filter string) (string, string) {
 	}
 	if strings.Contains(filter, "=") {
 		parts := strings.Split(filter, "=")
-		return parts[0], parts[1]
+		return parts[0], "=" + parts[1]
 	}
 	return filter, ""
 }

@@ -74,7 +74,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 		if ast.Kondisi != "" {
 			intent.Kondisi = ast.Kondisi
 
-			filter, ok := resolveCondition(ast.Kondisi)
+			filter, ok := ResolveCondition(ast.Kondisi)
 			if !ok {
 				return intent, fmt.Errorf("kondisi tidak dikenali: %s", ast.Kondisi)
 			}
@@ -85,7 +85,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 			// default: hanya kru yang dianggap "sehat" (running) secara default
 			// resource lain (node/mesin) ditampilkan apa adanya (tanpa filter)
 			if intent.Objek == "kru" {
-				intent.Filter = "status=Running"
+				intent.Filter = "status.phase=Running"
 				intent.IsDefaultFilter = true
 			}
 		}
@@ -110,18 +110,4 @@ func Resolve(ast parser.AST) (Intent, error) {
 	}
 
 	return intent, nil
-}
-
-// resolveCondition memetakan kondisi bahasa manusia ke filter Kubernetes.
-func resolveCondition(kondisi string) (string, bool) {
-	switch kondisi {
-	case "rusak":
-		return "status!=Running", true
-	case "bocor":
-		return "reason=OOMKilled", true
-	case "sehat":
-		return "status=Running", true
-	default:
-		return "", false
-	}
 }

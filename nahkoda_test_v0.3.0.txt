@@ -1,5 +1,5 @@
 ⚓ Nahkoda Test Run v0.3.0
-Timestamp: Wed Jan  7 16:16:44 WIB 2026
+Timestamp: Wed Jan  7 16:24:15 WIB 2026
 ==============================
 
 🔨 Building binary...
@@ -26,58 +26,63 @@ Flags:
 
 ▶ COMMAND: liat kru
 ------------------------------
-⚓ Rencana eksekusi:
-Operation : list
-Resource  : pod
-Namespace : all
-Filters:
-  - status=Running
-
-(simulasi eksekusi, belum menyentuh Kubernetes)
+⚓ Menjalankan: kubectl get pod -A --field-selector=status.phase=Running
+E0107 16:24:17.240802   94336 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.242686   94336 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.243788   94336 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.244648   94336 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.245670   94336 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+Unable to connect to the server: dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+❌ exit status 1
+❌ command failed
 
 ▶ COMMAND: liat kru rusak
 ------------------------------
-⚓ Rencana eksekusi:
-Operation : list
-Resource  : pod
-Namespace : all
-Filters:
-  - status!=Running
-
-(simulasi eksekusi, belum menyentuh Kubernetes)
+⚓ Menjalankan: kubectl get pod -A --field-selector=status.phase!=Running
+E0107 16:24:17.600194   94342 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.601350   94342 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.602325   94342 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.603245   94342 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.604192   94342 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+Unable to connect to the server: dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+❌ exit status 1
+❌ command failed
 
 ▶ COMMAND: liat kru di geladak auth
 ------------------------------
-⚓ Rencana eksekusi:
-Operation : list
-Resource  : pod
-Namespace : auth
-Filters:
-  - status=Running
-
-(simulasi eksekusi, belum menyentuh Kubernetes)
+⚓ Menjalankan: kubectl get pod -n auth --field-selector=status.phase=Running
+E0107 16:24:17.947890   94347 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.948926   94347 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.949775   94347 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.950761   94347 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:17.951699   94347 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+Unable to connect to the server: dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+❌ exit status 1
+❌ command failed
 
 ▶ COMMAND: liat kru bocor di geladak payment
 ------------------------------
-⚓ Rencana eksekusi:
-Operation : list
-Resource  : pod
-Namespace : payment
-Filters:
-  - reason=OOMKilled
-
-(simulasi eksekusi, belum menyentuh Kubernetes)
+⚓ Menjalankan: kubectl get pod -n payment --field-selector=status.reason=OOMKilled
+E0107 16:24:18.289594   94352 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.290627   94352 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.291528   94352 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.292496   94352 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.293341   94352 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+Unable to connect to the server: dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+❌ exit status 1
+❌ command failed
 
 ▶ COMMAND: liat kru sehat
 ------------------------------
-⚓ Rencana eksekusi:
-Operation : list
-Resource  : pod
-Namespace : all
-Filters:
-  - status=Running
-
-(simulasi eksekusi, belum menyentuh Kubernetes)
+⚓ Menjalankan: kubectl get pod -A --field-selector=status.phase=Running
+E0107 16:24:18.631788   94357 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.632986   94357 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.633556   94357 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.635168   94357 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.635977   94357 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+Unable to connect to the server: dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+❌ exit status 1
+❌ command failed
 
 ▶ COMMAND: liat kru xyz
 ------------------------------
@@ -86,15 +91,15 @@ Filters:
 
 ▶ COMMAND: cek kru payments-pod-1
 ------------------------------
-⚓ Rencana eksekusi:
-Operation : describe
-Resource  : pod
-Namespace : all
-Target    : payments-pod-1
-Filters:
-  - none
-
-(simulasi eksekusi, belum menyentuh Kubernetes)
+⚓ Menjalankan: kubectl describe pod payments-pod-1 -A
+E0107 16:24:18.984523   94365 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.985824   94365 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.986413   94365 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.987838   94365 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:18.988660   94365 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+Unable to connect to the server: dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+❌ exit status 1
+❌ command failed
 
 ▶ COMMAND: cek mesin
 ------------------------------
@@ -103,14 +108,27 @@ Filters:
 
 ▶ COMMAND: liat mesin
 ------------------------------
-⚓ Rencana eksekusi:
-Operation : list
-Resource  : node
-Namespace : all
-Filters:
-  - none
+⚓ Menjalankan: kubectl get node -A
+E0107 16:24:19.349234   94373 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:19.350362   94373 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:19.351318   94373 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:19.352251   94373 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:19.352823   94373 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+Unable to connect to the server: dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+❌ exit status 1
+❌ command failed
 
-(simulasi eksekusi, belum menyentuh Kubernetes)
+▶ COMMAND: liat kru terdampar
+------------------------------
+⚓ Menjalankan: kubectl get pod -A --field-selector=status.phase=Pending
+E0107 16:24:19.830654   94378 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:19.831734   94378 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:19.832699   94378 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:19.833915   94378 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+E0107 16:24:19.836384   94378 memcache.go:265] couldn't get current server API group list: Get "https://7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com/api?timeout=32s": dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+Unable to connect to the server: dial tcp: lookup 7FB94673BB57AA3AA5712FBB0B14DD7C.yl4.ap-southeast-3.eks.amazonaws.com: no such host
+❌ exit status 1
+❌ command failed
 
 ▶ COMMAND: terbangkan kapal
 ------------------------------

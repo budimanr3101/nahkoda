@@ -2,43 +2,42 @@ package exec
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
+	"strings"
 
 	"nahkoda/internal/planner"
 )
 
 func Execute(plan planner.Plan) error {
-	fmt.Println("⚓ Rencana eksekusi:")
-	fmt.Println("Operation :", plan.Operation)
-	fmt.Println("Resource  :", plan.Resource)
-	fmt.Println("Namespace :", plan.Namespace)
+	// Construct args: kubectl [operation] [resource] [target]
+	args := []string{plan.Operation, plan.Resource}
 
-	// ===============================
-	// TARGET (khusus cek / describe)
-	// ===============================
 	if plan.Target != "" {
-		fmt.Println("Target    :", plan.Target)
+		args = append(args, plan.Target)
 	}
 
-	// ===============================
-	// FILTERS (TIDAK DIUBAH)
-	// ===============================
-	fmt.Println("Filters:")
-	if len(plan.Filters) == 0 {
-		fmt.Println("  - none")
+	// Namespace
+	if plan.Namespace == "all" {
+		args = append(args, "-A")
 	} else {
-		for k, v := range plan.Filters {
-			// FIX UTAMA ADA DI SINI (existing behavior)
-			if len(v) > 0 && (v[0] == '!' || v[0] == '=') {
-				// contoh: status!=Running
-				fmt.Printf("  - %s%s\n", k, v)
-			} else {
-				// contoh: status=Running
-				fmt.Printf("  - %s=%s\n", k, v)
-			}
-		}
+		args = append(args, "-n", plan.Namespace)
 	}
 
-	fmt.Println()
-	fmt.Println("(simulasi eksekusi, belum menyentuh Kubernetes)")
-	return nil
+	// Filter (field-selector)
+	var selectors []string
+	for k, v := range plan.Filters {
+		selectors = append(selectors, k+v)
+	}
+	if len(selectors) > 0 {
+		args = append(args, "--field-selector="+strings.Join(selectors, ","))
+	}
+
+	// Execute
+	cmd := exec.Command("kubectl", args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	fmt.Printf("⚓ Menjalankan: %s\n", strings.Join(cmd.Args, " "))
+	return cmd.Run()
 }

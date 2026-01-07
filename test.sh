@@ -2,10 +2,10 @@
 
 set -e
 
-OUT="nahkoda_test_v0.3.0.txt"
+OUT="nahkoda_test_v0.4.0.txt"
 BIN="./nahkoda"
 
-echo "⚓ Nahkoda Test Run v0.3.0" > $OUT
+echo "⚓ Nahkoda Test Run v0.4.0" > $OUT
 echo "Timestamp: $(date)" >> $OUT
 echo "==============================" >> $OUT
 echo "" >> $OUT
@@ -33,6 +33,7 @@ run_test "liat kru xyz"
 run_test "cek kru payments-pod-1"
 run_test "cek mesin"
 run_test "liat mesin"
+run_test "liat kru terdampar"
 run_test "terbangkan kapal"
 
 echo "✅ Test selesai. Output tersimpan di $OUT"

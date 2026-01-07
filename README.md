@@ -1,4 +1,4 @@
-# ⚓ Nahkoda v0.3.0
+# ⚓ Nahkoda v0.4.0
 
 > **Human-friendly command layer di atas kubectl, pakai bahasa Indonesia.**
 
@@ -36,9 +36,9 @@ Nahkoda hadir sebagai **lapisan semantic di atas kubectl**.
 
 ---
 
-## 🧠 Filosofi v0.3.0 — *Semantic Strict Mode*
+## 🧠 Filosofi v0.4.0 — *Koneksi Kubectl*
 
-Mulai **v0.3.0**, Nahkoda berjalan dalam **STRICT SEMANTIC MODE**.
+Mulai **v0.4.0**, Nahkoda terintegrasi langsung dengan `kubectl`.
 
 Artinya:
 
@@ -251,7 +251,7 @@ Lihat detail di [`TODO.md`](./TODO.md):
 * ✅ DSL v1 stabil
 * ✅ Strict semantic resolver (v0.3.0)
 * ✅ Deterministic output
-* ⏳ kubectl executor (next)
+* ✅ kubectl executor (v0.4.0)
 
 Nahkoda **sudah aman dipamerkan**,
 dan **fondasinya siap untuk production-grade CLI**.
