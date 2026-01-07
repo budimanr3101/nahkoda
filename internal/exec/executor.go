@@ -2,26 +2,32 @@ package exec
 
 import (
 	"fmt"
-	"nahkoda/internal/semantic"
+	"nahkoda/internal/planner"
 )
 
-func Execute(intent semantic.Intent) {
-	fmt.Println("⚓ Nahkoda menerima perintah:")
-	fmt.Printf("Aksi   : %s\n", intent.Aksi)
-	fmt.Printf("Objek  : %s\n", intent.Objek)
-	fmt.Printf("Lokasi : %s\n", intent.Lokasi)
+func Execute(plan planner.Plan) error {
+	fmt.Println("⚓ Rencana eksekusi:")
+	fmt.Println("Operation :", plan.Operation)
+	fmt.Println("Resource  :", plan.Resource)
+	fmt.Println("Namespace :", plan.Namespace)
 
-	if intent.Kondisi != "" {
-		fmt.Println("Kondisi:", intent.Kondisi)
-	}
-
-	if intent.Filter != "" {
-		if intent.IsDefaultFilter {
-			fmt.Println("Filter :", intent.Filter, "(aturan default: kru sehat)")
-		} else {
-			fmt.Println("Filter :", intent.Filter)
+	fmt.Println("Filters:")
+	if len(plan.Filters) == 0 {
+		fmt.Println("  - none")
+	} else {
+		for k, v := range plan.Filters {
+			// FIX UTAMA ADA DI SINI
+			if len(v) > 0 && (v[0] == '!' || v[0] == '=') {
+				// contoh: status!=Running
+				fmt.Printf("  - %s%s\n", k, v)
+			} else {
+				// contoh: status=Running
+				fmt.Printf("  - %s=%s\n", k, v)
+			}
 		}
 	}
 
-	fmt.Println("\n(simulasi, belum menyentuh Kubernetes)")
+	fmt.Println()
+	fmt.Println("(simulasi eksekusi, belum menyentuh Kubernetes)")
+	return nil
 }

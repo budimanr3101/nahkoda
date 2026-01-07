@@ -1,0 +1,107 @@
+⚓ Nahkoda Test Run
+Timestamp: Wed Jan  7 12:30:54 WIB 2026
+==============================
+
+🔨 Building binary...
+✅ Build success
+
+▶ COMMAND: --help
+------------------------------
+⚓ Nahkoda — Bahasa manusia untuk Kubernetes
+
+Contoh perintah:
+  nahkoda liat kru
+  nahkoda liat kru rusak
+  nahkoda liat kru di geladak auth
+  nahkoda liat kru bocor di geladak payment
+
+Analogi:
+  kru       → pod
+  geladak   → namespace
+  rusak     → status!=Running
+  bocor     → OOMKilled
+
+Usage:
+  nahkoda [kalimat] [flags]
+
+Flags:
+  -h, --help   help for nahkoda
+
+▶ COMMAND: liat kru
+------------------------------
+⚓ Rencana eksekusi:
+Operation : list
+Resource  : pod
+Namespace : all
+Filters:
+  - status=Running
+
+(simulasi eksekusi, belum menyentuh Kubernetes)
+
+▶ COMMAND: liat kru rusak
+------------------------------
+⚓ Rencana eksekusi:
+Operation : list
+Resource  : pod
+Namespace : all
+Filters:
+  - status!=Running
+
+(simulasi eksekusi, belum menyentuh Kubernetes)
+
+▶ COMMAND: liat kru di geladak auth
+------------------------------
+⚓ Rencana eksekusi:
+Operation : list
+Resource  : pod
+Namespace : auth
+Filters:
+  - status=Running
+
+(simulasi eksekusi, belum menyentuh Kubernetes)
+
+▶ COMMAND: liat kru bocor di geladak payment
+------------------------------
+⚓ Rencana eksekusi:
+Operation : list
+Resource  : pod
+Namespace : payment
+Filters:
+  - reason=OOMKilled
+
+(simulasi eksekusi, belum menyentuh Kubernetes)
+
+▶ COMMAND: liat kru sehat
+------------------------------
+⚓ Rencana eksekusi:
+Operation : list
+Resource  : pod
+Namespace : all
+Filters:
+  - status=Running
+
+(simulasi eksekusi, belum menyentuh Kubernetes)
+
+▶ COMMAND: liat kru xyz
+------------------------------
+⚓ Rencana eksekusi:
+Operation : list
+Resource  : pod
+Namespace : all
+Filters:
+  - status=Running
+
+(simulasi eksekusi, belum menyentuh Kubernetes)
+
+▶ COMMAND: terbangkan kapal
+------------------------------
+Error: aksi tidak dikenali
+Usage:
+  nahkoda [kalimat] [flags]
+
+Flags:
+  -h, --help   help for nahkoda
+
+❌ aksi tidak dikenali
+❌ command failed
+

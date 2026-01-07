@@ -17,21 +17,22 @@ func Resolve(ast parser.AST) Intent {
 		Objek: ast.Objek,
 	}
 
-	// default objek
+	// ===== DEFAULT OBJEK =====
 	if intent.Objek == "" {
 		intent.Objek = "kru"
 	}
 
-	// lokasi
+	// ===== LOKASI =====
 	if ast.Lokasi != "" {
-		intent.Lokasi = ast.Lokasi
+		// parser sekarang hanya memberi nama namespace: "auth"
+		// semantic bertugas membentuk makna bahasa
+		intent.Lokasi = "geladak " + ast.Lokasi
 	} else {
 		intent.Lokasi = "semua geladak"
 	}
 
 	// ===== KONDISI =====
 	if ast.Kondisi != "" {
-		// kondisi eksplisit
 		intent.Kondisi = ast.Kondisi
 
 		if filter, ok := ResolveCondition(ast.Kondisi); ok {

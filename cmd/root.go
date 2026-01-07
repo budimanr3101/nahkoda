@@ -7,6 +7,7 @@ import (
 
 	"nahkoda/internal/exec"
 	"nahkoda/internal/parser"
+	"nahkoda/internal/planner"
 	"nahkoda/internal/semantic"
 
 	"github.com/spf13/cobra"
@@ -21,29 +22,33 @@ Contoh perintah:
   nahkoda liat kru
   nahkoda liat kru rusak
   nahkoda liat kru di geladak auth
-  nahkoda liat kru bocor di geladak auth
+  nahkoda liat kru bocor di geladak payment
 
-Nahkoda akan menerjemahkan kalimat manusia
-menjadi intent operasional Kubernetes.
+Analogi:
+  kru       → pod
+  geladak   → namespace
+  rusak     → status!=Running
+  bocor     → OOMKilled
 `,
 	Args: cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		input := strings.Join(args, " ")
 
 		ast, err := parser.Parse(input)
 		if err != nil {
-			fmt.Println("❌", err.Error())
-			return
+			return err
 		}
 
 		intent := semantic.Resolve(ast)
-		exec.Execute(intent)
+		plan := planner.Build(intent)
+
+		return exec.Execute(plan)
 	},
 }
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		fmt.Println("❌", err.Error())
 		os.Exit(1)
 	}
 }

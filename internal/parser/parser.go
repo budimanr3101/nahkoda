@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -12,39 +11,50 @@ type AST struct {
 	Lokasi  string
 	Kondisi string
 	Filter  string
+	Unknown []string
 }
 
 func Parse(input string) (AST, error) {
-	// v0 parser: super naif, tapi sesuai SPEC
-	tokens := split(input)
+	tokens := strings.Fields(strings.ToLower(input))
 	ast := AST{}
 
 	for i := 0; i < len(tokens); i++ {
-		switch tokens[i] {
+		tok := tokens[i]
 
-		case "liat":
-			ast.Aksi = "liat"
+		switch tok {
 
+		// ===== AKSI =====
+		case "liat", "hapus":
+			ast.Aksi = tok
+
+		// ===== OBJEK =====
 		case "kru":
-			ast.Objek = "kru"
+			ast.Objek = tok
 
-		case "rusak", "terdampar", "bocor", "sehat":
-			ast.Kondisi = tokens[i]
+		// ===== KONDISI =====
+		case "rusak", "bocor", "sehat":
+			ast.Kondisi = tok
 
+		// ===== LOKASI =====
 		case "di":
 			if i+2 < len(tokens) && tokens[i+1] == "geladak" {
-				ast.Lokasi = "geladak " + tokens[i+2]
+				ast.Lokasi = tokens[i+2]
+				i += 2
+			} else {
+				ast.Unknown = append(ast.Unknown, tok)
 			}
-			fmt.Printf("DEBUG TOKENS: %#v\n", tokens)
-			fmt.Printf("DEBUG AST: %#v\n", ast)
+
+		// ===== UNKNOWN =====
+		default:
+			ast.Unknown = append(ast.Unknown, tok)
 		}
 	}
-	if ast.Aksi == "" {
-		return ast, errors.New("aksi tidak dikenali")
-	}
-	return ast, nil
-}
 
-func split(s string) []string {
-	return strings.Fields(strings.ToLower(s))
+	// ===== VALIDASI MINIMAL =====
+	if ast.Aksi == "" {
+		return ast, fmt.Errorf("aksi tidak dikenali")
+	}
+
+	// objek default ditangani di semantic layer
+	return ast, nil
 }
