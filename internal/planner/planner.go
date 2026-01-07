@@ -11,10 +11,14 @@ func Build(intent semantic.Intent) Plan {
 		Filters: make(map[string]string),
 	}
 
-	// ===== AKSI → OPERATION =====
+	// ===============================
+	// 1️⃣ AKSI → OPERATION
+	// ===============================
 	switch intent.Aksi {
 	case "liat":
 		plan.Operation = "list"
+	case "cek":
+		plan.Operation = "describe"
 	case "hapus":
 		plan.Operation = "delete"
 	default:
@@ -22,7 +26,9 @@ func Build(intent semantic.Intent) Plan {
 		plan.Notes = append(plan.Notes, "aksi tidak dikenali")
 	}
 
-	// ===== OBJEK → RESOURCE =====
+	// ===============================
+	// 2️⃣ OBJEK → RESOURCE
+	// ===============================
 	switch intent.Objek {
 	case "kru":
 		plan.Resource = "pod"
@@ -33,15 +39,24 @@ func Build(intent semantic.Intent) Plan {
 		plan.Notes = append(plan.Notes, "objek tidak dikenali")
 	}
 
-	// ===== LOKASI → NAMESPACE =====
+	// ===============================
+	// 3️⃣ LOKASI → NAMESPACE
+	// ===============================
 	if intent.Lokasi == "semua geladak" {
 		plan.Namespace = "all"
 	} else {
 		plan.Namespace = normalizeNamespace(intent.Lokasi)
 	}
 
-	// ===== FILTER =====
-	if intent.Filter != "" {
+	// ===============================
+	// 4️⃣ TARGET (UNTUK CEK)
+	// ===============================
+	plan.Target = intent.Target
+
+	// ===============================
+	// 5️⃣ FILTER (HANYA UNTUK LIAT)
+	// ===============================
+	if intent.Aksi == "liat" && intent.Filter != "" {
 		key, value := splitFilter(intent.Filter)
 		plan.Filters[key] = value
 	}

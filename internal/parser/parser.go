@@ -10,7 +10,7 @@ type AST struct {
 	Objek   string
 	Lokasi  string
 	Kondisi string
-	Filter  string
+	Target  string
 	Unknown []string
 }
 
@@ -24,7 +24,7 @@ func Parse(input string) (AST, error) {
 		switch tok {
 
 		// ===== AKSI =====
-		case "liat", "hapus":
+		case "liat", "hapus", "cek":
 			ast.Aksi = tok
 
 		// ===== OBJEK =====
@@ -44,9 +44,14 @@ func Parse(input string) (AST, error) {
 				ast.Unknown = append(ast.Unknown, tok)
 			}
 
-		// ===== UNKNOWN =====
+		// ===== DEFAULT =====
 		default:
-			ast.Unknown = append(ast.Unknown, tok)
+			// khusus untuk aksi "cek", token terakhir dianggap target
+			if ast.Aksi == "cek" && i == len(tokens)-1 {
+				ast.Target = tok
+			} else {
+				ast.Unknown = append(ast.Unknown, tok)
+			}
 		}
 	}
 
@@ -55,6 +60,5 @@ func Parse(input string) (AST, error) {
 		return ast, fmt.Errorf("aksi tidak dikenali")
 	}
 
-	// objek default ditangani di semantic layer
 	return ast, nil
 }

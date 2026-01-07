@@ -13,6 +13,7 @@ type Intent struct {
 	Lokasi          string
 	Kondisi         string
 	Filter          string
+	Target          string
 	IsDefaultFilter bool
 }
 
@@ -57,22 +58,52 @@ func Resolve(ast parser.AST) (Intent, error) {
 	}
 
 	// ===============================
-	// 5️⃣ KONDISI → FILTER
+	// 5️⃣ TARGET (UNTUK CEK)
 	// ===============================
-	if ast.Kondisi != "" {
-		intent.Kondisi = ast.Kondisi
+	intent.Target = ast.Target
 
-		filter, ok := resolveCondition(ast.Kondisi)
-		if !ok {
-			return intent, fmt.Errorf("kondisi tidak dikenali: %s", ast.Kondisi)
+	// ===============================
+	// 6️⃣ AKSI-SPECIFIC LOGIC
+	// ===============================
+	switch intent.Aksi {
+
+	// ===============================
+	// LIAT → LIST
+	// ===============================
+	case "liat":
+		if ast.Kondisi != "" {
+			intent.Kondisi = ast.Kondisi
+
+			filter, ok := resolveCondition(ast.Kondisi)
+			if !ok {
+				return intent, fmt.Errorf("kondisi tidak dikenali: %s", ast.Kondisi)
+			}
+
+			intent.Filter = filter
+			intent.IsDefaultFilter = false
+		} else {
+			// default: kru sehat
+			intent.Filter = "status=Running"
+			intent.IsDefaultFilter = true
 		}
 
-		intent.Filter = filter
+	// ===============================
+	// CEK → DESCRIBE (STRICT)
+	// ===============================
+	case "cek":
+		if intent.Target == "" {
+			return intent, fmt.Errorf("cek kru butuh nama kru")
+		}
+
+		// cek itu inspect 1 resource → tidak pakai filter
+		intent.Filter = ""
 		intent.IsDefaultFilter = false
-	} else {
-		// default: kru sehat
-		intent.Filter = "status=Running"
-		intent.IsDefaultFilter = true
+
+	// ===============================
+	// AKSI TIDAK DIKENAL
+	// ===============================
+	default:
+		return intent, fmt.Errorf("aksi tidak dikenali")
 	}
 
 	return intent, nil

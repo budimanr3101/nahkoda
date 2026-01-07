@@ -2,6 +2,7 @@ package exec
 
 import (
 	"fmt"
+
 	"nahkoda/internal/planner"
 )
 
@@ -11,12 +12,22 @@ func Execute(plan planner.Plan) error {
 	fmt.Println("Resource  :", plan.Resource)
 	fmt.Println("Namespace :", plan.Namespace)
 
+	// ===============================
+	// TARGET (khusus cek / describe)
+	// ===============================
+	if plan.Target != "" {
+		fmt.Println("Target    :", plan.Target)
+	}
+
+	// ===============================
+	// FILTERS (TIDAK DIUBAH)
+	// ===============================
 	fmt.Println("Filters:")
 	if len(plan.Filters) == 0 {
 		fmt.Println("  - none")
 	} else {
 		for k, v := range plan.Filters {
-			// FIX UTAMA ADA DI SINI
+			// FIX UTAMA ADA DI SINI (existing behavior)
 			if len(v) > 0 && (v[0] == '!' || v[0] == '=') {
 				// contoh: status!=Running
 				fmt.Printf("  - %s%s\n", k, v)
