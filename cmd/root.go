@@ -34,15 +34,15 @@ menjadi intent operasional Kubernetes.
 		// 1️⃣ PARSER
 		ast, err := parser.Parse(input)
 		if err != nil {
-			fmt.Println("❌", err.Error())
-			os.Exit(1)
+			fmt.Println(err.Error())
+			return
 		}
 
 		// 2️⃣ SEMANTIC (STRICT)
 		intent, err := semantic.Resolve(ast)
 		if err != nil {
-			fmt.Println("❌", err.Error())
-			os.Exit(1)
+			fmt.Println(err.Error())
+			return
 		}
 
 		// 3️⃣ PLANNER
@@ -50,8 +50,8 @@ menjadi intent operasional Kubernetes.
 
 		// 4️⃣ EXECUTOR
 		if err := exec.Execute(plan); err != nil {
-			fmt.Println("❌", err.Error())
-			os.Exit(1)
+			fmt.Println(err.Error())
+			return
 		}
 	},
 }

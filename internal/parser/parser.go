@@ -32,7 +32,7 @@ func Parse(input string) (AST, error) {
 			ast.Objek = tok
 
 		// ===== KONDISI =====
-		case "rusak", "bocor", "sehat", "terdampar":
+		case "rusak", "bocor", "sehat", "terdampar", "siap", "mogok":
 			ast.Kondisi = tok
 
 		// ===== LOKASI =====

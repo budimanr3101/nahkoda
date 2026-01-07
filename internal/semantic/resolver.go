@@ -93,7 +93,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 			// default: hanya kru yang dianggap "sehat" (running) secara default
 			// resource lain (node/mesin) ditampilkan apa adanya (tanpa filter)
 			if intent.Objek == "kru" {
-				intent.Filter = "status.phase=Running"
+				intent.Filter = "status=Running"
 				intent.IsDefaultFilter = true
 			}
 		}

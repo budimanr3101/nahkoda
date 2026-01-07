@@ -1,0 +1,109 @@
+⚓ Nahkoda Test Run v0.5.1
+Timestamp: Wed Jan  7 22:36:04 WIB 2026
+==============================
+
+🔨 Building binary...
+✅ Build success
+
+▶ COMMAND: --help
+------------------------------
+⚓ Nahkoda — Bahasa manusia untuk Kubernetes
+
+Contoh perintah:
+  nahkoda liat kru
+  nahkoda liat kru rusak
+  nahkoda liat kru di geladak auth
+  nahkoda liat kru bocor di geladak payment
+
+Nahkoda menerjemahkan bahasa manusia
+menjadi intent operasional Kubernetes.
+
+Usage:
+  nahkoda [kalimat] [flags]
+
+Flags:
+  -h, --help   help for nahkoda
+
+▶ COMMAND: liat kru
+------------------------------
+⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
+NAMESPACE     NAME                                     READY   STATUS             RESTARTS      AGE
+default       my-app-59854d5646-5xc99                  1/1     Running            0             5h55m
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            0             5h59m
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            0             5h59m
+kube-system   etcd-docker-desktop                      1/1     Running            0             5h59m
+kube-system   kube-apiserver-docker-desktop            1/1     Running            0             5h59m
+kube-system   kube-controller-manager-docker-desktop   1/1     Running            0             5h59m
+kube-system   kube-proxy-wdpfs                         1/1     Running            0             5h59m
+kube-system   kube-scheduler-docker-desktop            1/1     Running            0             5h59m
+kube-system   storage-provisioner                      1/1     Running            1 (19m ago)   5h59m
+kube-system   vpnkit-controller                        1/1     Running            0             5h59m
+
+▶ COMMAND: liat kru rusak
+------------------------------
+⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=true)
+NAMESPACE     NAME                                     READY   STATUS             RESTARTS      AGE
+default       crashloop-pod                            0/1     CrashLoopBackOff   7 (44s ago)   12m
+default       imagepullbackoff-pod                     0/1     ImagePullBackOff   0             12m
+
+▶ COMMAND: liat kru di geladak auth
+------------------------------
+⚓ Menjalankan: kubectl get pod -n auth | grep 'Running' (invert=false)
+No resources found in auth namespace.
+
+▶ COMMAND: liat kru bocor di geladak payment
+------------------------------
+❌ kondisi tidak dikenali: bocor
+❌ command failed
+
+▶ COMMAND: liat kru sehat
+------------------------------
+⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
+NAMESPACE     NAME                                     READY   STATUS             RESTARTS      AGE
+default       my-app-59854d5646-5xc99                  1/1     Running            0             5h55m
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            0             5h59m
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            0             5h59m
+kube-system   etcd-docker-desktop                      1/1     Running            0             5h59m
+kube-system   kube-apiserver-docker-desktop            1/1     Running            0             5h59m
+kube-system   kube-controller-manager-docker-desktop   1/1     Running            0             5h59m
+kube-system   kube-proxy-wdpfs                         1/1     Running            0             5h59m
+kube-system   kube-scheduler-docker-desktop            1/1     Running            0             5h59m
+kube-system   storage-provisioner                      1/1     Running            1 (19m ago)   5h59m
+kube-system   vpnkit-controller                        1/1     Running            0             5h59m
+
+▶ COMMAND: liat kru xyz
+------------------------------
+❌ kata tidak dikenali: "xyz"
+❌ command failed
+
+▶ COMMAND: cek kru hantu
+------------------------------
+⚓ Menjalankan: kubectl describe pod hantu -n default
+Error from server (NotFound): pods "hantu" not found
+
+▶ COMMAND: cek kru payments-pod-1
+------------------------------
+⚓ Menjalankan: kubectl describe pod payments-pod-1 -n default
+Error from server (NotFound): pods "payments-pod-1" not found
+
+▶ COMMAND: cek mesin
+------------------------------
+❌ cek mesin butuh nama mesin
+❌ command failed
+
+▶ COMMAND: liat mesin
+------------------------------
+⚓ Menjalankan: kubectl get node -A
+NAME             STATUS   ROLES           AGE     VERSION
+docker-desktop   Ready    control-plane   5h59m   v1.34.1
+
+▶ COMMAND: liat kru terdampar
+------------------------------
+⚓ Menjalankan: kubectl get pod -A | grep 'Pending' (invert=false)
+NAMESPACE     NAME                                     READY   STATUS             RESTARTS      AGE
+
+▶ COMMAND: terbangkan kapal
+------------------------------
+❌ aksi tidak dikenali
+❌ command failed
+

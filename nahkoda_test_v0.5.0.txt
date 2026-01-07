@@ -1,5 +1,5 @@
-⚓ Nahkoda Test Run v0.4.0
-Timestamp: Wed Jan  7 22:30:42 WIB 2026
+⚓ Nahkoda Test Run v0.5.0
+Timestamp: Wed Jan  7 22:31:42 WIB 2026
 ==============================
 
 🔨 Building binary...
@@ -28,23 +28,23 @@ Flags:
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
 NAMESPACE     NAME                                     READY   STATUS             RESTARTS      AGE
-default       my-app-59854d5646-5xc99                  1/1     Running            0             5h50m
-kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            0             5h54m
-kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            0             5h54m
-kube-system   etcd-docker-desktop                      1/1     Running            0             5h54m
-kube-system   kube-apiserver-docker-desktop            1/1     Running            0             5h54m
-kube-system   kube-controller-manager-docker-desktop   1/1     Running            0             5h54m
-kube-system   kube-proxy-wdpfs                         1/1     Running            0             5h54m
-kube-system   kube-scheduler-docker-desktop            1/1     Running            0             5h54m
-kube-system   storage-provisioner                      1/1     Running            1 (14m ago)   5h54m
-kube-system   vpnkit-controller                        1/1     Running            0             5h54m
+default       my-app-59854d5646-5xc99                  1/1     Running            0             5h51m
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            0             5h55m
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            0             5h55m
+kube-system   etcd-docker-desktop                      1/1     Running            0             5h55m
+kube-system   kube-apiserver-docker-desktop            1/1     Running            0             5h55m
+kube-system   kube-controller-manager-docker-desktop   1/1     Running            0             5h55m
+kube-system   kube-proxy-wdpfs                         1/1     Running            0             5h55m
+kube-system   kube-scheduler-docker-desktop            1/1     Running            0             5h55m
+kube-system   storage-provisioner                      1/1     Running            1 (15m ago)   5h55m
+kube-system   vpnkit-controller                        1/1     Running            0             5h55m
 
 ▶ COMMAND: liat kru rusak
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=true)
 NAMESPACE     NAME                                     READY   STATUS             RESTARTS      AGE
-default       crashloop-pod                            0/1     CrashLoopBackOff   6 (38s ago)   7m3s
-default       imagepullbackoff-pod                     0/1     ImagePullBackOff   0             6m51s
+default       crashloop-pod                            0/1     CrashLoopBackOff   6 (96s ago)   8m1s
+default       imagepullbackoff-pod                     0/1     ImagePullBackOff   0             7m49s
 
 ▶ COMMAND: liat kru di geladak auth
 ------------------------------
@@ -60,16 +60,16 @@ No resources found in auth namespace.
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
 NAMESPACE     NAME                                     READY   STATUS             RESTARTS      AGE
-default       my-app-59854d5646-5xc99                  1/1     Running            0             5h50m
-kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            0             5h54m
-kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            0             5h54m
-kube-system   etcd-docker-desktop                      1/1     Running            0             5h54m
-kube-system   kube-apiserver-docker-desktop            1/1     Running            0             5h54m
-kube-system   kube-controller-manager-docker-desktop   1/1     Running            0             5h54m
-kube-system   kube-proxy-wdpfs                         1/1     Running            0             5h54m
-kube-system   kube-scheduler-docker-desktop            1/1     Running            0             5h54m
-kube-system   storage-provisioner                      1/1     Running            1 (14m ago)   5h54m
-kube-system   vpnkit-controller                        1/1     Running            0             5h54m
+default       my-app-59854d5646-5xc99                  1/1     Running            0             5h51m
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            0             5h55m
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            0             5h55m
+kube-system   etcd-docker-desktop                      1/1     Running            0             5h55m
+kube-system   kube-apiserver-docker-desktop            1/1     Running            0             5h55m
+kube-system   kube-controller-manager-docker-desktop   1/1     Running            0             5h55m
+kube-system   kube-proxy-wdpfs                         1/1     Running            0             5h55m
+kube-system   kube-scheduler-docker-desktop            1/1     Running            0             5h55m
+kube-system   storage-provisioner                      1/1     Running            1 (15m ago)   5h55m
+kube-system   vpnkit-controller                        1/1     Running            0             5h55m
 
 ▶ COMMAND: liat kru xyz
 ------------------------------
@@ -92,7 +92,7 @@ Error from server (NotFound): pods "payments-pod-1" not found
 ------------------------------
 ⚓ Menjalankan: kubectl get node -A
 NAME             STATUS   ROLES           AGE     VERSION
-docker-desktop   Ready    control-plane   5h54m   v1.34.1
+docker-desktop   Ready    control-plane   5h55m   v1.34.1
 
 ▶ COMMAND: liat kru terdampar
 ------------------------------

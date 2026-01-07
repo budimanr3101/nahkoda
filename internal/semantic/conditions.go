@@ -2,10 +2,12 @@ package semantic
 
 func ResolveCondition(kondisi string) (string, bool) {
 	kondisiMap := map[string]string{
-		"rusak":     "status.phase!=Running",
-		"terdampar": "status.phase=Pending",
+		"rusak":     "status!=Running",
+		"terdampar": "status=Pending",
+		"siap":      "status=Ready",
+		"mogok":     "status=NotReady",
 		// "bocor":     "status.reason=OOMKilled",
-		"sehat": "status.phase=Running",
+		"sehat": "status=Running",
 	}
 
 	filter, ok := kondisiMap[kondisi]

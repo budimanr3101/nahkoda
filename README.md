@@ -1,4 +1,4 @@
-# ⚓ Nahkoda v0.4.0
+# ⚓ Nahkoda v0.6.0
 
 > **Human-friendly command layer di atas kubectl, pakai bahasa Indonesia.**
 
@@ -36,9 +36,14 @@ Nahkoda hadir sebagai **lapisan semantic di atas kubectl**.
 
 ---
 
-## 🧠 Filosofi v0.4.0 — *Koneksi Kubectl*
+## 🧠 Filosofi v0.5.0 — *Mature Filtering*
 
-Mulai **v0.4.0**, Nahkoda terintegrasi langsung dengan `kubectl`.
+Mulai **v0.5.0**, Nahkoda menggunakan **Client-Side Text Filtering** untuk hasil yang lebih manusiawi.
+- `sehat` = Mengandung kata "Running"
+- `rusak` = TIDAK mengandung kata "Running" (termasuk CrashLoopBackOff)
+- **Graceful Error**: `cek` missing resource tidak error.
+- **Graceful Validation**: Input typo / invalid syntax hanya memberi feedback (tanpa panic).
+- **Regex Filtering**: `siap` hanya match kata "Ready" (presisi), menghindari match parsial dengan "NotReady".
 
 Artinya:
 
@@ -101,11 +106,14 @@ Nahkoda menggunakan analogi kapal agar lebih natural:
 | Nahkoda   | Kubernetes          |
 | --------- | ------------------- |
 | kru       | pod                 |
+| mesin     | node                |
 | geladak   | namespace           |
 | rusak     | status != Running   |
 | sehat     | status = Running    |
 | bocor     | OOMKilled           |
-| terdampar | Pending *(planned)* |
+| terdampar | Pending             |
+| siap      | status = Ready      |
+| mogok     | status = NotReady   |
 
 Tujuannya:
 
@@ -252,6 +260,9 @@ Lihat detail di [`TODO.md`](./TODO.md):
 * ✅ Strict semantic resolver (v0.3.0)
 * ✅ Deterministic output
 * ✅ kubectl executor (v0.4.0)
+* ✅ Mature filtering (v0.5.0)
+* ✅ Graceful Error & Validation (v0.5.2)
+* ✅ Node Status Support (v0.6.0)
 
 Nahkoda **sudah aman dipamerkan**,
 dan **fondasinya siap untuk production-grade CLI**.

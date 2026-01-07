@@ -54,11 +54,40 @@ func Build(intent semantic.Intent) Plan {
 	plan.Target = intent.Target
 
 	// ===============================
-	// 5️⃣ FILTER (HANYA UNTUK LIAT)
+	// 5️⃣ FILTER (LIST / GET)
 	// ===============================
 	if intent.Aksi == "liat" && intent.Filter != "" {
 		key, value := splitFilter(intent.Filter)
-		plan.Filters[key] = value
+
+		// MATCHING LOGIC (v0.5.0 & v0.6.0)
+		// Jika filter adalah "status", kita gunakan Client-Side Grep
+		if key == "status" {
+			// value formats: "=Running" or "!=Running" or "=Pending" or "=Ready"
+			val := value
+			invert := false
+			if strings.HasPrefix(val, "!=") {
+				val = strings.TrimPrefix(val, "!=")
+				invert = true
+			} else {
+				val = strings.TrimPrefix(val, "=")
+			}
+
+			// SPECIAL CASE: Ready vs NotReady (v0.6.0)
+			// "Ready" match dengan "NotReady" jika pakai simple grep.
+			// Solusi: Pakai Regex \bReady\b
+			if val == "Ready" {
+				plan.Grep = `\bReady\b`
+				plan.GrepRegex = true
+			} else {
+				plan.Grep = val
+				plan.GrepRegex = false
+			}
+
+			plan.GrepInvert = invert
+		} else {
+			// Filter lain (jika ada support di masa depan) tetap server-side
+			plan.Filters[key] = value
+		}
 	}
 
 	return plan
