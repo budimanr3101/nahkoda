@@ -51,10 +51,18 @@ func Resolve(ast parser.AST) (Intent, error) {
 	// ===============================
 	// 4️⃣ LOKASI
 	// ===============================
+	// ===============================
+	// 4️⃣ LOKASI
+	// ===============================
 	if ast.Lokasi != "" {
 		intent.Lokasi = ast.Lokasi
 	} else {
-		intent.Lokasi = "semua geladak"
+		// Default location logic
+		if intent.Aksi == "liat" {
+			intent.Lokasi = "semua geladak"
+		} else {
+			intent.Lokasi = "geladak default"
+		}
 	}
 
 	// ===============================
