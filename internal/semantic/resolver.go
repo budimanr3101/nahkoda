@@ -82,9 +82,12 @@ func Resolve(ast parser.AST) (Intent, error) {
 			intent.Filter = filter
 			intent.IsDefaultFilter = false
 		} else {
-			// default: kru sehat
-			intent.Filter = "status=Running"
-			intent.IsDefaultFilter = true
+			// default: hanya kru yang dianggap "sehat" (running) secara default
+			// resource lain (node/mesin) ditampilkan apa adanya (tanpa filter)
+			if intent.Objek == "kru" {
+				intent.Filter = "status=Running"
+				intent.IsDefaultFilter = true
+			}
 		}
 
 	// ===============================
@@ -92,7 +95,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 	// ===============================
 	case "cek":
 		if intent.Target == "" {
-			return intent, fmt.Errorf("cek kru butuh nama kru")
+			return intent, fmt.Errorf("cek %s butuh nama %s", intent.Objek, intent.Objek)
 		}
 
 		// cek itu inspect 1 resource → tidak pakai filter

@@ -31,6 +31,8 @@ run_test "liat kru bocor di geladak payment"
 run_test "liat kru sehat"
 run_test "liat kru xyz"
 run_test "cek kru payments-pod-1"
+run_test "cek mesin"
+run_test "liat mesin"
 run_test "terbangkan kapal"
 
 echo "✅ Test selesai. Output tersimpan di $OUT"

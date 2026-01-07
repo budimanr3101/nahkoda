@@ -28,7 +28,7 @@ func Parse(input string) (AST, error) {
 			ast.Aksi = tok
 
 		// ===== OBJEK =====
-		case "kru":
+		case "kru", "mesin":
 			ast.Objek = tok
 
 		// ===== KONDISI =====

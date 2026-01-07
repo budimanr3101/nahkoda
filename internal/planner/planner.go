@@ -32,7 +32,7 @@ func Build(intent semantic.Intent) Plan {
 	switch intent.Objek {
 	case "kru":
 		plan.Resource = "pod"
-	case "node":
+	case "mesin":
 		plan.Resource = "node"
 	default:
 		plan.Resource = "unknown"

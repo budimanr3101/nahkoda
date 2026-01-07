@@ -1,5 +1,5 @@
 ⚓ Nahkoda Test Run v0.3.0
-Timestamp: Wed Jan  7 16:09:22 WIB 2026
+Timestamp: Wed Jan  7 16:16:44 WIB 2026
 ==============================
 
 🔨 Building binary...
@@ -91,6 +91,22 @@ Operation : describe
 Resource  : pod
 Namespace : all
 Target    : payments-pod-1
+Filters:
+  - none
+
+(simulasi eksekusi, belum menyentuh Kubernetes)
+
+▶ COMMAND: cek mesin
+------------------------------
+❌ cek mesin butuh nama mesin
+❌ command failed
+
+▶ COMMAND: liat mesin
+------------------------------
+⚓ Rencana eksekusi:
+Operation : list
+Resource  : node
+Namespace : all
 Filters:
   - none
 
