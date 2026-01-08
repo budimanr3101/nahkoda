@@ -16,6 +16,8 @@ kind: Pod
 metadata:
   name: healthy-pod-1
   namespace: default
+  labels:
+    app: nginx
 spec:
   containers:
   - name: nginx
@@ -33,6 +35,8 @@ kind: Pod
 metadata:
   name: healthy-pod-2
   namespace: auth
+  labels:
+    app: nginx
 spec:
   containers:
   - name: nginx
