@@ -6,8 +6,8 @@ func ResolveCondition(kondisi string) (string, bool) {
 		"terdampar": "status=Pending",
 		"siap":      "status=Ready",
 		"mogok":     "status=NotReady",
-		// "bocor":     "status.reason=OOMKilled",
-		"sehat": "status=Running",
+		"bocor":     "status.reason=OOMKilled",
+		"sehat":     "status=Running",
 	}
 
 	filter, ok := kondisiMap[kondisi]

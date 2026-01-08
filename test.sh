@@ -14,7 +14,12 @@ echo "" >> $OUT
 run_test() {
     echo "▶ COMMAND: $1" >> $OUT
     echo "------------------------------" >> $OUT
-    $BIN $1 >> $OUT 2>&1 || echo "❌ command failed" >> $OUT
+    # Capture output and exit code
+    if ! $BIN $1 >> $OUT 2>&1; then
+        echo "❌ command failed" >> $OUT
+        echo "❌ TEST FAILED: $1"
+        exit 1
+    fi
     echo "" >> $OUT
 }
 

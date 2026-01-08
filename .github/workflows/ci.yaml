@@ -1,0 +1,48 @@
+name: Strict CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.1'
+          cache: true
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --timeout=5m
+
+      - name: Unit Tests
+        run: go test -v -race -cover ./...
+
+      - name: Build Binary
+        run: go build -v -o nahkoda main.go
+
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.9.0
+        with:
+          cluster_name: nahkoda-test
+
+      - name: Deploy Test Resources
+        run: |
+          kubectl apply -f test-resources.yaml
+          echo "Waiting for pods to be ready..."
+          kubectl wait --for=condition=ready pod -l app=nginx --timeout=60s || true
+          kubectl get pods -A
+
+      - name: Run Integration Tests
+        run: ./test.sh

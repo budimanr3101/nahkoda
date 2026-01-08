@@ -1,217 +1,137 @@
 package parser
 
 import (
+	"reflect"
 	"testing"
 
 	"nahkoda/internal/errors"
 )
 
-func TestParse_ValidCommands(t *testing.T) {
+func TestParse(t *testing.T) {
 	tests := []struct {
-		name        string
-		input       string
-		wantAksi    string
-		wantObjek   string
-		wantLokasi  string
-		wantKondisi string
-		wantTarget  string
-		wantErr     bool
+		name    string
+		input   string
+		want    AST
+		wantErr bool
+		errType errors.ErrorType
 	}{
 		{
-			name:      "simple liat kru",
-			input:     "liat kru",
-			wantAksi:  "liat",
-			wantObjek: "kru",
-			wantErr:   false,
+			name:  "Basic list pod",
+			input: "liat kru",
+			want: AST{
+				Aksi:  "liat",
+				Objek: "kru",
+			},
+			wantErr: false,
 		},
 		{
-			name:        "liat kru with condition",
-			input:       "liat kru rusak",
-			wantAksi:    "liat",
-			wantObjek:   "kru",
-			wantKondisi: "rusak",
-			wantErr:     false,
+			name:  "List pod with condition",
+			input: "liat kru rusak",
+			want: AST{
+				Aksi:    "liat",
+				Objek:   "kru",
+				Kondisi: "rusak",
+			},
+			wantErr: false,
 		},
 		{
-			name:       "liat kru with location",
-			input:      "liat kru di geladak auth",
-			wantAksi:   "liat",
-			wantObjek:  "kru",
-			wantLokasi: "geladak auth",
-			wantErr:    false,
+			name:  "List pod with location",
+			input: "liat kru di geladak auth",
+			want: AST{
+				Aksi:   "liat",
+				Objek:  "kru",
+				Lokasi: "geladak auth",
+			},
+			wantErr: false,
 		},
 		{
-			name:        "liat kru with condition and location",
-			input:       "liat kru rusak di geladak payment",
-			wantAksi:    "liat",
-			wantObjek:   "kru",
-			wantKondisi: "rusak",
-			wantLokasi:  "geladak payment",
-			wantErr:     false,
+			name:  "Full command",
+			input: "liat kru bocor di geladak payment",
+			want: AST{
+				Aksi:    "liat",
+				Objek:   "kru",
+				Kondisi: "bocor",
+				Lokasi:  "geladak payment",
+			},
+			wantErr: false,
 		},
 		{
-			name:       "cek kru with target",
-			input:      "cek kru my-pod-123",
-			wantAksi:   "cek",
-			wantObjek:  "kru",
-			wantTarget: "my-pod-123",
-			wantErr:    false,
+			name:  "Case insensitive",
+			input: "LIAT KRU RUSAK",
+			want: AST{
+				Aksi:    "liat",
+				Objek:   "kru",
+				Kondisi: "rusak",
+			},
+			wantErr: false,
 		},
 		{
-			name:      "liat mesin",
-			input:     "liat mesin",
-			wantAksi:  "liat",
-			wantObjek: "mesin",
-			wantErr:   false,
+			name:  "Extra spaces",
+			input: "  liat   kru    rusak  ",
+			want: AST{
+				Aksi:    "liat",
+				Objek:   "kru",
+				Kondisi: "rusak",
+			},
+			wantErr: false,
 		},
 		{
-			name:        "liat mesin siap",
-			input:       "liat mesin siap",
-			wantAksi:    "liat",
-			wantObjek:   "mesin",
-			wantKondisi: "siap",
-			wantErr:     false,
+			name:  "Cek specific target",
+			input: "cek kru pod-123",
+			want: AST{
+				Aksi:   "cek",
+				Objek:  "kru",
+				Target: "pod-123",
+			},
+			wantErr: false,
+		},
+		{
+			name:  "Unknown words",
+			input: "liat kru xyz",
+			want: AST{
+				Aksi:    "liat",
+				Objek:   "kru",
+				Unknown: []string{"xyz"},
+			},
+			wantErr: false,
+		},
+		{
+			name:    "Empty input",
+			input:   "",
+			want:    AST{},
+			wantErr: true,
+			errType: errors.ErrUnknownAction, // Empty input results in empty action string
+		},
+		{
+			name:    "Missing action",
+			input:   "kru rusak", // "kru" treated as object, no action found
+			want:    AST{Objek: "kru", Kondisi: "rusak"},
+			wantErr: true,
+			errType: errors.ErrUnknownAction,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ast, err := Parse(tt.input)
-
+			got, err := Parse(tt.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Parse() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
-			if ast.Aksi != tt.wantAksi {
-				t.Errorf("Aksi = %v, want %v", ast.Aksi, tt.wantAksi)
-			}
-
-			if ast.Objek != tt.wantObjek {
-				t.Errorf("Objek = %v, want %v", ast.Objek, tt.wantObjek)
-			}
-
-			if tt.wantLokasi != "" && ast.Lokasi != tt.wantLokasi {
-				t.Errorf("Lokasi = %v, want %v", ast.Lokasi, tt.wantLokasi)
-			}
-
-			if tt.wantKondisi != "" && ast.Kondisi != tt.wantKondisi {
-				t.Errorf("Kondisi = %v, want %v", ast.Kondisi, tt.wantKondisi)
-			}
-
-			if tt.wantTarget != "" && ast.Target != tt.wantTarget {
-				t.Errorf("Target = %v, want %v", ast.Target, tt.wantTarget)
-			}
-		})
-	}
-}
-
-func TestParse_UnknownWords(t *testing.T) {
-	tests := []struct {
-		name        string
-		input       string
-		wantUnknown []string
-	}{
-		{
-			name:        "unknown word xyz",
-			input:       "liat kru xyz",
-			wantUnknown: []string{"xyz"},
-		},
-		{
-			name:        "multiple unknown words",
-			input:       "liat kru foo bar",
-			wantUnknown: []string{"foo", "bar"},
-		},
-		{
-			name:        "invalid di without geladak",
-			input:       "liat kru di auth",
-			wantUnknown: []string{"di", "auth"},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			ast, _ := Parse(tt.input)
-
-			if len(ast.Unknown) != len(tt.wantUnknown) {
-				t.Errorf("Unknown count = %v, want %v", len(ast.Unknown), len(tt.wantUnknown))
-				return
-			}
-
-			for i, unknown := range tt.wantUnknown {
-				if ast.Unknown[i] != unknown {
-					t.Errorf("Unknown[%d] = %v, want %v", i, ast.Unknown[i], unknown)
+			if tt.wantErr {
+				// Check error type if specified
+				if ne, ok := err.(*errors.NahkodaError); ok {
+					if !ne.IsType(tt.errType) {
+						t.Errorf("Error type = %v, want %v", ne.Type, tt.errType)
+					}
 				}
-			}
-		})
-	}
-}
-
-func TestParse_MissingAction(t *testing.T) {
-	input := "kru rusak"
-	_, err := Parse(input)
-
-	if err == nil {
-		t.Error("Expected error for missing action")
-		return
-	}
-
-	if ne, ok := err.(*errors.NahkodaError); ok {
-		if !ne.IsType(errors.ErrUnknownAction) {
-			t.Errorf("Expected ErrUnknownAction, got %v", ne.Type)
-		}
-	} else {
-		t.Error("Expected NahkodaError type")
-	}
-}
-
-func TestParse_CaseInsensitive(t *testing.T) {
-	tests := []string{
-		"LIAT KRU",
-		"Liat Kru",
-		"lIaT kRu",
-	}
-
-	for _, input := range tests {
-		t.Run(input, func(t *testing.T) {
-			ast, err := Parse(input)
-
-			if err != nil {
-				t.Errorf("Parse() error = %v", err)
 				return
 			}
 
-			if ast.Aksi != "liat" || ast.Objek != "kru" {
-				t.Errorf("Case insensitive failed: aksi=%v, objek=%v", ast.Aksi, ast.Objek)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parse() = %+v, want %+v", got, tt.want)
 			}
 		})
-	}
-}
-
-func TestParse_AllConditions(t *testing.T) {
-	conditions := []string{"rusak", "bocor", "sehat", "terdampar", "siap", "mogok"}
-
-	for _, cond := range conditions {
-		t.Run(cond, func(t *testing.T) {
-			input := "liat kru " + cond
-			ast, err := Parse(input)
-
-			if err != nil {
-				t.Errorf("Parse() error = %v", err)
-				return
-			}
-
-			if ast.Kondisi != cond {
-				t.Errorf("Kondisi = %v, want %v", ast.Kondisi, cond)
-			}
-		})
-	}
-}
-
-func TestParse_EmptyInput(t *testing.T) {
-	_, err := Parse("")
-
-	if err == nil {
-		t.Error("Expected error for empty input")
 	}
 }

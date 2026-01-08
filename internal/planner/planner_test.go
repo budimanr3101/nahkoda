@@ -141,6 +141,13 @@ func TestBuild_FilterToGrep(t *testing.T) {
 			wantGrepRegex:  false,
 			wantGrepInvert: false,
 		},
+		{
+			name:           "status.reason=OOMKilled (bocor)",
+			filter:         "status.reason=OOMKilled",
+			wantGrep:       "", // Should NOT be grep, but server-side filter (initially)
+			wantGrepRegex:  false,
+			wantGrepInvert: false,
+		},
 	}
 
 	for _, tt := range tests {

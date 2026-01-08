@@ -197,6 +197,7 @@ func TestResolveCondition(t *testing.T) {
 		{"terdampar", "status=Pending", true},
 		{"siap", "status=Ready", true},
 		{"mogok", "status=NotReady", true},
+		{"bocor", "status.reason=OOMKilled", true},
 		{"invalid", "", false},
 	}
 

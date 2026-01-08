@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -28,21 +27,19 @@ Nahkoda menerjemahkan bahasa manusia
 menjadi intent operasional Kubernetes.
 `,
 	Args: cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		input := strings.Join(args, " ")
 
 		// 1️⃣ PARSER
 		ast, err := parser.Parse(input)
 		if err != nil {
-			fmt.Println(err.Error())
-			return
+			return err
 		}
 
 		// 2️⃣ SEMANTIC (STRICT)
 		intent, err := semantic.Resolve(ast)
 		if err != nil {
-			fmt.Println(err.Error())
-			return
+			return err
 		}
 
 		// 3️⃣ PLANNER
@@ -50,9 +47,10 @@ menjadi intent operasional Kubernetes.
 
 		// 4️⃣ EXECUTOR
 		if err := exec.Execute(plan); err != nil {
-			fmt.Println(err.Error())
-			return
+			return err
 		}
+
+		return nil
 	},
 }
 
