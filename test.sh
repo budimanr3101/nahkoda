@@ -145,6 +145,8 @@ echo "📜 SECTION 11: Jurnal (Logs)" | tee -a $OUT
 echo "==============================" >> $OUT
 run_test "baca jurnal healthy-pod-1"
 run_fail "baca jurnal pod-tidak-ada"
+# Bug fix verification: target with location
+run_test "baca jurnal healthy-pod-2 di geladak auth"
 
 # ==========================================
 # SECTION 12: BERITA (EVENTS)

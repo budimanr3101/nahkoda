@@ -55,7 +55,7 @@ func Parse(input string) (AST, error) {
 				"baca":   true,
 				"masuk":  true,
 			}
-			if capturingActions[ast.Aksi] && i == len(tokens)-1 {
+			if capturingActions[ast.Aksi] && ast.Target == "" {
 				ast.Target = tok
 			} else {
 				ast.Unknown = append(ast.Unknown, tok)

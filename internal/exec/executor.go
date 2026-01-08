@@ -63,28 +63,32 @@ func Execute(plan planner.Plan) error {
 	// Execute
 	cmd := exec.Command("kubectl", args...)
 
-	// INTERACTIVE MODE (EXEC)
+	// Execute target (interactive or native stdout)
 	if plan.Operation == "exec" {
-		cmd.Stdin = os.Stdin
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-
-		fmt.Printf("⚓ Menjalankan (Interactive): %s\n", strings.Join(cmd.Args, " "))
-		return cmd.Run()
+		cmd.Stdin = os.Stdin // Interactive needs Stdin
 	}
 
-	// Jika tidak ada GREP, langsung stream ke stdout (native performance)
+	// Capture stderr for error analysis
+	var stderrBuf bytes.Buffer
+	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
+
+	// Interactive exec uses direct IO
+	if plan.Operation == "exec" {
+		cmd.Stdout = os.Stdout
+		fmt.Printf("⚓ Menjalankan (Interactive): %s\n", strings.Join(cmd.Args, " "))
+		if err := cmd.Run(); err != nil {
+			checkAndPrintHint(stderrBuf.String(), plan)
+			return errors.NewKubectlFailed(err).WithContext("command", strings.Join(cmd.Args, " "))
+		}
+		return nil
+	}
+
+	// Native execution (without grep)
 	if plan.Grep == "" {
 		cmd.Stdout = os.Stdout
-
-		// Capture stderr untuk cek "NotFound"
-		var stderrBuf bytes.Buffer
-		cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
-
 		fmt.Printf("⚓ Menjalankan: %s\n", strings.Join(cmd.Args, " "))
-
 		if err := cmd.Run(); err != nil {
-			// Wrap kubectl error with context
+			checkAndPrintHint(stderrBuf.String(), plan)
 			return errors.NewKubectlFailed(err).WithContext("command", strings.Join(cmd.Args, " "))
 		}
 		return nil
@@ -99,7 +103,13 @@ func Execute(plan planner.Plan) error {
 	}
 
 	// Capture stderr juga disini
-	var stderrBuf bytes.Buffer
+	// Capture stderr juga disini (reuse stderrBuf if needed, but it's cleaner to use a new one or reset)
+	// Since we are in a different block (Grep mode), we can just use a new buffer variable name
+	// to avoid confusion/shadowing issues with the previous block if we merged scopes.
+	// BUT, here we are in the same function scope.
+	// The previous `stderrBuf` was declared in the function scope (line 72).
+	// So we should just reset it or reuse it.
+	stderrBuf.Reset()
 	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
 
 	if err := cmd.Start(); err != nil {
@@ -139,8 +149,17 @@ func Execute(plan planner.Plan) error {
 	}
 
 	if err := cmd.Wait(); err != nil {
-		// Wrap kubectl error with context
+		checkAndPrintHint(stderrBuf.String(), plan)
 		return errors.NewKubectlFailed(err).WithContext("command", strings.Join(cmd.Args, " "))
 	}
 	return nil
+}
+
+func checkAndPrintHint(errStr string, plan planner.Plan) {
+	if strings.Contains(errStr, "NotFound") || strings.Contains(errStr, "not found") {
+		if plan.Namespace == "" || plan.Namespace == "default" {
+			fmt.Printf("\n💡 TIPS: Resource '%s' tidak ditemukan di geladak 'default'.\n", plan.Target)
+			fmt.Println("   Coba cek di geladak lain dengan menambahkan: 'di geladak [nama]'")
+		}
+	}
 }
