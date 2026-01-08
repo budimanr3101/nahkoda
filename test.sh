@@ -23,6 +23,20 @@ run_test() {
     echo "" >> $OUT
 }
 
+# Function to run test expected to fail
+run_fail() {
+    echo "▶ COMMAND (EXPECT FAIL): $1" >> $OUT
+    echo "------------------------------" >> $OUT
+    # Capture output and exit code
+    if $BIN $1 >> $OUT 2>&1; then
+        echo "❌ command succeeded (but expected to fail)" >> $OUT
+        echo "❌ TEST FAILED (EXPECTED ERROR): $1"
+        exit 1
+    fi
+    echo "✅ Success (failed as expected)" >> $OUT
+    echo "" >> $OUT
+}
+
 # Build binary
 echo "🔨 Building binary..." | tee -a $OUT
 go build -o $BIN
@@ -99,19 +113,19 @@ run_test "cek mesin node-tidak-ada"
 # ==========================================
 echo "⚠️  SECTION 8: Error Handling" | tee -a $OUT
 echo "==============================" >> $OUT
-run_test "liat kru xyz"
-run_test "liat kru bocor"
-run_test "terbangkan kapal"
-run_test "cek mesin"
-run_test "liat"
-run_test "kru rusak"
+run_fail "liat kru xyz"
+run_fail "liat kru bocor"
+run_fail "terbangkan kapal"
+run_fail "cek mesin"
+run_fail "liat"
+run_fail "kru rusak"
 
 # ==========================================
 # SECTION 9: EDGE CASES
 # ==========================================
 echo "🎯 SECTION 9: Edge Cases" | tee -a $OUT
 echo "==============================" >> $OUT
-run_test "liat kru di auth"
+run_fail "liat kru di auth"
 run_test "LIAT KRU"
 run_test "Liat Kru Sehat"
 
