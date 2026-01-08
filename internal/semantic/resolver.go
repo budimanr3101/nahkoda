@@ -1,9 +1,9 @@
 package semantic
 
 import (
-	"fmt"
 	"strings"
 
+	"nahkoda/internal/errors"
 	"nahkoda/internal/parser"
 )
 
@@ -26,17 +26,14 @@ func Resolve(ast parser.AST) (Intent, error) {
 	// 1️⃣ UNKNOWN WORDS (STRICT)
 	// ===============================
 	if len(ast.Unknown) > 0 {
-		return intent, fmt.Errorf(
-			"kata tidak dikenali: %q",
-			strings.Join(ast.Unknown, ", "),
-		)
+		return intent, errors.NewUnknownWord(strings.Join(ast.Unknown, ", "))
 	}
 
 	// ===============================
 	// 2️⃣ AKSI (WAJIB)
 	// ===============================
 	if ast.Aksi == "" {
-		return intent, fmt.Errorf("aksi tidak dikenali")
+		return intent, errors.NewUnknownAction()
 	}
 	intent.Aksi = ast.Aksi
 
@@ -44,7 +41,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 	// 3️⃣ OBJEK (WAJIB)
 	// ===============================
 	if ast.Objek == "" {
-		return intent, fmt.Errorf("objek tidak dikenali")
+		return intent, errors.NewUnknownObject()
 	}
 	intent.Objek = ast.Objek
 
@@ -84,7 +81,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 
 			filter, ok := ResolveCondition(ast.Kondisi)
 			if !ok {
-				return intent, fmt.Errorf("kondisi tidak dikenali: %s", ast.Kondisi)
+				return intent, errors.NewUnknownCondition(ast.Kondisi)
 			}
 
 			intent.Filter = filter
@@ -103,7 +100,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 	// ===============================
 	case "cek":
 		if intent.Target == "" {
-			return intent, fmt.Errorf("cek %s butuh nama %s", intent.Objek, intent.Objek)
+			return intent, errors.NewMissingTarget(intent.Objek)
 		}
 
 		// cek itu inspect 1 resource → tidak pakai filter
@@ -114,7 +111,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 	// AKSI TIDAK DIKENAL
 	// ===============================
 	default:
-		return intent, fmt.Errorf("aksi tidak dikenali")
+		return intent, errors.NewUnknownAction()
 	}
 
 	return intent, nil

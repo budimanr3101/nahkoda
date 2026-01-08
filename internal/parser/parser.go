@@ -1,8 +1,9 @@
 package parser
 
 import (
-	"fmt"
 	"strings"
+
+	"nahkoda/internal/errors"
 )
 
 type AST struct {
@@ -57,7 +58,7 @@ func Parse(input string) (AST, error) {
 
 	// ===== VALIDASI MINIMAL =====
 	if ast.Aksi == "" {
-		return ast, fmt.Errorf("aksi tidak dikenali")
+		return ast, errors.NewUnknownAction()
 	}
 
 	return ast, nil

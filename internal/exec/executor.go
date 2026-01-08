@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 
+	"nahkoda/internal/errors"
 	"nahkoda/internal/planner"
 )
 
@@ -54,9 +55,11 @@ func Execute(plan planner.Plan) error {
 			// Graceful error handling for NotFound
 			errStr := stderrBuf.String()
 			if strings.Contains(errStr, "NotFound") || strings.Contains(errStr, "not found") {
+				// Resource not found is not an error in our context
 				return nil
 			}
-			return err
+			// Wrap kubectl error with context
+			return errors.NewKubectlFailed(err).WithContext("command", strings.Join(cmd.Args, " "))
 		}
 		return nil
 	}
@@ -113,9 +116,11 @@ func Execute(plan planner.Plan) error {
 		// Graceful error handling for NotFound
 		errStr := stderrBuf.String()
 		if strings.Contains(errStr, "NotFound") || strings.Contains(errStr, "not found") {
+			// Resource not found is not an error in our context
 			return nil
 		}
-		return err
+		// Wrap kubectl error with context
+		return errors.NewKubectlFailed(err).WithContext("command", strings.Join(cmd.Args, " "))
 	}
 	return nil
 }

@@ -1,0 +1,590 @@
+⚓ Nahkoda Test Run v0.7.0 - Comprehensive Integration Test
+Timestamp: Thu Jan  8 16:56:05 WIB 2026
+==============================
+
+🔨 Building binary...
+✅ Build success
+
+📖 SECTION 1: Help & Basic Commands
+==============================
+▶ COMMAND: --help
+------------------------------
+⚓ Nahkoda — Bahasa manusia untuk Kubernetes
+
+Contoh perintah:
+  nahkoda liat kru
+  nahkoda liat kru rusak
+  nahkoda liat kru di geladak auth
+  nahkoda liat kru bocor di geladak payment
+
+Nahkoda menerjemahkan bahasa manusia
+menjadi intent operasional Kubernetes.
+
+Usage:
+  nahkoda [kalimat] [flags]
+
+Flags:
+  -h, --help   help for nahkoda
+
+📦 SECTION 2: Liat Kru (List Pods)
+==============================
+▶ COMMAND: liat kru
+------------------------------
+⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
+NAMESPACE     NAME                                     READY   STATUS              RESTARTS        AGE
+auth          healthy-pod-2                            1/1     Running             0               79s
+default       healthy-pod-1                            1/1     Running             0               79s
+default       my-app-59854d5646-5xc99                  1/1     Running             1 (4h43m ago)   24h
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running             1 (4h43m ago)   24h
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running             1 (4h43m ago)   24h
+kube-system   etcd-docker-desktop                      1/1     Running             1 (4h43m ago)   24h
+kube-system   kube-apiserver-docker-desktop            1/1     Running             1 (4h43m ago)   24h
+kube-system   kube-controller-manager-docker-desktop   1/1     Running             1 (4h43m ago)   24h
+kube-system   kube-proxy-wdpfs                         1/1     Running             1 (4h43m ago)   24h
+kube-system   kube-scheduler-docker-desktop            1/1     Running             1 (4h43m ago)   24h
+kube-system   storage-provisioner                      1/1     Running             3 (2m39s ago)   24h
+kube-system   vpnkit-controller                        1/1     Running             1 (4h43m ago)   24h
+payment       test-deployment-cd89d7bb-22q56           1/1     Running             0               79s
+payment       test-deployment-cd89d7bb-2rbmq           1/1     Running             0               79s
+
+▶ COMMAND: liat kru sehat
+------------------------------
+⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
+NAMESPACE     NAME                                     READY   STATUS             RESTARTS        AGE
+auth          healthy-pod-2                            1/1     Running            0               79s
+default       healthy-pod-1                            1/1     Running            0               79s
+default       my-app-59854d5646-5xc99                  1/1     Running            1 (4h43m ago)   24h
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            1 (4h43m ago)   24h
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            1 (4h43m ago)   24h
+kube-system   etcd-docker-desktop                      1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-apiserver-docker-desktop            1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-controller-manager-docker-desktop   1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-proxy-wdpfs                         1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-scheduler-docker-desktop            1/1     Running            1 (4h43m ago)   24h
+kube-system   storage-provisioner                      1/1     Running            3 (2m39s ago)   24h
+kube-system   vpnkit-controller                        1/1     Running            1 (4h43m ago)   24h
+payment       test-deployment-cd89d7bb-22q56           1/1     Running            0               79s
+payment       test-deployment-cd89d7bb-2rbmq           1/1     Running            0               79s
+
+▶ COMMAND: liat kru rusak
+------------------------------
+⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=true)
+NAMESPACE     NAME                                     READY   STATUS             RESTARTS        AGE
+default       crashloop-pod                            0/1     Error              0               33s
+default       imagepull-pod                            0/1     ImagePullBackOff   0               79s
+default       imagepullbackoff-pod                     0/1     ImagePullBackOff   0               18h
+default       pending-pod                              0/1     Pending            0               79s
+
+▶ COMMAND: liat kru terdampar
+------------------------------
+⚓ Menjalankan: kubectl get pod -A | grep 'Pending' (invert=false)
+NAMESPACE     NAME                                     READY   STATUS             RESTARTS        AGE
+default       pending-pod                              0/1     Pending            0               80s
+
+🏢 SECTION 3: Liat Kru with Namespace
+==============================
+▶ COMMAND: liat kru di geladak default
+------------------------------
+⚓ Menjalankan: kubectl get pod -n default | grep 'Running' (invert=false)
+NAME                      READY   STATUS             RESTARTS        AGE
+healthy-pod-1             1/1     Running            0               80s
+my-app-59854d5646-5xc99   1/1     Running            1 (4h43m ago)   24h
+
+▶ COMMAND: liat kru di geladak auth
+------------------------------
+⚓ Menjalankan: kubectl get pod -n auth | grep 'Running' (invert=false)
+NAME            READY   STATUS    RESTARTS   AGE
+healthy-pod-2   1/1     Running   0          80s
+
+▶ COMMAND: liat kru di geladak payment
+------------------------------
+⚓ Menjalankan: kubectl get pod -n payment | grep 'Running' (invert=false)
+NAME                             READY   STATUS    RESTARTS   AGE
+test-deployment-cd89d7bb-22q56   1/1     Running   0          80s
+test-deployment-cd89d7bb-2rbmq   1/1     Running   0          80s
+
+▶ COMMAND: liat kru di geladak kube-system
+------------------------------
+⚓ Menjalankan: kubectl get pod -n kube-system | grep 'Running' (invert=false)
+NAME                                     READY   STATUS    RESTARTS        AGE
+coredns-66bc5c9577-6jdxh                 1/1     Running   1 (4h43m ago)   24h
+coredns-66bc5c9577-8cnjx                 1/1     Running   1 (4h43m ago)   24h
+etcd-docker-desktop                      1/1     Running   1 (4h43m ago)   24h
+kube-apiserver-docker-desktop            1/1     Running   1 (4h43m ago)   24h
+kube-controller-manager-docker-desktop   1/1     Running   1 (4h43m ago)   24h
+kube-proxy-wdpfs                         1/1     Running   1 (4h43m ago)   24h
+kube-scheduler-docker-desktop            1/1     Running   1 (4h43m ago)   24h
+storage-provisioner                      1/1     Running   3 (2m40s ago)   24h
+vpnkit-controller                        1/1     Running   1 (4h43m ago)   24h
+
+🔍 SECTION 4: Liat Kru with Condition + Namespace
+==============================
+▶ COMMAND: liat kru sehat di geladak default
+------------------------------
+⚓ Menjalankan: kubectl get pod -n default | grep 'Running' (invert=false)
+NAME                      READY   STATUS             RESTARTS        AGE
+healthy-pod-1             1/1     Running            0               80s
+my-app-59854d5646-5xc99   1/1     Running            1 (4h43m ago)   24h
+
+▶ COMMAND: liat kru rusak di geladak default
+------------------------------
+⚓ Menjalankan: kubectl get pod -n default | grep 'Running' (invert=true)
+NAME                      READY   STATUS             RESTARTS        AGE
+crashloop-pod             0/1     Error              0               34s
+imagepull-pod             0/1     ImagePullBackOff   0               80s
+imagepullbackoff-pod      0/1     ImagePullBackOff   0               18h
+pending-pod               0/1     Pending            0               80s
+
+▶ COMMAND: liat kru sehat di geladak auth
+------------------------------
+⚓ Menjalankan: kubectl get pod -n auth | grep 'Running' (invert=false)
+NAME            READY   STATUS    RESTARTS   AGE
+healthy-pod-2   1/1     Running   0          80s
+
+▶ COMMAND: liat kru sehat di geladak payment
+------------------------------
+⚓ Menjalankan: kubectl get pod -n payment | grep 'Running' (invert=false)
+NAME                             READY   STATUS    RESTARTS   AGE
+test-deployment-cd89d7bb-22q56   1/1     Running   0          80s
+test-deployment-cd89d7bb-2rbmq   1/1     Running   0          80s
+
+🔎 SECTION 5: Cek Kru (Describe Pod)
+==============================
+▶ COMMAND: cek kru healthy-pod-1
+------------------------------
+⚓ Menjalankan: kubectl describe pod healthy-pod-1 -n default
+Name:             healthy-pod-1
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             docker-desktop/192.168.65.3
+Start Time:       Thu, 08 Jan 2026 16:54:47 +0700
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.1.0.22
+IPs:
+  IP:  10.1.0.22
+Containers:
+  nginx:
+    Container ID:   docker://290562e7d6bf404f1e90882f587115563b9840aa2125dc6dc7a49bc616754829
+    Image:          nginx:alpine
+    Image ID:       docker-pullable://nginx@sha256:8491795299c8e739b7fcc6285d531d9812ce2666e07bd3dd8db00020ad132295
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Thu, 08 Jan 2026 16:55:39 +0700
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     100m
+      memory:  64Mi
+    Requests:
+      cpu:        50m
+      memory:     32Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-wvd59 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-wvd59:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  80s   default-scheduler  Successfully assigned default/healthy-pod-1 to docker-desktop
+  Normal  Pulling    80s   kubelet            Pulling image "nginx:alpine"
+  Normal  Pulled     29s   kubelet            Successfully pulled image "nginx:alpine" in 42.106s (51.009s including waiting). Image size: 53669265 bytes.
+  Normal  Created    28s   kubelet            Created container: nginx
+  Normal  Started    28s   kubelet            Started container nginx
+
+▶ COMMAND: cek kru crashloop-pod
+------------------------------
+⚓ Menjalankan: kubectl describe pod crashloop-pod -n default
+Name:             crashloop-pod
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             docker-desktop/192.168.65.3
+Start Time:       Thu, 08 Jan 2026 16:55:33 +0700
+Labels:           run=crashloop-pod
+Annotations:      <none>
+Status:           Pending
+IP:               10.1.0.26
+IPs:
+  IP:  10.1.0.26
+Containers:
+  crashloop-pod:
+    Container ID:  docker://097dd4dee526d721bbbd66f292ad26929e6300c59caf84e4154e7fa57ab461de
+    Image:         busybox
+    Image ID:      docker-pullable://busybox@sha256:2383baad1860bbe9d8a7a843775048fd07d8afe292b94bd876df64a69aae7cb1
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      sh
+      -c
+      exit 1
+    State:          Terminated
+      Reason:       Error
+      Exit Code:    1
+      Started:      Thu, 08 Jan 2026 16:56:06 +0700
+      Finished:     Thu, 08 Jan 2026 16:56:06 +0700
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-dkbkg (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-dkbkg:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  33s   default-scheduler  Successfully assigned default/crashloop-pod to docker-desktop
+  Normal  Pulling    33s   kubelet            Pulling image "busybox"
+  Normal  Pulled     1s    kubelet            Successfully pulled image "busybox" in 2.747s (31.85s including waiting). Image size: 4170790 bytes.
+  Normal  Created    1s    kubelet            Created container: crashloop-pod
+  Normal  Started    1s    kubelet            Started container crashloop-pod
+
+▶ COMMAND: cek kru imagepull-pod
+------------------------------
+⚓ Menjalankan: kubectl describe pod imagepull-pod -n default
+Name:             imagepull-pod
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             docker-desktop/192.168.65.3
+Start Time:       Thu, 08 Jan 2026 16:54:47 +0700
+Labels:           <none>
+Annotations:      <none>
+Status:           Pending
+IP:               10.1.0.21
+IPs:
+  IP:  10.1.0.21
+Containers:
+  invalid:
+    Container ID:   
+    Image:          invalid-image-that-does-not-exist:latest
+    Image ID:       
+    Port:           <none>
+    Host Port:      <none>
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Requests:
+      cpu:        10m
+      memory:     16Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-px779 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-px779:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  80s                default-scheduler  Successfully assigned default/imagepull-pod to docker-desktop
+  Normal   BackOff    70s                kubelet            Back-off pulling image "invalid-image-that-does-not-exist:latest"
+  Warning  Failed     70s                kubelet            Error: ImagePullBackOff
+  Normal   Pulling    57s (x2 over 80s)  kubelet            Pulling image "invalid-image-that-does-not-exist:latest"
+  Warning  Failed     4s (x2 over 71s)   kubelet            Failed to pull image "invalid-image-that-does-not-exist:latest": Error response from daemon: pull access denied for invalid-image-that-does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+  Warning  Failed     4s (x2 over 71s)   kubelet            Error: ErrImagePull
+
+▶ COMMAND: cek kru pending-pod
+------------------------------
+⚓ Menjalankan: kubectl describe pod pending-pod -n default
+Name:             pending-pod
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             <none>
+Labels:           <none>
+Annotations:      <none>
+Status:           Pending
+IP:               
+IPs:              <none>
+Containers:
+  nginx:
+    Image:      nginx:alpine
+    Port:       <none>
+    Host Port:  <none>
+    Requests:
+      cpu:        999
+      memory:     999Gi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-g4p6f (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False 
+Volumes:
+  kube-api-access-g4p6f:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age   From               Message
+  ----     ------            ----  ----               -------
+  Warning  FailedScheduling  80s   default-scheduler  0/1 nodes are available: 1 Insufficient cpu, 1 Insufficient memory. no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+  Warning  FailedScheduling  45s   default-scheduler  0/1 nodes are available: 1 Insufficient cpu, 1 Insufficient memory. no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+
+▶ COMMAND: cek kru pod-tidak-ada
+------------------------------
+⚓ Menjalankan: kubectl describe pod pod-tidak-ada -n default
+Error from server (NotFound): pods "pod-tidak-ada" not found
+
+🖥️  SECTION 6: Liat Mesin (List Nodes)
+==============================
+▶ COMMAND: liat mesin
+------------------------------
+⚓ Menjalankan: kubectl get node -A
+NAME             STATUS   ROLES           AGE   VERSION
+docker-desktop   Ready    control-plane   24h   v1.34.1
+
+▶ COMMAND: liat mesin siap
+------------------------------
+⚓ Menjalankan: kubectl get node -A | grep '\bReady\b' (invert=false)
+NAME             STATUS   ROLES           AGE   VERSION
+docker-desktop   Ready    control-plane   24h   v1.34.1
+
+▶ COMMAND: liat mesin mogok
+------------------------------
+⚓ Menjalankan: kubectl get node -A | grep 'NotReady' (invert=false)
+NAME             STATUS   ROLES           AGE   VERSION
+
+🔧 SECTION 7: Cek Mesin (Describe Node)
+==============================
+▶ COMMAND: cek mesin docker-desktop
+------------------------------
+⚓ Menjalankan: kubectl describe node docker-desktop -n default
+Name:               docker-desktop
+Roles:              control-plane
+Labels:             beta.kubernetes.io/arch=arm64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=arm64
+                    kubernetes.io/hostname=docker-desktop
+                    kubernetes.io/os=linux
+                    node-role.kubernetes.io/control-plane=
+                    node.kubernetes.io/exclude-from-external-load-balancers=
+Annotations:        node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Wed, 07 Jan 2026 16:36:25 +0700
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  docker-desktop
+  AcquireTime:     <unset>
+  RenewTime:       Thu, 08 Jan 2026 16:55:58 +0700
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Thu, 08 Jan 2026 16:55:58 +0700   Wed, 07 Jan 2026 16:36:24 +0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Thu, 08 Jan 2026 16:55:58 +0700   Wed, 07 Jan 2026 16:36:24 +0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Thu, 08 Jan 2026 16:55:58 +0700   Wed, 07 Jan 2026 16:36:24 +0700   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Thu, 08 Jan 2026 16:55:58 +0700   Wed, 07 Jan 2026 16:36:25 +0700   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  192.168.65.3
+  Hostname:    docker-desktop
+Capacity:
+  cpu:                8
+  ephemeral-storage:  61202244Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  hugepages-32Mi:     0
+  hugepages-64Ki:     0
+  memory:             4012908Ki
+  pods:               110
+Allocatable:
+  cpu:                8
+  ephemeral-storage:  56403987978
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  hugepages-32Mi:     0
+  hugepages-64Ki:     0
+  memory:             3910508Ki
+  pods:               110
+System Info:
+  Machine ID:                 3f1624ff-726a-484a-a4f1-bcc7931c33f8
+  System UUID:                3f1624ff-726a-484a-a4f1-bcc7931c33f8
+  Boot ID:                    b67d942d-0baf-4c40-8a07-f675e343acad
+  Kernel Version:             6.12.54-linuxkit
+  OS Image:                   Docker Desktop
+  Operating System:           linux
+  Architecture:               arm64
+  Container Runtime Version:  docker://29.1.3
+  Kubelet Version:            v1.34.1
+  Kube-Proxy Version:         
+Non-terminated Pods:          (17 in total)
+  Namespace                   Name                                      CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                      ------------  ----------  ---------------  -------------  ---
+  auth                        healthy-pod-2                             50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      80s
+  default                     crashloop-pod                             0 (0%)        0 (0%)      0 (0%)           0 (0%)         34s
+  default                     healthy-pod-1                             50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      80s
+  default                     imagepull-pod                             10m (0%)      0 (0%)      16Mi (0%)        0 (0%)         80s
+  default                     imagepullbackoff-pod                      0 (0%)        0 (0%)      0 (0%)           0 (0%)         18h
+  default                     my-app-59854d5646-5xc99                   0 (0%)        0 (0%)      0 (0%)           0 (0%)         24h
+  kube-system                 coredns-66bc5c9577-6jdxh                  100m (1%)     0 (0%)      70Mi (1%)        170Mi (4%)     24h
+  kube-system                 coredns-66bc5c9577-8cnjx                  100m (1%)     0 (0%)      70Mi (1%)        170Mi (4%)     24h
+  kube-system                 etcd-docker-desktop                       100m (1%)     0 (0%)      100Mi (2%)       0 (0%)         24h
+  kube-system                 kube-apiserver-docker-desktop             250m (3%)     0 (0%)      0 (0%)           0 (0%)         24h
+  kube-system                 kube-controller-manager-docker-desktop    200m (2%)     0 (0%)      0 (0%)           0 (0%)         24h
+  kube-system                 kube-proxy-wdpfs                          0 (0%)        0 (0%)      0 (0%)           0 (0%)         24h
+  kube-system                 kube-scheduler-docker-desktop             100m (1%)     0 (0%)      0 (0%)           0 (0%)         24h
+  kube-system                 storage-provisioner                       0 (0%)        0 (0%)      0 (0%)           0 (0%)         24h
+  kube-system                 vpnkit-controller                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         24h
+  payment                     test-deployment-cd89d7bb-22q56            50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      80s
+  payment                     test-deployment-cd89d7bb-2rbmq            50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      80s
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests     Limits
+  --------           --------     ------
+  cpu                1060m (13%)  400m (5%)
+  memory             384Mi (10%)  596Mi (15%)
+  ephemeral-storage  0 (0%)       0 (0%)
+  hugepages-1Gi      0 (0%)       0 (0%)
+  hugepages-2Mi      0 (0%)       0 (0%)
+  hugepages-32Mi     0 (0%)       0 (0%)
+  hugepages-64Ki     0 (0%)       0 (0%)
+Events:
+  Type     Reason                   Age                    From             Message
+  ----     ------                   ----                   ----             -------
+  Normal   Starting                 3m9s                   kube-proxy       
+  Normal   Starting                 3m15s                  kubelet          Starting kubelet.
+  Normal   NodeHasSufficientMemory  3m15s (x8 over 3m15s)  kubelet          Node docker-desktop status is now: NodeHasSufficientMemory
+  Normal   NodeHasNoDiskPressure    3m15s (x8 over 3m15s)  kubelet          Node docker-desktop status is now: NodeHasNoDiskPressure
+  Normal   NodeHasSufficientPID     3m15s (x7 over 3m15s)  kubelet          Node docker-desktop status is now: NodeHasSufficientPID
+  Normal   NodeAllocatableEnforced  3m15s                  kubelet          Updated Node Allocatable limit across pods
+  Warning  Rebooted                 3m12s                  kubelet          Node docker-desktop has been rebooted, boot id: b67d942d-0baf-4c40-8a07-f675e343acad
+  Normal   RegisteredNode           3m9s                   node-controller  Node docker-desktop event: Registered Node docker-desktop in Controller
+
+▶ COMMAND: cek mesin node-tidak-ada
+------------------------------
+⚓ Menjalankan: kubectl describe node node-tidak-ada -n default
+Error from server (NotFound): nodes "node-tidak-ada" not found
+
+⚠️  SECTION 8: Error Handling
+==============================
+▶ COMMAND: liat kru xyz
+------------------------------
+kata tidak dikenali: "xyz"
+
+▶ COMMAND: liat kru bocor
+------------------------------
+kondisi tidak dikenali: bocor
+
+▶ COMMAND: terbangkan kapal
+------------------------------
+aksi tidak dikenali
+
+▶ COMMAND: cek mesin
+------------------------------
+cek mesin butuh nama mesin
+
+▶ COMMAND: liat
+------------------------------
+objek tidak dikenali
+
+▶ COMMAND: kru rusak
+------------------------------
+aksi tidak dikenali
+
+🎯 SECTION 9: Edge Cases
+==============================
+▶ COMMAND: liat kru di auth
+------------------------------
+kata tidak dikenali: "di, auth"
+
+▶ COMMAND: LIAT KRU
+------------------------------
+⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
+NAMESPACE     NAME                                     READY   STATUS             RESTARTS        AGE
+auth          healthy-pod-2                            1/1     Running            0               81s
+default       healthy-pod-1                            1/1     Running            0               81s
+default       my-app-59854d5646-5xc99                  1/1     Running            1 (4h43m ago)   24h
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            1 (4h43m ago)   24h
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            1 (4h43m ago)   24h
+kube-system   etcd-docker-desktop                      1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-apiserver-docker-desktop            1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-controller-manager-docker-desktop   1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-proxy-wdpfs                         1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-scheduler-docker-desktop            1/1     Running            1 (4h43m ago)   24h
+kube-system   storage-provisioner                      1/1     Running            3 (2m41s ago)   24h
+kube-system   vpnkit-controller                        1/1     Running            1 (4h43m ago)   24h
+payment       test-deployment-cd89d7bb-22q56           1/1     Running            0               81s
+payment       test-deployment-cd89d7bb-2rbmq           1/1     Running            0               81s
+
+▶ COMMAND: Liat Kru Sehat
+------------------------------
+⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
+NAMESPACE     NAME                                     READY   STATUS             RESTARTS        AGE
+auth          healthy-pod-2                            1/1     Running            0               81s
+default       healthy-pod-1                            1/1     Running            0               81s
+default       my-app-59854d5646-5xc99                  1/1     Running            1 (4h43m ago)   24h
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            1 (4h43m ago)   24h
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            1 (4h43m ago)   24h
+kube-system   etcd-docker-desktop                      1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-apiserver-docker-desktop            1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-controller-manager-docker-desktop   1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-proxy-wdpfs                         1/1     Running            1 (4h43m ago)   24h
+kube-system   kube-scheduler-docker-desktop            1/1     Running            1 (4h43m ago)   24h
+kube-system   storage-provisioner                      1/1     Running            3 (2m41s ago)   24h
+kube-system   vpnkit-controller                        1/1     Running            1 (4h43m ago)   24h
+payment       test-deployment-cd89d7bb-22q56           1/1     Running            0               81s
+payment       test-deployment-cd89d7bb-2rbmq           1/1     Running            0               81s
+
+
+==============================
+✅ Test selesai. Output tersimpan di nahkoda_test_v0.7.0.txt
+
+📊 Total tests run: 32

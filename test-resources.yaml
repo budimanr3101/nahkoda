@@ -1,0 +1,119 @@
+---
+# Namespace untuk testing
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: auth
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: payment
+---
+# Pod sehat (Running)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: healthy-pod-1
+  namespace: default
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    resources:
+      requests:
+        memory: "32Mi"
+        cpu: "50m"
+      limits:
+        memory: "64Mi"
+        cpu: "100m"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: healthy-pod-2
+  namespace: auth
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    resources:
+      requests:
+        memory: "32Mi"
+        cpu: "50m"
+      limits:
+        memory: "64Mi"
+        cpu: "100m"
+---
+# Pod CrashLoopBackOff (rusak)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crashloop-pod
+  namespace: default
+spec:
+  containers:
+  - name: crash
+    image: busybox
+    command: ["sh", "-c", "exit 1"]
+    resources:
+      requests:
+        memory: "16Mi"
+        cpu: "10m"
+---
+# Pod ImagePullBackOff (rusak)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: imagepull-pod
+  namespace: default
+spec:
+  containers:
+  - name: invalid
+    image: invalid-image-that-does-not-exist:latest
+    resources:
+      requests:
+        memory: "16Mi"
+        cpu: "10m"
+---
+# Pod Pending (terdampar)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pending-pod
+  namespace: default
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    resources:
+      requests:
+        memory: "999Gi"  # Impossible to schedule
+        cpu: "999"
+---
+# Deployment untuk testing
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deployment
+  namespace: payment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test
+  template:
+    metadata:
+      labels:
+        app: test
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "50m"
+          limits:
+            memory: "64Mi"
+            cpu: "100m"
