@@ -1,3 +1,4 @@
+[![Strict CI](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml/badge.svg)](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml)
 # ⚓ Nahkoda v0.7.0
 
 > **Human-friendly command layer di atas kubectl, pakai bahasa Indonesia.**
