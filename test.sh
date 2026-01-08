@@ -105,7 +105,9 @@ run_test "liat mesin mogok"
 # ==========================================
 echo "🔧 SECTION 7: Cek Mesin (Describe Node)" | tee -a $OUT
 echo "==============================" >> $OUT
-run_test "cek mesin docker-desktop"
+# Get dynamic node name (CI might use kind-control-plane, local might use docker-desktop)
+NODE_NAME=$(kubectl get nodes -o jsonpath='{.items[0].metadata.name}')
+run_test "cek mesin $NODE_NAME"
 run_fail "cek mesin node-tidak-ada"
 
 # ==========================================
