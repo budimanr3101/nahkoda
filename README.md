@@ -1,4 +1,4 @@
-# ⚓ Nahkoda v0.6.0
+# ⚓ Nahkoda v0.7.0
 
 > **Human-friendly command layer di atas kubectl, pakai bahasa Indonesia.**
 
@@ -36,33 +36,67 @@ Nahkoda hadir sebagai **lapisan semantic di atas kubectl**.
 
 ---
 
-## 🧠 Filosofi v0.5.0 — *Mature Filtering*
+## 🚀 What's New in v0.7.0
 
-Mulai **v0.5.0**, Nahkoda menggunakan **Client-Side Text Filtering** untuk hasil yang lebih manusiawi.
+### Production-Ready Improvements
+
+#### 1. **Custom Error Types** 
+- Structured error handling dengan context
+- Type-safe error checking
+- Better debugging capabilities
+- 71.4% test coverage
+
+#### 2. **Comprehensive Unit Tests**
+- Parser: 100% coverage
+- Semantic: 97.1% coverage
+- Planner: 88.6% coverage
+- **Total: 25 test suites, all passing**
+
+#### 3. **Full Bahasa Indonesia**
+- Semua error messages dalam Bahasa Indonesia
+- Konsisten dari command sampai error output
+- `perintah kubectl gagal` instead of `kubectl command failed`
+
+#### 4. **Integration Testing**
+- 32 comprehensive tests
+- Real Kubernetes cluster testing
+- Test resources (pods, deployments, namespaces)
+- No tests skipped!
+
+---
+
+## 🧠 Filosofi Nahkoda
+
+### Strict Semantic Mode
+
+Nahkoda menggunakan **Client-Side Text Filtering** untuk hasil yang lebih manusiawi:
+
 - `sehat` = Mengandung kata "Running"
 - `rusak` = TIDAK mengandung kata "Running" (termasuk CrashLoopBackOff)
-- **Graceful Error**: `cek` missing resource tidak error.
-- **Graceful Validation**: Input typo / invalid syntax hanya memberi feedback (tanpa panic).
-- **Regex Filtering**: `siap` hanya match kata "Ready" (presisi), menghindari match parsial dengan "NotReady".
+- `siap` = Regex match `\bReady\b` (presisi, menghindari NotReady)
+- `mogok` = Status NotReady
+- `terdampar` = Status Pending
 
-Artinya:
+**Graceful Error Handling:**
+- Missing resource tidak error (exit 0)
+- Input validation errors memberikan feedback, bukan panic
+- Semua error messages dalam Bahasa Indonesia
 
-* ❌ Kata tidak dikenal → **ERROR**
-* ❌ Aksi tidak valid → **ERROR**
-* ❌ Ambigu → **ERROR**
-* ✅ Default boleh ada, tapi **harus jujur**
-* ✅ Tidak ada silent fallback
+**Strict Mode:**
+- ❌ Kata tidak dikenal → **ERROR**
+- ❌ Aksi tidak valid → **ERROR**
+- ❌ Ambigu → **ERROR**
+- ✅ Default boleh ada, tapi **harus jujur**
+- ✅ Tidak ada silent fallback
 
 Contoh:
 
 ```bash
 nahkoda liat kru xyz
-❌ kata tidak dikenali: "xyz"
-```
+# kata tidak dikenali: "xyz"
 
-```bash
 nahkoda terbangkan kapal
-❌ aksi tidak dikenali
+# aksi tidak dikenali
 ```
 
 Ini desain **sengaja ketat**, supaya:
@@ -73,47 +107,27 @@ Ini desain **sengaja ketat**, supaya:
 
 ---
 
-## 🧠 Cara Kerja Nahkoda
-
-Nahkoda bekerja seperti **mini compiler**:
-
-```
-Teks Perintah
-   ↓
-Parser (AST)
-   ↓
-Semantic Resolver (strict)
-   ↓
-Intent
-   ↓
-Planner
-   ↓
-Executor (kubectl – planned)
-```
-
-Tidak ada:
-
-* logika kubectl di parser
-* asumsi tersembunyi
-* output ambigu
-
----
-
 ## 🗣️ Vocabulary Nahkoda
 
 Nahkoda menggunakan analogi kapal agar lebih natural:
 
-| Nahkoda   | Kubernetes          |
-| --------- | ------------------- |
-| kru       | pod                 |
-| mesin     | node                |
-| geladak   | namespace           |
-| rusak     | status != Running   |
-| sehat     | status = Running    |
-| bocor     | OOMKilled           |
-| terdampar | Pending             |
-| siap      | status = Ready      |
-| mogok     | status = NotReady   |
+| Nahkoda   | Kubernetes          | Keterangan |
+| --------- | ------------------- | ---------- |
+| **Objek** |
+| kru       | pod                 | Container workload |
+| mesin     | node                | Cluster nodes |
+| geladak   | namespace           | Logical separation |
+| **Kondisi Pod** |
+| rusak     | status != Running   | CrashLoop, ImagePull, Error |
+| sehat     | status = Running    | Healthy pods |
+| terdampar | status = Pending    | Unschedulable |
+| **Kondisi Node** |
+| siap      | status = Ready      | Node ready |
+| mogok     | status = NotReady   | Node not ready |
+| **Aksi** |
+| liat      | get / list          | View resources |
+| cek       | describe            | Detailed info |
+| hapus     | delete              | Remove resource |
 
 Tujuannya:
 
@@ -130,9 +144,11 @@ nahkoda liat kru
 ```
 
 Output:
-
 ```
-Filter : status=Running
+⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
+NAMESPACE     NAME                    READY   STATUS    RESTARTS   AGE
+default       healthy-pod-1           1/1     Running   0          5m
+auth          healthy-pod-2           1/1     Running   0          5m
 ```
 
 (Default ini **eksplisit & jujur**)
@@ -145,8 +161,12 @@ Filter : status=Running
 nahkoda liat kru rusak
 ```
 
+Output:
 ```
-Filter : status!=Running
+⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=true)
+NAMESPACE     NAME                    READY   STATUS             RESTARTS   AGE
+default       crashloop-pod           0/1     CrashLoopBackOff   5          2m
+default       imagepull-pod           0/1     ImagePullBackOff   0          2m
 ```
 
 ---
@@ -154,12 +174,14 @@ Filter : status!=Running
 ### Dengan lokasi (namespace)
 
 ```bash
-nahkoda liat kru bocor di geladak auth
+nahkoda liat kru sehat di geladak auth
 ```
 
+Output:
 ```
-Namespace : auth
-Filter    : reason=OOMKilled
+⚓ Menjalankan: kubectl get pod -n auth | grep 'Running' (invert=false)
+NAME            READY   STATUS    RESTARTS   AGE
+healthy-pod-2   1/1     Running   0          5m
 ```
 
 ---
@@ -167,13 +189,30 @@ Filter    : reason=OOMKilled
 ### Cek detail kru (Describe)
 
 ```bash
-nahkoda cek kru payments-pod-1
+nahkoda cek kru healthy-pod-1
 ```
 
+Output:
 ```
-Operation : describe
-Resource  : pod
-Target    : payments-pod-1
+⚓ Menjalankan: kubectl describe pod healthy-pod-1 -n default
+Name:         healthy-pod-1
+Namespace:    default
+...
+```
+
+---
+
+### Lihat mesin (nodes)
+
+```bash
+nahkoda liat mesin siap
+```
+
+Output:
+```
+⚓ Menjalankan: kubectl get node -A | grep '\bReady\b' (invert=false)
+NAME             STATUS   ROLES           AGE   VERSION
+docker-desktop   Ready    control-plane   5d    v1.34.1
 ```
 
 ---
@@ -182,12 +221,18 @@ Target    : payments-pod-1
 
 ```bash
 nahkoda liat kru xyz
-❌ kata tidak dikenali: "xyz"
-```
+# kata tidak dikenali: "xyz"
 
-```bash
 nahkoda terbangkan kapal
-❌ aksi tidak dikenali
+# aksi tidak dikenali
+
+nahkoda cek mesin
+# cek mesin butuh nama mesin
+
+nahkoda cek kru pod-tidak-ada
+# ⚓ Menjalankan: kubectl describe pod pod-tidak-ada -n default
+# Error from server (NotFound): pods "pod-tidak-ada" not found
+# (No panic, graceful handling)
 ```
 
 Tidak ada guessing.
@@ -199,17 +244,27 @@ Tidak ada asumsi.
 
 Struktur dibuat modular & scalable:
 
-* **parser/**
-  Tokenizer & AST
+```
+Input (Bahasa Indonesia)
+    ↓
+Parser (AST) - 100% test coverage
+    ↓
+Semantic Resolver (strict) - 97.1% test coverage
+    ↓
+Intent
+    ↓
+Planner - 88.6% test coverage
+    ↓
+Executor (kubectl)
+```
 
-* **semantic/**
-  Resolver intent, default, dan validasi
+### Packages
 
-* **planner/**
-  Translasi intent → execution plan
-
-* **exec/**
-  Executor (simulasi, kubectl planned)
+* **parser/** - Tokenizer & AST
+* **semantic/** - Resolver intent, default, dan validasi
+* **planner/** - Translasi intent → execution plan
+* **exec/** - Executor (kubectl dengan client-side filtering)
+* **errors/** - Structured error types dengan context
 
 ---
 
@@ -219,11 +274,18 @@ Struktur dibuat modular & scalable:
 nahkoda/
 ├── cmd/              # CLI entrypoint (cobra)
 ├── internal/
-│   ├── parser/       # Tokenizer & AST
-│   ├── semantic/     # Strict semantic resolver
-│   ├── planner/      # Execution planning
-│   └── exec/         # Executor (simulasi)
-├── TODO.md
+│   ├── parser/       # Tokenizer & AST + tests
+│   ├── semantic/     # Strict semantic resolver + tests
+│   ├── planner/      # Execution planning + tests
+│   ├── exec/         # Kubectl executor
+│   └── errors/       # Custom error types + tests
+├── docs/             # Documentation
+│   ├── TESTING.md
+│   ├── CUSTOM_ERRORS.md
+│   ├── INDONESIANIZATION.md
+│   └── PRODUCTION_IMPROVEMENTS.md
+├── test-resources.yaml  # K8s test manifests
+├── test.sh              # Comprehensive test suite
 ├── README.md
 └── main.go
 ```
@@ -232,25 +294,76 @@ nahkoda/
 
 ## 🧪 Testing
 
+### Unit Tests
+
 Fokus utama ada di **semantic layer**:
 
 ```bash
+# Run all tests
+go test ./... -v -cover
+
+# Specific package
+go test ./internal/parser -v
 go test ./internal/semantic -v
+go test ./internal/planner -v
+```
+
+**Coverage:**
+- Parser: 100%
+- Semantic: 97.1%
+- Planner: 88.6%
+- Errors: 71.4%
+
+### Integration Tests
+
+```bash
+# Deploy test resources
+kubectl apply -f test-resources.yaml
+
+# Run comprehensive tests (32 tests)
+./test.sh
+
+# View results
+cat nahkoda_test_v0.7.0.txt
 ```
 
 Jika semantic benar, seluruh CLI behavior konsisten.
 
 ---
 
-## 🛣️ Roadmap (Next)
+## 📦 Installation
+
+```bash
+# Clone repository
+git clone https://github.com/yourusername/nahkoda.git
+cd nahkoda
+
+# Build
+go build -o nahkoda
+
+# Run
+./nahkoda liat kru
+```
+
+---
+
+## 🛣️ Roadmap
 
 Lihat detail di [`TODO.md`](./TODO.md):
 
-* kubectl executor
-* typo handling (`krue` → `kru`)
-* ambiguity resolver
-* explain mode (`nahkoda explain`)
-* shell completion
+* ✅ kubectl executor (v0.4.0)
+* ✅ Mature filtering (v0.5.0)
+* ✅ Graceful error handling (v0.5.1-v0.5.2)
+* ✅ Node status support (v0.6.0)
+* ✅ Custom error types (v0.7.0)
+* ✅ Unit tests (v0.7.0)
+* ✅ Bahasa Indonesia errors (v0.7.0)
+* ✅ Integration testing (v0.7.0)
+* 🔄 Logging/debugging mode
+* 🔄 Config file support
+* 🔄 Typo handling (`krue` → `kru`)
+* 🔄 Explain mode (`nahkoda explain`)
+* 🔄 Shell completion
 
 ---
 
@@ -263,15 +376,53 @@ Lihat detail di [`TODO.md`](./TODO.md):
 * ✅ Mature filtering (v0.5.0)
 * ✅ Graceful Error & Validation (v0.5.2)
 * ✅ Node Status Support (v0.6.0)
+* ✅ Custom Error Types (v0.7.0)
+* ✅ Comprehensive Unit Tests (v0.7.0)
+* ✅ Full Bahasa Indonesia (v0.7.0)
+* ✅ Integration Testing (v0.7.0)
 
-Nahkoda **sudah aman dipamerkan**,
-dan **fondasinya siap untuk production-grade CLI**.
+Nahkoda **production-ready**,
+dan **fondasinya solid untuk enterprise CLI**.
+
+---
+
+## 📊 Test Statistics
+
+```
+Total Unit Tests:     25 suites
+Total Integration:    32 tests
+Code Coverage:        ~90% average
+All Tests:            ✅ PASSING
+Error Messages:       🇮🇩 100% Bahasa Indonesia
+```
 
 ---
 
 ## 📜 License
 
 MIT License
+
+---
+
+## 🙏 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Write tests for new features
+4. Ensure all tests pass
+5. Submit a pull request
+
+---
+
+## 📚 Documentation
+
+- [Testing Guide](docs/TESTING.md)
+- [Custom Errors](docs/CUSTOM_ERRORS.md)
+- [Indonesianization](docs/INDONESIANIZATION.md)
+- [Production Improvements](docs/PRODUCTION_IMPROVEMENTS.md)
+- [Release Notes v0.6.0](RELEASE_NOTES_v0.6.0.md)
 
 ---
 
