@@ -22,11 +22,14 @@ func Execute(plan planner.Plan) error {
 		args = append(args, plan.Target)
 	}
 
-	// Namespace
-	if plan.Namespace == "all" {
-		args = append(args, "-A")
-	} else {
-		args = append(args, "-n", plan.Namespace)
+	// Namespace (SKIP if operation is "config")
+	// "config" commands (get-contexts, use-context) do not support -n/-A
+	if plan.Operation != "config" {
+		if plan.Namespace == "all" {
+			args = append(args, "-A")
+		} else {
+			args = append(args, "-n", plan.Namespace)
+		}
 	}
 
 	// Filter (field-selector) - SERVER SIDE

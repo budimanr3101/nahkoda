@@ -1,5 +1,5 @@
 ⚓ Nahkoda Test Run v0.7.0 - Comprehensive Integration Test
-Timestamp: Thu Jan  8 23:35:33 WIB 2026
+Timestamp: Thu Jan  8 23:47:16 WIB 2026
 ==============================
 
 🔨 Building binary...
@@ -32,54 +32,54 @@ Flags:
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
 NAMESPACE     NAME                                     READY   STATUS             RESTARTS        AGE
-auth          healthy-pod-2                            1/1     Running            0               6h40m
-default       healthy-pod-1                            1/1     Running            0               6h40m
-default       my-app-59854d5646-5xc99                  1/1     Running            1 (11h ago)     30h
-kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            1 (11h ago)     30h
-kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            1 (11h ago)     30h
-kube-system   etcd-docker-desktop                      1/1     Running            1 (11h ago)     30h
-kube-system   kube-apiserver-docker-desktop            1/1     Running            1 (11h ago)     30h
-kube-system   kube-controller-manager-docker-desktop   1/1     Running            1 (11h ago)     30h
-kube-system   kube-proxy-wdpfs                         1/1     Running            1 (11h ago)     30h
-kube-system   kube-scheduler-docker-desktop            1/1     Running            1 (11h ago)     30h
-kube-system   storage-provisioner                      1/1     Running            3 (6h42m ago)   30h
-kube-system   vpnkit-controller                        1/1     Running            1 (11h ago)     30h
-payment       test-deployment-cd89d7bb-22q56           1/1     Running            0               6h40m
-payment       test-deployment-cd89d7bb-2rbmq           1/1     Running            0               6h40m
+auth          healthy-pod-2                            1/1     Running            0               6h52m
+default       healthy-pod-1                            1/1     Running            0               6h52m
+default       my-app-59854d5646-5xc99                  1/1     Running            1 (11h ago)     31h
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            1 (11h ago)     31h
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            1 (11h ago)     31h
+kube-system   etcd-docker-desktop                      1/1     Running            1 (11h ago)     31h
+kube-system   kube-apiserver-docker-desktop            1/1     Running            1 (11h ago)     31h
+kube-system   kube-controller-manager-docker-desktop   1/1     Running            1 (11h ago)     31h
+kube-system   kube-proxy-wdpfs                         1/1     Running            1 (11h ago)     31h
+kube-system   kube-scheduler-docker-desktop            1/1     Running            1 (11h ago)     31h
+kube-system   storage-provisioner                      1/1     Running            3 (6h53m ago)   31h
+kube-system   vpnkit-controller                        1/1     Running            1 (11h ago)     31h
+payment       test-deployment-cd89d7bb-22q56           1/1     Running            0               6h52m
+payment       test-deployment-cd89d7bb-2rbmq           1/1     Running            0               6h52m
 
 ▶ COMMAND: liat kru sehat
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
 NAMESPACE     NAME                                     READY   STATUS             RESTARTS        AGE
-auth          healthy-pod-2                            1/1     Running            0               6h40m
-default       healthy-pod-1                            1/1     Running            0               6h40m
-default       my-app-59854d5646-5xc99                  1/1     Running            1 (11h ago)     30h
-kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            1 (11h ago)     30h
-kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            1 (11h ago)     30h
-kube-system   etcd-docker-desktop                      1/1     Running            1 (11h ago)     30h
-kube-system   kube-apiserver-docker-desktop            1/1     Running            1 (11h ago)     30h
-kube-system   kube-controller-manager-docker-desktop   1/1     Running            1 (11h ago)     30h
-kube-system   kube-proxy-wdpfs                         1/1     Running            1 (11h ago)     30h
-kube-system   kube-scheduler-docker-desktop            1/1     Running            1 (11h ago)     30h
-kube-system   storage-provisioner                      1/1     Running            3 (6h42m ago)   30h
-kube-system   vpnkit-controller                        1/1     Running            1 (11h ago)     30h
-payment       test-deployment-cd89d7bb-22q56           1/1     Running            0               6h40m
-payment       test-deployment-cd89d7bb-2rbmq           1/1     Running            0               6h40m
+auth          healthy-pod-2                            1/1     Running            0               6h52m
+default       healthy-pod-1                            1/1     Running            0               6h52m
+default       my-app-59854d5646-5xc99                  1/1     Running            1 (11h ago)     31h
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            1 (11h ago)     31h
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            1 (11h ago)     31h
+kube-system   etcd-docker-desktop                      1/1     Running            1 (11h ago)     31h
+kube-system   kube-apiserver-docker-desktop            1/1     Running            1 (11h ago)     31h
+kube-system   kube-controller-manager-docker-desktop   1/1     Running            1 (11h ago)     31h
+kube-system   kube-proxy-wdpfs                         1/1     Running            1 (11h ago)     31h
+kube-system   kube-scheduler-docker-desktop            1/1     Running            1 (11h ago)     31h
+kube-system   storage-provisioner                      1/1     Running            3 (6h53m ago)   31h
+kube-system   vpnkit-controller                        1/1     Running            1 (11h ago)     31h
+payment       test-deployment-cd89d7bb-22q56           1/1     Running            0               6h52m
+payment       test-deployment-cd89d7bb-2rbmq           1/1     Running            0               6h52m
 
 ▶ COMMAND: liat kru rusak
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=true)
 NAMESPACE     NAME                                     READY   STATUS             RESTARTS        AGE
-default       crashloop-pod                            0/1     Error              0               6h40m
-default       imagepull-pod                            0/1     ImagePullBackOff   0               6h40m
+default       crashloop-pod                            0/1     Error              0               6h51m
+default       imagepull-pod                            0/1     ImagePullBackOff   0               6h52m
 default       imagepullbackoff-pod                     0/1     ImagePullBackOff   0               25h
-default       pending-pod                              0/1     Pending            0               6h40m
+default       pending-pod                              0/1     Pending            0               6h52m
 
 ▶ COMMAND: liat kru terdampar
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -A | grep 'Pending' (invert=false)
 NAMESPACE     NAME                                     READY   STATUS             RESTARTS        AGE
-default       pending-pod                              0/1     Pending            0               6h40m
+default       pending-pod                              0/1     Pending            0               6h52m
 
 🏢 SECTION 3: Liat Kru with Namespace
 ==============================
@@ -87,35 +87,35 @@ default       pending-pod                              0/1     Pending          
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -n default | grep 'Running' (invert=false)
 NAME                      READY   STATUS             RESTARTS      AGE
-healthy-pod-1             1/1     Running            0             6h40m
-my-app-59854d5646-5xc99   1/1     Running            1 (11h ago)   30h
+healthy-pod-1             1/1     Running            0             6h52m
+my-app-59854d5646-5xc99   1/1     Running            1 (11h ago)   31h
 
 ▶ COMMAND: liat kru di geladak auth
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -n auth | grep 'Running' (invert=false)
 NAME            READY   STATUS    RESTARTS   AGE
-healthy-pod-2   1/1     Running   0          6h40m
+healthy-pod-2   1/1     Running   0          6h52m
 
 ▶ COMMAND: liat kru di geladak payment
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -n payment | grep 'Running' (invert=false)
 NAME                             READY   STATUS    RESTARTS   AGE
-test-deployment-cd89d7bb-22q56   1/1     Running   0          6h40m
-test-deployment-cd89d7bb-2rbmq   1/1     Running   0          6h40m
+test-deployment-cd89d7bb-22q56   1/1     Running   0          6h52m
+test-deployment-cd89d7bb-2rbmq   1/1     Running   0          6h52m
 
 ▶ COMMAND: liat kru di geladak kube-system
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -n kube-system | grep 'Running' (invert=false)
 NAME                                     READY   STATUS    RESTARTS        AGE
-coredns-66bc5c9577-6jdxh                 1/1     Running   1 (11h ago)     30h
-coredns-66bc5c9577-8cnjx                 1/1     Running   1 (11h ago)     30h
-etcd-docker-desktop                      1/1     Running   1 (11h ago)     30h
-kube-apiserver-docker-desktop            1/1     Running   1 (11h ago)     30h
-kube-controller-manager-docker-desktop   1/1     Running   1 (11h ago)     30h
-kube-proxy-wdpfs                         1/1     Running   1 (11h ago)     30h
-kube-scheduler-docker-desktop            1/1     Running   1 (11h ago)     30h
-storage-provisioner                      1/1     Running   3 (6h42m ago)   30h
-vpnkit-controller                        1/1     Running   1 (11h ago)     30h
+coredns-66bc5c9577-6jdxh                 1/1     Running   1 (11h ago)     31h
+coredns-66bc5c9577-8cnjx                 1/1     Running   1 (11h ago)     31h
+etcd-docker-desktop                      1/1     Running   1 (11h ago)     31h
+kube-apiserver-docker-desktop            1/1     Running   1 (11h ago)     31h
+kube-controller-manager-docker-desktop   1/1     Running   1 (11h ago)     31h
+kube-proxy-wdpfs                         1/1     Running   1 (11h ago)     31h
+kube-scheduler-docker-desktop            1/1     Running   1 (11h ago)     31h
+storage-provisioner                      1/1     Running   3 (6h53m ago)   31h
+vpnkit-controller                        1/1     Running   1 (11h ago)     31h
 
 🔍 SECTION 4: Liat Kru with Condition + Namespace
 ==============================
@@ -123,30 +123,30 @@ vpnkit-controller                        1/1     Running   1 (11h ago)     30h
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -n default | grep 'Running' (invert=false)
 NAME                      READY   STATUS             RESTARTS      AGE
-healthy-pod-1             1/1     Running            0             6h40m
-my-app-59854d5646-5xc99   1/1     Running            1 (11h ago)   30h
+healthy-pod-1             1/1     Running            0             6h52m
+my-app-59854d5646-5xc99   1/1     Running            1 (11h ago)   31h
 
 ▶ COMMAND: liat kru rusak di geladak default
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -n default | grep 'Running' (invert=true)
 NAME                      READY   STATUS             RESTARTS      AGE
-crashloop-pod             0/1     Error              0             6h40m
-imagepull-pod             0/1     ImagePullBackOff   0             6h40m
+crashloop-pod             0/1     Error              0             6h51m
+imagepull-pod             0/1     ImagePullBackOff   0             6h52m
 imagepullbackoff-pod      0/1     ImagePullBackOff   0             25h
-pending-pod               0/1     Pending            0             6h40m
+pending-pod               0/1     Pending            0             6h52m
 
 ▶ COMMAND: liat kru sehat di geladak auth
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -n auth | grep 'Running' (invert=false)
 NAME            READY   STATUS    RESTARTS   AGE
-healthy-pod-2   1/1     Running   0          6h40m
+healthy-pod-2   1/1     Running   0          6h52m
 
 ▶ COMMAND: liat kru sehat di geladak payment
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -n payment | grep 'Running' (invert=false)
 NAME                             READY   STATUS    RESTARTS   AGE
-test-deployment-cd89d7bb-22q56   1/1     Running   0          6h40m
-test-deployment-cd89d7bb-2rbmq   1/1     Running   0          6h40m
+test-deployment-cd89d7bb-22q56   1/1     Running   0          6h52m
+test-deployment-cd89d7bb-2rbmq   1/1     Running   0          6h52m
 
 🔎 SECTION 5: Cek Kru (Describe Pod)
 ==============================
@@ -312,12 +312,12 @@ Node-Selectors:              <none>
 Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
                              node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
 Events:
-  Type     Reason   Age                    From     Message
-  ----     ------   ----                   ----     -------
-  Normal   Pulling  31m (x23 over 6h40m)   kubelet  Pulling image "invalid-image-that-does-not-exist:latest"
-  Warning  Failed   26m (x23 over 6h40m)   kubelet  Failed to pull image "invalid-image-that-does-not-exist:latest": Error response from daemon: pull access denied for invalid-image-that-does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
-  Normal   BackOff  98s (x540 over 6h40m)  kubelet  Back-off pulling image "invalid-image-that-does-not-exist:latest"
-  Warning  Failed   86s (x541 over 6h40m)  kubelet  Error: ImagePullBackOff
+  Type     Reason   Age                      From     Message
+  ----     ------   ----                     ----     -------
+  Normal   Pulling  43m (x23 over 6h52m)     kubelet  Pulling image "invalid-image-that-does-not-exist:latest"
+  Warning  Failed   38m (x23 over 6h52m)     kubelet  Failed to pull image "invalid-image-that-does-not-exist:latest": Error response from daemon: pull access denied for invalid-image-that-does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+  Normal   BackOff  3m17s (x584 over 6h52m)  kubelet  Back-off pulling image "invalid-image-that-does-not-exist:latest"
+  Warning  Failed   3m5s (x585 over 6h52m)   kubelet  Error: ImagePullBackOff
 
 ▶ COMMAND: cek kru pending-pod
 ------------------------------
@@ -358,9 +358,9 @@ Node-Selectors:              <none>
 Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
                              node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
 Events:
-  Type     Reason            Age                 From               Message
-  ----     ------            ----                ----               -------
-  Warning  FailedScheduling  10m (x18 over 95m)  default-scheduler  0/1 nodes are available: 1 Insufficient cpu, 1 Insufficient memory. no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+  Type     Reason            Age                  From               Message
+  ----     ------            ----                 ----               -------
+  Warning  FailedScheduling  21m (x18 over 106m)  default-scheduler  0/1 nodes are available: 1 Insufficient cpu, 1 Insufficient memory. no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
 
 ▶ COMMAND: cek kru pod-tidak-ada
 ------------------------------
@@ -373,13 +373,13 @@ Error from server (NotFound): pods "pod-tidak-ada" not found
 ------------------------------
 ⚓ Menjalankan: kubectl get node -A
 NAME             STATUS   ROLES           AGE   VERSION
-docker-desktop   Ready    control-plane   30h   v1.34.1
+docker-desktop   Ready    control-plane   31h   v1.34.1
 
 ▶ COMMAND: liat mesin siap
 ------------------------------
 ⚓ Menjalankan: kubectl get node -A | grep '\bReady\b' (invert=false)
 NAME             STATUS   ROLES           AGE   VERSION
-docker-desktop   Ready    control-plane   30h   v1.34.1
+docker-desktop   Ready    control-plane   31h   v1.34.1
 
 ▶ COMMAND: liat mesin mogok
 ------------------------------
@@ -408,14 +408,14 @@ Unschedulable:      false
 Lease:
   HolderIdentity:  docker-desktop
   AcquireTime:     <unset>
-  RenewTime:       Thu, 08 Jan 2026 23:35:28 +0700
+  RenewTime:       Thu, 08 Jan 2026 23:47:14 +0700
 Conditions:
   Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
   ----             ------  -----------------                 ------------------                ------                       -------
-  MemoryPressure   False   Thu, 08 Jan 2026 23:35:19 +0700   Wed, 07 Jan 2026 16:36:24 +0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
-  DiskPressure     False   Thu, 08 Jan 2026 23:35:19 +0700   Wed, 07 Jan 2026 16:36:24 +0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
-  PIDPressure      False   Thu, 08 Jan 2026 23:35:19 +0700   Wed, 07 Jan 2026 16:36:24 +0700   KubeletHasSufficientPID      kubelet has sufficient PID available
-  Ready            True    Thu, 08 Jan 2026 23:35:19 +0700   Wed, 07 Jan 2026 16:36:25 +0700   KubeletReady                 kubelet is posting ready status
+  MemoryPressure   False   Thu, 08 Jan 2026 23:47:04 +0700   Wed, 07 Jan 2026 16:36:24 +0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Thu, 08 Jan 2026 23:47:04 +0700   Wed, 07 Jan 2026 16:36:24 +0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Thu, 08 Jan 2026 23:47:04 +0700   Wed, 07 Jan 2026 16:36:24 +0700   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Thu, 08 Jan 2026 23:47:04 +0700   Wed, 07 Jan 2026 16:36:25 +0700   KubeletReady                 kubelet is posting ready status
 Addresses:
   InternalIP:  192.168.65.3
   Hostname:    docker-desktop
@@ -451,22 +451,22 @@ System Info:
 Non-terminated Pods:          (16 in total)
   Namespace                   Name                                      CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
   ---------                   ----                                      ------------  ----------  ---------------  -------------  ---
-  auth                        healthy-pod-2                             50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      6h40m
-  default                     healthy-pod-1                             50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      6h40m
-  default                     imagepull-pod                             10m (0%)      0 (0%)      16Mi (0%)        0 (0%)         6h40m
+  auth                        healthy-pod-2                             50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      6h52m
+  default                     healthy-pod-1                             50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      6h52m
+  default                     imagepull-pod                             10m (0%)      0 (0%)      16Mi (0%)        0 (0%)         6h52m
   default                     imagepullbackoff-pod                      0 (0%)        0 (0%)      0 (0%)           0 (0%)         25h
-  default                     my-app-59854d5646-5xc99                   0 (0%)        0 (0%)      0 (0%)           0 (0%)         30h
-  kube-system                 coredns-66bc5c9577-6jdxh                  100m (1%)     0 (0%)      70Mi (1%)        170Mi (4%)     30h
-  kube-system                 coredns-66bc5c9577-8cnjx                  100m (1%)     0 (0%)      70Mi (1%)        170Mi (4%)     30h
-  kube-system                 etcd-docker-desktop                       100m (1%)     0 (0%)      100Mi (2%)       0 (0%)         30h
-  kube-system                 kube-apiserver-docker-desktop             250m (3%)     0 (0%)      0 (0%)           0 (0%)         30h
-  kube-system                 kube-controller-manager-docker-desktop    200m (2%)     0 (0%)      0 (0%)           0 (0%)         30h
-  kube-system                 kube-proxy-wdpfs                          0 (0%)        0 (0%)      0 (0%)           0 (0%)         30h
-  kube-system                 kube-scheduler-docker-desktop             100m (1%)     0 (0%)      0 (0%)           0 (0%)         30h
-  kube-system                 storage-provisioner                       0 (0%)        0 (0%)      0 (0%)           0 (0%)         30h
-  kube-system                 vpnkit-controller                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         30h
-  payment                     test-deployment-cd89d7bb-22q56            50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      6h40m
-  payment                     test-deployment-cd89d7bb-2rbmq            50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      6h40m
+  default                     my-app-59854d5646-5xc99                   0 (0%)        0 (0%)      0 (0%)           0 (0%)         31h
+  kube-system                 coredns-66bc5c9577-6jdxh                  100m (1%)     0 (0%)      70Mi (1%)        170Mi (4%)     31h
+  kube-system                 coredns-66bc5c9577-8cnjx                  100m (1%)     0 (0%)      70Mi (1%)        170Mi (4%)     31h
+  kube-system                 etcd-docker-desktop                       100m (1%)     0 (0%)      100Mi (2%)       0 (0%)         31h
+  kube-system                 kube-apiserver-docker-desktop             250m (3%)     0 (0%)      0 (0%)           0 (0%)         31h
+  kube-system                 kube-controller-manager-docker-desktop    200m (2%)     0 (0%)      0 (0%)           0 (0%)         31h
+  kube-system                 kube-proxy-wdpfs                          0 (0%)        0 (0%)      0 (0%)           0 (0%)         31h
+  kube-system                 kube-scheduler-docker-desktop             100m (1%)     0 (0%)      0 (0%)           0 (0%)         31h
+  kube-system                 storage-provisioner                       0 (0%)        0 (0%)      0 (0%)           0 (0%)         31h
+  kube-system                 vpnkit-controller                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         31h
+  payment                     test-deployment-cd89d7bb-22q56            50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      6h52m
+  payment                     test-deployment-cd89d7bb-2rbmq            50m (0%)      100m (1%)   32Mi (0%)        64Mi (1%)      6h52m
 Allocated resources:
   (Total limits may be over 100 percent, i.e., overcommitted.)
   Resource           Requests     Limits
@@ -572,42 +572,69 @@ Flags:
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
 NAMESPACE     NAME                                     READY   STATUS             RESTARTS        AGE
-auth          healthy-pod-2                            1/1     Running            0               6h40m
-default       healthy-pod-1                            1/1     Running            0               6h40m
-default       my-app-59854d5646-5xc99                  1/1     Running            1 (11h ago)     30h
-kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            1 (11h ago)     30h
-kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            1 (11h ago)     30h
-kube-system   etcd-docker-desktop                      1/1     Running            1 (11h ago)     30h
-kube-system   kube-apiserver-docker-desktop            1/1     Running            1 (11h ago)     30h
-kube-system   kube-controller-manager-docker-desktop   1/1     Running            1 (11h ago)     30h
-kube-system   kube-proxy-wdpfs                         1/1     Running            1 (11h ago)     30h
-kube-system   kube-scheduler-docker-desktop            1/1     Running            1 (11h ago)     30h
-kube-system   storage-provisioner                      1/1     Running            3 (6h42m ago)   30h
-kube-system   vpnkit-controller                        1/1     Running            1 (11h ago)     30h
-payment       test-deployment-cd89d7bb-22q56           1/1     Running            0               6h40m
-payment       test-deployment-cd89d7bb-2rbmq           1/1     Running            0               6h40m
+auth          healthy-pod-2                            1/1     Running            0               6h52m
+default       healthy-pod-1                            1/1     Running            0               6h52m
+default       my-app-59854d5646-5xc99                  1/1     Running            1 (11h ago)     31h
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            1 (11h ago)     31h
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            1 (11h ago)     31h
+kube-system   etcd-docker-desktop                      1/1     Running            1 (11h ago)     31h
+kube-system   kube-apiserver-docker-desktop            1/1     Running            1 (11h ago)     31h
+kube-system   kube-controller-manager-docker-desktop   1/1     Running            1 (11h ago)     31h
+kube-system   kube-proxy-wdpfs                         1/1     Running            1 (11h ago)     31h
+kube-system   kube-scheduler-docker-desktop            1/1     Running            1 (11h ago)     31h
+kube-system   storage-provisioner                      1/1     Running            3 (6h53m ago)   31h
+kube-system   vpnkit-controller                        1/1     Running            1 (11h ago)     31h
+payment       test-deployment-cd89d7bb-22q56           1/1     Running            0               6h52m
+payment       test-deployment-cd89d7bb-2rbmq           1/1     Running            0               6h52m
 
 ▶ COMMAND: Liat Kru Sehat
 ------------------------------
 ⚓ Menjalankan: kubectl get pod -A | grep 'Running' (invert=false)
 NAMESPACE     NAME                                     READY   STATUS             RESTARTS        AGE
-auth          healthy-pod-2                            1/1     Running            0               6h40m
-default       healthy-pod-1                            1/1     Running            0               6h40m
-default       my-app-59854d5646-5xc99                  1/1     Running            1 (11h ago)     30h
-kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            1 (11h ago)     30h
-kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            1 (11h ago)     30h
-kube-system   etcd-docker-desktop                      1/1     Running            1 (11h ago)     30h
-kube-system   kube-apiserver-docker-desktop            1/1     Running            1 (11h ago)     30h
-kube-system   kube-controller-manager-docker-desktop   1/1     Running            1 (11h ago)     30h
-kube-system   kube-proxy-wdpfs                         1/1     Running            1 (11h ago)     30h
-kube-system   kube-scheduler-docker-desktop            1/1     Running            1 (11h ago)     30h
-kube-system   storage-provisioner                      1/1     Running            3 (6h42m ago)   30h
-kube-system   vpnkit-controller                        1/1     Running            1 (11h ago)     30h
-payment       test-deployment-cd89d7bb-22q56           1/1     Running            0               6h40m
-payment       test-deployment-cd89d7bb-2rbmq           1/1     Running            0               6h40m
+auth          healthy-pod-2                            1/1     Running            0               6h52m
+default       healthy-pod-1                            1/1     Running            0               6h52m
+default       my-app-59854d5646-5xc99                  1/1     Running            1 (11h ago)     31h
+kube-system   coredns-66bc5c9577-6jdxh                 1/1     Running            1 (11h ago)     31h
+kube-system   coredns-66bc5c9577-8cnjx                 1/1     Running            1 (11h ago)     31h
+kube-system   etcd-docker-desktop                      1/1     Running            1 (11h ago)     31h
+kube-system   kube-apiserver-docker-desktop            1/1     Running            1 (11h ago)     31h
+kube-system   kube-controller-manager-docker-desktop   1/1     Running            1 (11h ago)     31h
+kube-system   kube-proxy-wdpfs                         1/1     Running            1 (11h ago)     31h
+kube-system   kube-scheduler-docker-desktop            1/1     Running            1 (11h ago)     31h
+kube-system   storage-provisioner                      1/1     Running            3 (6h53m ago)   31h
+kube-system   vpnkit-controller                        1/1     Running            1 (11h ago)     31h
+payment       test-deployment-cd89d7bb-22q56           1/1     Running            0               6h52m
+payment       test-deployment-cd89d7bb-2rbmq           1/1     Running            0               6h52m
+
+⚓ SECTION 10: Kapal (Context)
+==============================
+▶ COMMAND: liat kapal
+------------------------------
+⚓ Menjalankan: kubectl config get-contexts
+CURRENT   NAME                                                                              CLUSTER                                                                           AUTHINFO                                                                          NAMESPACE
+          arn:aws:eks:ap-southeast-1:642080213866:cluster/DevProject                        arn:aws:eks:ap-southeast-1:642080213866:cluster/DevProject                        arn:aws:eks:ap-southeast-1:642080213866:cluster/DevProject                        
+          arn:aws:eks:ap-southeast-3:146554952197:cluster/aw-qlola-prd-eks-blue             arn:aws:eks:ap-southeast-3:146554952197:cluster/aw-qlola-prd-eks-blue             arn:aws:eks:ap-southeast-3:146554952197:cluster/aw-qlola-prd-eks-blue             
+          arn:aws:eks:ap-southeast-3:193983171233:cluster/msi-poc-cluster                   arn:aws:eks:ap-southeast-3:193983171233:cluster/msi-poc-cluster                   arn:aws:eks:ap-southeast-3:193983171233:cluster/msi-poc-cluster                   
+          arn:aws:eks:ap-southeast-3:203918848971:cluster/btn-prod-nmbs-eks                 arn:aws:eks:ap-southeast-3:203918848971:cluster/btn-prod-nmbs-eks                 arn:aws:eks:ap-southeast-3:203918848971:cluster/btn-prod-nmbs-eks                 
+          arn:aws:eks:ap-southeast-3:211125502617:cluster/loena-Prod-cluster                arn:aws:eks:ap-southeast-3:211125502617:cluster/loena-Prod-cluster                arn:aws:eks:ap-southeast-3:211125502617:cluster/loena-Prod-cluster                
+          arn:aws:eks:ap-southeast-3:223280895774:cluster/aw-qlola-prd-eks-blue             arn:aws:eks:ap-southeast-3:223280895774:cluster/aw-qlola-prd-eks-blue             arn:aws:eks:ap-southeast-3:223280895774:cluster/aw-qlola-prd-eks-blue             
+          arn:aws:eks:ap-southeast-3:223280895774:cluster/aw-qlola-prd-ekss-green           arn:aws:eks:ap-southeast-3:223280895774:cluster/aw-qlola-prd-ekss-green           arn:aws:eks:ap-southeast-3:223280895774:cluster/aw-qlola-prd-ekss-green           
+          arn:aws:eks:ap-southeast-3:381491966185:cluster/dana-jagoan-neon-eks              arn:aws:eks:ap-southeast-3:381491966185:cluster/dana-jagoan-neon-eks              arn:aws:eks:ap-southeast-3:381491966185:cluster/dana-jagoan-neon-eks              
+          arn:aws:eks:ap-southeast-3:381491966185:cluster/gandi-lab-mso-eks                 arn:aws:eks:ap-southeast-3:381491966185:cluster/gandi-lab-mso-eks                 arn:aws:eks:ap-southeast-3:381491966185:cluster/gandi-lab-mso-eks                 
+          arn:aws:eks:ap-southeast-3:670012318318:cluster/Dummy-esb-EKSControlPlane         arn:aws:eks:ap-southeast-3:670012318318:cluster/Dummy-esb-EKSControlPlane         arn:aws:eks:ap-southeast-3:670012318318:cluster/Dummy-esb-EKSControlPlane         
+          arn:aws:eks:ap-southeast-3:670012318318:cluster/NonProd-esb-EKSControlPlane       arn:aws:eks:ap-southeast-3:670012318318:cluster/NonProd-esb-EKSControlPlane       arn:aws:eks:ap-southeast-3:670012318318:cluster/NonProd-esb-EKSControlPlane       
+          arn:aws:eks:ap-southeast-3:670012318318:cluster/TBS-Outpost-esb-EKSControlPlane   arn:aws:eks:ap-southeast-3:670012318318:cluster/TBS-Outpost-esb-EKSControlPlane   arn:aws:eks:ap-southeast-3:670012318318:cluster/TBS-Outpost-esb-EKSControlPlane   
+          arn:aws:eks:ap-southeast-3:688571716623:cluster/prod-subsdom-eks                  arn:aws:eks:ap-southeast-3:688571716623:cluster/prod-subsdom-eks                  arn:aws:eks:ap-southeast-3:688571716623:cluster/prod-subsdom-eks                  
+          arn:aws:eks:ap-southeast-3:713881829349:cluster/aw-brimo-rnd-eks-blue             arn:aws:eks:ap-southeast-3:713881829349:cluster/aw-brimo-rnd-eks-blue             arn:aws:eks:ap-southeast-3:713881829349:cluster/aw-brimo-rnd-eks-blue             
+          arn:aws:eks:ap-southeast-3:987529536644:cluster/Outpost-esb-EKSControlPlane       arn:aws:eks:ap-southeast-3:987529536644:cluster/Outpost-esb-EKSControlPlane       arn:aws:eks:ap-southeast-3:987529536644:cluster/Outpost-esb-EKSControlPlane       
+          arn:aws:eks:ap-southeast-3:987529536644:cluster/Prod-esb-EKSControlPlane          arn:aws:eks:ap-southeast-3:987529536644:cluster/Prod-esb-EKSControlPlane          arn:aws:eks:ap-southeast-3:987529536644:cluster/Prod-esb-EKSControlPlane          
+          arn:aws:eks:ap-southeast-3:987529536644:cluster/TBS-Outpost-esb-EKSControlPlane   arn:aws:eks:ap-southeast-3:987529536644:cluster/TBS-Outpost-esb-EKSControlPlane   arn:aws:eks:ap-southeast-3:987529536644:cluster/TBS-Outpost-esb-EKSControlPlane   
+          arn:aws:eks:ap-southeast-3:998938083430:cluster/nonprod-subsdom-eks               arn:aws:eks:ap-southeast-3:998938083430:cluster/nonprod-subsdom-eks               arn:aws:eks:ap-southeast-3:998938083430:cluster/nonprod-subsdom-eks               
+          budimanr3101-dev/api-sandbox-m2-lls9k-p1-openshiftapps-com:6443/budimanr3101      api-sandbox-m2-lls9k-p1-openshiftapps-com:6443                                    budimanr3101/api-sandbox-m2-lls9k-p1-openshiftapps-com:6443                       budimanr3101-dev
+*         docker-desktop                                                                    docker-desktop                                                                    docker-desktop                                                                    
 
 
 ==============================
 ✅ Test selesai. Output tersimpan di nahkoda_test_v0.7.0.txt
 
-📊 Total tests run: 25
+📊 Total tests run: 26

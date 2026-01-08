@@ -130,6 +130,13 @@ run_test "LIAT KRU"
 run_test "Liat Kru Sehat"
 
 # ==========================================
+# SECTION 10: KAPAL (CONTEXT)
+# ==========================================
+echo "⚓ SECTION 10: Kapal (Context)" | tee -a $OUT
+echo "==============================" >> $OUT
+run_test "liat kapal"
+
+# ==========================================
 # SUMMARY
 # ==========================================
 echo "" | tee -a $OUT

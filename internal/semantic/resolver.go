@@ -108,6 +108,18 @@ func Resolve(ast parser.AST) (Intent, error) {
 		intent.IsDefaultFilter = false
 
 	// ===============================
+	// PINDAH → USE CONTEXT
+	// ===============================
+	case "pindah":
+		if intent.Objek != "kapal" {
+			// Pindah hanya support kapal untuk saat ini
+			return intent, errors.NewUnknownObject()
+		}
+		if intent.Target == "" {
+			return intent, errors.NewMissingTarget(intent.Objek)
+		}
+
+	// ===============================
 	// AKSI TIDAK DIKENAL
 	// ===============================
 	default:

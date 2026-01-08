@@ -125,6 +125,12 @@ Nahkoda menggunakan analogi kapal agar lebih natural:
 | **Kondisi Node** |
 | siap      | status = Ready      | Node ready |
 | mogok     | status = NotReady   | Node not ready |
+| `liat mesin` | `kubectl get nodes` |
+| `liat mesin siap` | `kubectl get nodes` (filter Ready) |
+| `liat mesin mogok` | `kubectl get nodes -l status!=Ready` |
+| `cek mesin [nama]` | `kubectl describe node [nama]` |
+| `liat kapal` | `kubectl config get-contexts` |
+| `pindah kapal [nama]` | `kubectl config use-context [nama]` |
 | **Aksi** |
 | liat      | get / list          | View resources |
 | cek       | describe            | Detailed info |

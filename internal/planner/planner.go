@@ -21,6 +21,8 @@ func Build(intent semantic.Intent) Plan {
 		plan.Operation = "describe"
 	case "hapus":
 		plan.Operation = "delete"
+	case "pindah":
+		plan.Operation = "config"
 	default:
 		plan.Operation = "unknown"
 		plan.Notes = append(plan.Notes, "aksi tidak dikenali")
@@ -32,8 +34,21 @@ func Build(intent semantic.Intent) Plan {
 	switch intent.Objek {
 	case "kru":
 		plan.Resource = "pod"
+
 	case "mesin":
 		plan.Resource = "node"
+	case "kapal":
+		// Jika aksi "liat" -> get-contexts
+		// Jika aksi "pindah" -> use-context
+		if intent.Aksi == "liat" {
+			plan.Operation = "config" // Override "get" from step 1
+			plan.Resource = "get-contexts"
+		} else if intent.Aksi == "pindah" {
+			plan.Resource = "use-context"
+		} else {
+			plan.Resource = "unknown"
+			plan.Notes = append(plan.Notes, "aksi tidak valid untuk kapal")
+		}
 	default:
 		plan.Resource = "unknown"
 		plan.Notes = append(plan.Notes, "objek tidak dikenali")
