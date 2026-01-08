@@ -16,10 +16,21 @@ import (
 
 func Execute(plan planner.Plan) error {
 	// Construct args: kubectl [operation] [resource] [target]
-	args := []string{plan.Operation, plan.Resource}
+	// ARGS CONSTRUCTION
+	args := []string{}
 
-	if plan.Target != "" {
-		args = append(args, plan.Target)
+	if plan.Operation == "exec" {
+		// exec specific: kubectl exec -it [target] [-n namespace] -- /bin/sh
+		args = append(args, "exec", "-it", plan.Target)
+	} else if plan.Operation == "logs" {
+		// logs specific: kubectl logs [target] [-n namespace]
+		args = append(args, "logs", plan.Target)
+	} else {
+		// default: kubectl [operation] [resource] [target]
+		args = append(args, plan.Operation, plan.Resource)
+		if plan.Target != "" {
+			args = append(args, plan.Target)
+		}
 	}
 
 	// Namespace (SKIP if operation is "config")
@@ -41,8 +52,26 @@ func Execute(plan planner.Plan) error {
 		args = append(args, "--field-selector="+strings.Join(selectors, ","))
 	}
 
+	// Finalize Exec Args
+	if plan.Operation == "exec" {
+		args = append(args, "--", "/bin/sh")
+	}
+
+	// Append generic Flags
+	args = append(args, plan.Flags...)
+
 	// Execute
 	cmd := exec.Command("kubectl", args...)
+
+	// INTERACTIVE MODE (EXEC)
+	if plan.Operation == "exec" {
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		fmt.Printf("⚓ Menjalankan (Interactive): %s\n", strings.Join(cmd.Args, " "))
+		return cmd.Run()
+	}
 
 	// Jika tidak ada GREP, langsung stream ke stdout (native performance)
 	if plan.Grep == "" {
@@ -55,12 +84,6 @@ func Execute(plan planner.Plan) error {
 		fmt.Printf("⚓ Menjalankan: %s\n", strings.Join(cmd.Args, " "))
 
 		if err := cmd.Run(); err != nil {
-			// Graceful error handling for NotFound
-			errStr := stderrBuf.String()
-			if strings.Contains(errStr, "NotFound") || strings.Contains(errStr, "not found") {
-				// Resource not found is not an error in our context
-				return nil
-			}
 			// Wrap kubectl error with context
 			return errors.NewKubectlFailed(err).WithContext("command", strings.Join(cmd.Args, " "))
 		}
@@ -116,12 +139,6 @@ func Execute(plan planner.Plan) error {
 	}
 
 	if err := cmd.Wait(); err != nil {
-		// Graceful error handling for NotFound
-		errStr := stderrBuf.String()
-		if strings.Contains(errStr, "NotFound") || strings.Contains(errStr, "not found") {
-			// Resource not found is not an error in our context
-			return nil
-		}
 		// Wrap kubectl error with context
 		return errors.NewKubectlFailed(err).WithContext("command", strings.Join(cmd.Args, " "))
 	}

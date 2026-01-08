@@ -1,5 +1,5 @@
 [![Strict CI](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml/badge.svg)](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml)
-# ⚓ Nahkoda v0.7.0
+# ⚓ Nahkoda v0.9.0
 
 > **Human-friendly command layer di atas kubectl, pakai bahasa Indonesia.**
 
@@ -131,10 +131,22 @@ Nahkoda menggunakan analogi kapal agar lebih natural:
 | `cek mesin [nama]` | `kubectl describe node [nama]` |
 | `liat kapal` | `kubectl config get-contexts` |
 | `pindah kapal [nama]` | `kubectl config use-context [nama]` |
+| `baca jurnal [pod]` | `kubectl logs [pod]` |
+| `masuk [pod]` | `kubectl exec -it [pod] -- /bin/sh` |
+| `liat berita` | `kubectl get events --sort-by=.metadata.creationTimestamp` |
 | **Aksi** |
 | liat      | get / list          | View resources |
 | cek       | describe            | Detailed info |
-| hapus     | delete              | Remove resource |
+| hapus     | delete              | Delete resources |
+| pindah    | config use-context  | Switch context |
+| baca      | logs                | View logs |
+| masuk     | exec -it            | Enter container |
+| **Objek** |
+| kru       | pod                 | Kubernetes Pod |
+| mesin     | node                | Kubernetes Node |
+| kapal     | context             | Kubernetes Context |
+| jurnal    | logs                | Pod Logs |
+| berita    | events              | Cluster Events |
 
 Tujuannya:
 

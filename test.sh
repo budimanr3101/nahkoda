@@ -89,7 +89,7 @@ run_test "cek kru healthy-pod-1"
 run_test "cek kru crashloop-pod"
 run_test "cek kru imagepull-pod"
 run_test "cek kru pending-pod"
-run_test "cek kru pod-tidak-ada"
+run_fail "cek kru pod-tidak-ada"
 
 # ==========================================
 # SECTION 6: LIAT MESIN (LIST NODES)
@@ -106,7 +106,7 @@ run_test "liat mesin mogok"
 echo "🔧 SECTION 7: Cek Mesin (Describe Node)" | tee -a $OUT
 echo "==============================" >> $OUT
 run_test "cek mesin docker-desktop"
-run_test "cek mesin node-tidak-ada"
+run_fail "cek mesin node-tidak-ada"
 
 # ==========================================
 # SECTION 8: ERROR HANDLING
@@ -135,6 +135,21 @@ run_test "Liat Kru Sehat"
 echo "⚓ SECTION 10: Kapal (Context)" | tee -a $OUT
 echo "==============================" >> $OUT
 run_test "liat kapal"
+
+# ==========================================
+# SECTION 11: JURNAL (LOGS)
+# ==========================================
+echo "📜 SECTION 11: Jurnal (Logs)" | tee -a $OUT
+echo "==============================" >> $OUT
+run_test "baca jurnal healthy-pod-1"
+run_fail "baca jurnal pod-tidak-ada"
+
+# ==========================================
+# SECTION 12: BERITA (EVENTS)
+# ==========================================
+echo "📢 SECTION 12: Berita (Events)" | tee -a $OUT
+echo "==============================" >> $OUT
+run_test "liat berita"
 
 # ==========================================
 # SUMMARY

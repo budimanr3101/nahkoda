@@ -25,11 +25,11 @@ func Parse(input string) (AST, error) {
 		switch tok {
 
 		// ===== AKSI =====
-		case "liat", "hapus", "cek", "pindah":
+		case "liat", "hapus", "cek", "pindah", "baca", "masuk":
 			ast.Aksi = tok
 
 		// ===== OBJEK =====
-		case "kru", "mesin", "kapal":
+		case "kru", "mesin", "kapal", "jurnal", "berita":
 			ast.Objek = tok
 
 		// ===== KONDISI =====
@@ -47,8 +47,15 @@ func Parse(input string) (AST, error) {
 
 		// ===== DEFAULT =====
 		default:
-			// khusus untuk aksi "cek" atau "pindah", token terakhir dianggap target
-			if (ast.Aksi == "cek" || ast.Aksi == "pindah") && i == len(tokens)-1 {
+			// khusus untuk aksi "cek", "pindah", "baca", "masuk", token terakhir dianggap target
+			// "liat" tidak butuh target biasanya, kecuali kustomisasi (tp "liat berita" gapake target)
+			capturingActions := map[string]bool{
+				"cek":    true,
+				"pindah": true,
+				"baca":   true,
+				"masuk":  true,
+			}
+			if capturingActions[ast.Aksi] && i == len(tokens)-1 {
 				ast.Target = tok
 			} else {
 				ast.Unknown = append(ast.Unknown, tok)

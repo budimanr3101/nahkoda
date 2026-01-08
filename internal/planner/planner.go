@@ -23,6 +23,10 @@ func Build(intent semantic.Intent) Plan {
 		plan.Operation = "delete"
 	case "pindah":
 		plan.Operation = "config"
+	case "baca":
+		plan.Operation = "logs"
+	case "masuk":
+		plan.Operation = "exec"
 	default:
 		plan.Operation = "unknown"
 		plan.Notes = append(plan.Notes, "aksi tidak dikenali")
@@ -49,6 +53,12 @@ func Build(intent semantic.Intent) Plan {
 			plan.Resource = "unknown"
 			plan.Notes = append(plan.Notes, "aksi tidak valid untuk kapal")
 		}
+	case "jurnal":
+		plan.Resource = "pod" // kubectl logs [pod]
+	case "berita":
+		plan.Operation = "get"
+		plan.Resource = "events"
+		plan.Flags = append(plan.Flags, "--sort-by=.metadata.creationTimestamp")
 	default:
 		plan.Resource = "unknown"
 		plan.Notes = append(plan.Notes, "objek tidak dikenali")

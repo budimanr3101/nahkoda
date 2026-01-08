@@ -9,5 +9,6 @@ type Plan struct {
 	Grep       string            // client-side filter (text match)
 	GrepRegex  bool              // jika true, gunakan Regex Match
 	GrepInvert bool              // jika true, tampilkan yang TIDAK match
+	Flags      []string          // additional flags (e.g. --sort-by)
 	Notes      []string          // warning / catatan
 }

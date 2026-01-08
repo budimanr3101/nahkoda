@@ -76,6 +76,19 @@ func Resolve(ast parser.AST) (Intent, error) {
 	// LIAT → LIST
 	// ===============================
 	case "liat":
+		// Handle "liat berita"
+		if intent.Objek == "berita" {
+			// No filter needed for events usually, or maybe handled later
+			intent.Filter = ""
+			intent.IsDefaultFilter = false
+			break // Exit case "liat"
+		} else if intent.Objek == "kapal" {
+			// Already handled in planner
+			intent.Filter = ""
+			intent.IsDefaultFilter = false
+			break
+		}
+
 		if ast.Kondisi != "" {
 			intent.Kondisi = ast.Kondisi
 
@@ -117,6 +130,38 @@ func Resolve(ast parser.AST) (Intent, error) {
 		}
 		if intent.Target == "" {
 			return intent, errors.NewMissingTarget(intent.Objek)
+		}
+
+	// ===============================
+	// BACA → LOGS
+	// ===============================
+	case "baca":
+		if intent.Objek != "jurnal" {
+			return intent, errors.NewUnknownObject()
+		}
+		if intent.Target == "" {
+			return intent, errors.NewMissingTarget(intent.Objek)
+		}
+		// "baca jurnal" itu logs 1 pod -> no filter needed usually
+		intent.Filter = ""
+		intent.IsDefaultFilter = false
+
+	// ===============================
+	// MASUK → EXEC
+	// ===============================
+	case "masuk":
+		// User bisa bilang "masuk [target]" (objek kosong, default kru) atau "masuk kru [target]"
+		// Tapi Parser menaruh token non-keyword ke 'Target' hanya jika aksi=masuk & token terakhir.
+		// Jika Objek kosong, kita set ke "kru".
+		if intent.Objek == "" {
+			intent.Objek = "kru"
+		} else if intent.Objek != "kru" {
+			// masuk hanya support kru (pod)
+			return intent, errors.NewUnknownObject()
+		}
+
+		if intent.Target == "" {
+			return intent, errors.NewMissingTarget("kru")
 		}
 
 	// ===============================
