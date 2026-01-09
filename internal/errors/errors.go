@@ -25,10 +25,11 @@ const (
 
 // NahkodaError is a structured error type
 type NahkodaError struct {
-	Type    ErrorType
-	Message string
-	Context map[string]string
-	Err     error // underlying error
+	Type       ErrorType
+	Message    string
+	Suggestion string
+	Context    map[string]string
+	Err        error // underlying error
 }
 
 // Error implements the error interface
@@ -81,6 +82,11 @@ func Wrap(errType ErrorType, message string, err error) *NahkodaError {
 
 func NewUnknownWord(word string) *NahkodaError {
 	return New(ErrUnknownWord, fmt.Sprintf("kata tidak dikenali: %q", word))
+}
+
+func (e *NahkodaError) WithSuggestion(suggestion string) *NahkodaError {
+	e.Suggestion = suggestion
+	return e
 }
 
 func NewUnknownAction() *NahkodaError {

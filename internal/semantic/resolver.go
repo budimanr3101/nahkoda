@@ -26,7 +26,15 @@ func Resolve(ast parser.AST) (Intent, error) {
 	// 1️⃣ UNKNOWN WORDS (STRICT)
 	// ===============================
 	if len(ast.Unknown) > 0 {
-		return intent, errors.NewUnknownWord(strings.Join(ast.Unknown, ", "))
+		unknownStr := strings.Join(ast.Unknown, ", ")
+		err := errors.NewUnknownWord(unknownStr)
+
+		// Coba cari saran untuk kata pertama yang tidak dikenal
+		if suggestion := FindSuggestion(ast.Unknown[0]); suggestion != "" {
+			err = err.WithSuggestion(suggestion)
+		}
+
+		return intent, err
 	}
 
 	// ===============================

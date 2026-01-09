@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"nahkoda/internal/errors"
 	"nahkoda/internal/exec"
 	"nahkoda/internal/parser"
 	"nahkoda/internal/planner"
@@ -24,7 +25,10 @@ func main() {
 	}
 
 	input := strings.Join(os.Args[1:], " ")
+	executeCommand(input)
+}
 
+func executeCommand(input string) {
 	// 1️⃣ PARSER
 	ast, err := parser.Parse(input)
 	if err != nil {
@@ -35,6 +39,24 @@ func main() {
 	// 2️⃣ SEMANTIC (STRICT)
 	intent, err := semantic.Resolve(ast)
 	if err != nil {
+		// handle typo suggestion
+		if nErr, ok := err.(*errors.NahkodaError); ok && nErr.Suggestion != "" {
+			fmt.Printf("❓ %s\n", nErr.Message)
+			fmt.Printf("👉 Mungkin maksud Kapten: %s? (y/n): ", nErr.Suggestion)
+
+			var confirm string
+			fmt.Scanln(&confirm)
+
+			if strings.ToLower(confirm) == "y" {
+				// Coba ganti kata pertama yang unknown dengan suggestion
+				// Untuk simplicity, kita ganti kata yang mengandung typo di input string
+				newInput := strings.Replace(input, ast.Unknown[0], nErr.Suggestion, 1)
+				fmt.Printf("⚓ Berlayar dengan: %s\n\n", newInput)
+				executeCommand(newInput)
+				return
+			}
+		}
+
 		fmt.Println("❌", err.Error())
 		os.Exit(1)
 	}
