@@ -22,10 +22,14 @@ brew tap budimanr3101/nahkoda
 brew install nahkoda
 ```
 
-### via Winget (Windows Native)
+### via Scoop (Windows)
 
 ```powershell
-winget install nahkoda
+# Tambahkan bucket (diambil dari repo yang sama dengan brew)
+scoop bucket add nahkoda https://github.com/budimanr3101/homebrew-nahkoda
+
+# Install
+scoop install nahkoda
 ```
 
 ### Manual Download (Windows/Linux/macOS)
