@@ -5,7 +5,7 @@ import starlight from '@astrojs/starlight';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://budimanr3101.github.io',
-	base: '/nahkoda',
+	base: '/nahkoda/',
 	integrations: [
 		starlight({
 			title: 'Nahkoda',
