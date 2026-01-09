@@ -1,67 +1,70 @@
-// package main
-
-// import (
-// 	"fmt"
-// 	"os"
-// 	"strings"
-
-// 	"nahkoda/internal/parser"
-// 	"nahkoda/internal/semantic"
-// )
-
-// func main() {
-// 	if len(os.Args) < 2 {
-// 		printHelp()
-// 		return
-// 	}
-
-// 	input := strings.Join(os.Args[1:], " ")
-
-// 	ast, err := parser.Parse(input)
-// 	if err != nil {
-// 		fmt.Println("❌", err.Error())
-// 		return
-// 	}
-// 	intent := semantic.Resolve(ast)
-
-// 	printIntent(intent)
-// }
-
-// func printHelp() {
-// 	fmt.Println("⚓ Nahkoda — Natural CLI for Kubernetes\n")
-// 	fmt.Println("Contoh penggunaan:")
-// 	fmt.Println("  nahkoda liat kru")
-// 	fmt.Println("  nahkoda liat kru rusak")
-// 	fmt.Println("  nahkoda liat kru di geladak auth")
-// 	fmt.Println("  nahkoda liat kru bocor di geladak auth")
-// }
-
-// func printIntent(intent semantic.Intent) {
-// 	fmt.Println("⚓ Nahkoda menerima perintah:")
-
-// 	fmt.Printf("Aksi   : %s\n", intent.Aksi)
-// 	fmt.Printf("Objek  : %s\n", intent.Objek)
-// 	fmt.Printf("Lokasi : %s\n", intent.Lokasi)
-
-// 	if intent.Kondisi != "" {
-// 		fmt.Printf("Kondisi: %s\n", intent.Kondisi)
-// 	}
-
-// 	if intent.Filter != "" {
-// 		if intent.IsDefaultFilter {
-// 			fmt.Printf("Filter : %s (aturan default: kru sehat)\n", intent.Filter)
-// 		} else {
-// 			fmt.Printf("Filter : %s\n", intent.Filter)
-// 		}
-// 	}
-
-// 	fmt.Println("\n(simulasi, belum menyentuh Kubernetes)")
-// }
-
 package main
 
-import "nahkoda/cmd"
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"nahkoda/internal/exec"
+	"nahkoda/internal/parser"
+	"nahkoda/internal/planner"
+	"nahkoda/internal/semantic"
+)
 
 func main() {
-	cmd.Execute()
+	if len(os.Args) < 2 {
+		printHelp()
+		return
+	}
+
+	// Check for help flags
+	if os.Args[1] == "-h" || os.Args[1] == "--help" {
+		printHelp()
+		return
+	}
+
+	input := strings.Join(os.Args[1:], " ")
+
+	// 1️⃣ PARSER
+	ast, err := parser.Parse(input)
+	if err != nil {
+		fmt.Println("❌", err.Error())
+		os.Exit(1)
+	}
+
+	// 2️⃣ SEMANTIC (STRICT)
+	intent, err := semantic.Resolve(ast)
+	if err != nil {
+		fmt.Println("❌", err.Error())
+		os.Exit(1)
+	}
+
+	// 3️⃣ PLANNER
+	plan := planner.Build(intent)
+
+	// 4️⃣ EXECUTOR
+	if err := exec.Execute(plan); err != nil {
+		fmt.Println("❌", err.Error())
+		os.Exit(1)
+	}
+}
+
+func printHelp() {
+	helpText := `⚓ Nahkoda — Bahasa manusia untuk Kubernetes
+
+Cara pakai:
+  nahkoda [kalimat perintah]
+
+Contoh:
+  nahkoda liat kru
+  nahkoda liat kru rusak
+  nahkoda liat kru di geladak auth
+  nahkoda baca jurnal healthy-pod-1
+  nahkoda masuk healthy-pod-1
+  nahkoda liat berita
+
+Opsi:
+  -h, --help    Tampilkan bantuan ini
+`
+	fmt.Println(helpText)
 }
