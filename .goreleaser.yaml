@@ -56,8 +56,8 @@ brews:
       name: goreleaserbot
       email: bot@goreleaser.com
 
-    # Folder inside the repository to put the formula.
-    folder: Formula
+    # Directory inside the repository to put the formula.
+    directory: Formula
 
     # Homepage
     homepage: "https://github.com/budimanr3101/nahkoda"
