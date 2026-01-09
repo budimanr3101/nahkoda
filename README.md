@@ -1,10 +1,10 @@
 [![Strict CI](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml/badge.svg)](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml)
 
-# ⚓ Nahkoda
+# ⚓ Nahkoda v0.9.5
 
 > **Kubernetes dalam Bahasa Manusia.**
 
-Nahkoda adalah CLI experimental yang mengubah interaksi Kubernetes (kubectl) menjadi **Bahasa Indonesia** sehari-hari yang natural, ekspresif, dan tetap presisi.
+Nahkoda adalah CLI yang mengubah interaksi Kubernetes (kubectl) menjadi **Bahasa Indonesia** sehari-hari yang natural, ekspresif, dan tetap presisi. Sekarang dengan dukungan fitur **Bikin**, **Pantau**, dan **Toleransi Typo**.
 
 ---
 

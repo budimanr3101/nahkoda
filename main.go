@@ -45,7 +45,7 @@ func executeCommand(input string) {
 			fmt.Printf("👉 Mungkin maksud Kapten: %s? (y/n): ", nErr.Suggestion)
 
 			var confirm string
-			fmt.Scanln(&confirm)
+			_, _ = fmt.Scanln(&confirm) // We check error by underscore if we ignore it, or handle it.
 
 			if strings.ToLower(confirm) == "y" {
 				// Coba ganti kata pertama yang unknown dengan suggestion
