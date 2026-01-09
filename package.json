@@ -3,5 +3,8 @@
     "private": true,
     "workspaces": [
         "website"
-    ]
+    ],
+    "optionalDependencies": {
+        "@rollup/rollup-linux-x64-gnu": "*"
+    }
 }
