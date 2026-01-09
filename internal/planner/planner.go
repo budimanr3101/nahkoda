@@ -11,13 +11,8 @@ func Build(intent semantic.Intent) Plan {
 		Filters: make(map[string]string),
 	}
 
-	// ===============================
-	// 1️⃣ AKSI → OPERATION
-	// ===============================
+	// 1. AKSI → OPERATION
 	switch intent.Aksi {
-	// ===============================
-	// BIKIN → CREATE / RUN
-	// ===============================
 	case "bikin":
 		if intent.Objek == "geladak" {
 			plan.Operation = "create"
@@ -25,14 +20,11 @@ func Build(intent semantic.Intent) Plan {
 			// args: create namespace [target]
 		} else if intent.Objek == "kru" {
 			plan.Operation = "run"
-			plan.Resource = "" // run doesn't use "pod" resource mapping like get
+			plan.Resource = ""
 			// args: run [target] --image=nginx --restart=Never
 			plan.Flags = append(plan.Flags, "--image=nginx", "--restart=Never")
 		}
 
-	// ===============================
-	// PANTAU → TOP
-	// ===============================
 	case "pantau":
 		plan.Operation = "top"
 		if intent.Objek == "kru" {
@@ -58,9 +50,7 @@ func Build(intent semantic.Intent) Plan {
 		plan.Notes = append(plan.Notes, "aksi tidak dikenali")
 	}
 
-	// ===============================
-	// 2️⃣ OBJEK → RESOURCE
-	// ===============================
+	// 2. OBJEK → RESOURCE
 	switch intent.Objek {
 	case "kru":
 		plan.Resource = "pod"
@@ -92,23 +82,17 @@ func Build(intent semantic.Intent) Plan {
 		plan.Notes = append(plan.Notes, "objek tidak dikenali")
 	}
 
-	// ===============================
-	// 3️⃣ LOKASI → NAMESPACE
-	// ===============================
+	// 3. LOKASI → NAMESPACE
 	if intent.Lokasi == "semua geladak" {
 		plan.Namespace = "all"
 	} else {
 		plan.Namespace = normalizeNamespace(intent.Lokasi)
 	}
 
-	// ===============================
-	// 4️⃣ TARGET (UNTUK CEK)
-	// ===============================
+	// 4. TARGET
 	plan.Target = intent.Target
 
-	// ===============================
-	// 5️⃣ FILTER (LIST / GET)
-	// ===============================
+	// 5. FILTER (LIST / GET)
 	if intent.Aksi == "liat" && intent.Filter != "" {
 		key, value := splitFilter(intent.Filter)
 

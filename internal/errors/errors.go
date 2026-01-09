@@ -6,18 +6,15 @@ import "fmt"
 type ErrorType int
 
 const (
-	// Parser errors
 	ErrUnknownWord ErrorType = iota
 	ErrMissingAction
 	ErrInvalidSyntax
 
-	// Semantic errors
 	ErrUnknownAction
 	ErrUnknownObject
 	ErrUnknownCondition
 	ErrMissingTarget
 
-	// Executor errors
 	ErrKubectlFailed
 	ErrKubectlNotFound
 	ErrResourceNotFound

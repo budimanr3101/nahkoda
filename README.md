@@ -1,6 +1,6 @@
 [![Strict CI](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml/badge.svg)](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml)
 
-# ⚓ Nahkoda v0.9.5
+# ⚓ Nahkoda v0.9.6
 
 > **Kubernetes dalam Bahasa Manusia.**
 

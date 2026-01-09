@@ -22,9 +22,7 @@ type Intent struct {
 func Resolve(ast parser.AST) (Intent, error) {
 	intent := Intent{}
 
-	// ===============================
-	// 1️⃣ UNKNOWN WORDS (STRICT)
-	// ===============================
+	// 1. UNKNOWN WORDS (STRICT)
 	if len(ast.Unknown) > 0 {
 		unknownStr := strings.Join(ast.Unknown, ", ")
 		err := errors.NewUnknownWord(unknownStr)
@@ -37,28 +35,19 @@ func Resolve(ast parser.AST) (Intent, error) {
 		return intent, err
 	}
 
-	// ===============================
-	// 2️⃣ AKSI (WAJIB)
-	// ===============================
+	// 2. AKSI (WAJIB)
 	if ast.Aksi == "" {
 		return intent, errors.NewUnknownAction()
 	}
 	intent.Aksi = ast.Aksi
 
-	// ===============================
-	// 3️⃣ OBJEK (WAJIB)
-	// ===============================
+	// 3. OBJEK (WAJIB)
 	if ast.Objek == "" {
 		return intent, errors.NewUnknownObject()
 	}
 	intent.Objek = ast.Objek
 
-	// ===============================
-	// 4️⃣ LOKASI
-	// ===============================
-	// ===============================
-	// 4️⃣ LOKASI
-	// ===============================
+	// 4. LOKASI
 	if ast.Lokasi != "" {
 		intent.Lokasi = ast.Lokasi
 	} else {
@@ -70,19 +59,12 @@ func Resolve(ast parser.AST) (Intent, error) {
 		}
 	}
 
-	// ===============================
-	// 5️⃣ TARGET (UNTUK CEK)
-	// ===============================
+	// 5. TARGET (UNTUK CEK)
 	intent.Target = ast.Target
 
-	// ===============================
-	// 6️⃣ AKSI-SPECIFIC LOGIC
-	// ===============================
+	// 6. AKSI-SPECIFIC LOGIC
 	switch intent.Aksi {
 
-	// ===============================
-	// LIAT → LIST
-	// ===============================
 	case "liat":
 		// Handle "liat berita"
 		if intent.Objek == "berita" {
@@ -116,9 +98,6 @@ func Resolve(ast parser.AST) (Intent, error) {
 			}
 		}
 
-	// ===============================
-	// CEK → DESCRIBE (STRICT)
-	// ===============================
 	case "cek":
 		if intent.Target == "" {
 			return intent, errors.NewMissingTarget(intent.Objek)
@@ -128,9 +107,6 @@ func Resolve(ast parser.AST) (Intent, error) {
 		intent.Filter = ""
 		intent.IsDefaultFilter = false
 
-	// ===============================
-	// PINDAH → USE CONTEXT
-	// ===============================
 	case "pindah":
 		if intent.Objek != "kapal" {
 			// Pindah hanya support kapal untuk saat ini
@@ -140,9 +116,6 @@ func Resolve(ast parser.AST) (Intent, error) {
 			return intent, errors.NewMissingTarget(intent.Objek)
 		}
 
-	// ===============================
-	// BACA → LOGS
-	// ===============================
 	case "baca":
 		if intent.Objek != "jurnal" {
 			return intent, errors.NewUnknownObject()
@@ -154,9 +127,6 @@ func Resolve(ast parser.AST) (Intent, error) {
 		intent.Filter = ""
 		intent.IsDefaultFilter = false
 
-	// ===============================
-	// MASUK → EXEC
-	// ===============================
 	case "masuk":
 		// User bisa bilang "masuk [target]" (objek kosong, default kru) atau "masuk kru [target]"
 		// Tapi Parser menaruh token non-keyword ke 'Target' hanya jika aksi=masuk & token terakhir.
@@ -172,9 +142,6 @@ func Resolve(ast parser.AST) (Intent, error) {
 			return intent, errors.NewMissingTarget("kru")
 		}
 
-	// ===============================
-	// BIKIN → CREATE / RUN
-	// ===============================
 	case "bikin":
 		// bikin geladak (create ns) or bikin kru (run pod)
 		if intent.Objek != "geladak" && intent.Objek != "kru" {
@@ -184,18 +151,12 @@ func Resolve(ast parser.AST) (Intent, error) {
 			return intent, errors.NewMissingTarget(intent.Objek)
 		}
 
-	// ===============================
-	// PANTAU → TOP
-	// ===============================
 	case "pantau":
 		// pantau mesin (top node) or pantau kru (top pod)
 		if intent.Objek != "mesin" && intent.Objek != "kru" {
 			return intent, errors.NewUnknownObject()
 		}
 
-	// ===============================
-	// AKSI TIDAK DIKENAL
-	// ===============================
 	default:
 		return intent, errors.NewUnknownAction()
 	}

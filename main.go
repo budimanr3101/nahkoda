@@ -18,7 +18,6 @@ func main() {
 		return
 	}
 
-	// Check for help flags
 	if os.Args[1] == "-h" || os.Args[1] == "--help" {
 		printHelp()
 		return
@@ -29,27 +28,22 @@ func main() {
 }
 
 func executeCommand(input string) {
-	// 1️⃣ PARSER
 	ast, err := parser.Parse(input)
 	if err != nil {
 		fmt.Println("❌", err.Error())
 		os.Exit(1)
 	}
 
-	// 2️⃣ SEMANTIC (STRICT)
 	intent, err := semantic.Resolve(ast)
 	if err != nil {
-		// handle typo suggestion
 		if nErr, ok := err.(*errors.NahkodaError); ok && nErr.Suggestion != "" {
 			fmt.Printf("❓ %s\n", nErr.Message)
 			fmt.Printf("👉 Mungkin maksud Kapten: %s? (y/n): ", nErr.Suggestion)
 
 			var confirm string
-			_, _ = fmt.Scanln(&confirm) // We check error by underscore if we ignore it, or handle it.
+			_, _ = fmt.Scanln(&confirm)
 
 			if strings.ToLower(confirm) == "y" {
-				// Coba ganti kata pertama yang unknown dengan suggestion
-				// Untuk simplicity, kita ganti kata yang mengandung typo di input string
 				newInput := strings.Replace(input, ast.Unknown[0], nErr.Suggestion, 1)
 				fmt.Printf("⚓ Berlayar dengan: %s\n\n", newInput)
 				executeCommand(newInput)
@@ -61,10 +55,8 @@ func executeCommand(input string) {
 		os.Exit(1)
 	}
 
-	// 3️⃣ PLANNER
 	plan := planner.Build(intent)
 
-	// 4️⃣ EXECUTOR
 	if err := exec.Execute(plan); err != nil {
 		fmt.Println("❌", err.Error())
 		os.Exit(1)
