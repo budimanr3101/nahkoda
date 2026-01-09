@@ -77,7 +77,7 @@ mv nahkoda /usr/local/bin/
 | `nahkoda cek kru [pod]` | `kubectl describe pod [pod]` | Lihat detail/status pod |
 | `nahkoda cek mesin [node]` | `kubectl describe node [node]` | Lihat detail node |
 
-### 🛠️ Operation & Metrics (v0.10.0+)
+### 🛠️ Operation & Metrics (v0.9.5+)
 
 | Perintah Nahkoda | Ekuivalen Kubectl | Fungsi |
 | :--- | :--- | :--- |
