@@ -85,6 +85,8 @@ func Build(intent semantic.Intent) Plan {
 		plan.Operation = "get"
 		plan.Resource = "events"
 		plan.Flags = append(plan.Flags, "--sort-by=.metadata.creationTimestamp")
+	case "geladak":
+		plan.Resource = "namespace"
 	default:
 		plan.Resource = "unknown"
 		plan.Notes = append(plan.Notes, "objek tidak dikenali")
