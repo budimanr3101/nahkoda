@@ -22,6 +22,16 @@ brew tap budimanr3101/nahkoda
 brew install nahkoda
 ```
 
+### via Winget (Windows Native)
+
+```powershell
+winget install nahkoda
+```
+
+### Manual Download (Windows/Linux/macOS)
+
+Jika tidak ingin pakai Package Manager, Anda bisa langsung download file binary-nya (ekstrak `.zip` atau `.tar.gz`) di halaman **[Releases](https://github.com/budimanr3101/nahkoda/releases)**.
+
 ### via Go (Manual Build)
 
 ```bash

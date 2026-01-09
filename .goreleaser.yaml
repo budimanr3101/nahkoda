@@ -8,6 +8,7 @@ builds:
     goos:
       - linux
       - darwin
+      - windows
     goarch:
       - amd64
       - arm64
@@ -25,6 +26,9 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: zip
 
 checksum:
   name_template: 'checksums.txt'
@@ -76,3 +80,16 @@ brews:
     # Custom install
     install: |
       bin.install "nahkoda"
+
+wingets:
+  - name: nahkoda
+    publisher: budimanr3101
+    repository:
+      owner: budimanr3101
+      name: homebrew-nahkoda
+      token: "{{ .Env.GH_PAT }}"
+    directory: winget
+    homepage: "https://github.com/budimanr3101/nahkoda"
+    description: "Human-friendly Kubernetes navigator"
+    license: MIT
+
