@@ -1,0 +1,78 @@
+version: 2
+
+project_name: nahkoda
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    binary: nahkoda
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+
+archives:
+  - format: tar.gz
+    # this name template makes the archive name compatible with the default binaries
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+brews:
+  - name: nahkoda
+    
+    # Repository to push the formula to
+    repository:
+      owner: budimanr3101
+      name: homebrew-nahkoda
+      token: "{{ .Env.GH_PAT }}"
+    
+    # Template for the url which is determined by the given Token (github, gitlab or gitea)
+    url_template: "https://github.com/budimanr3101/nahkoda/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+
+    # Git author used to commit to the repository.
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
+
+    # Folder inside the repository to put the formula.
+    folder: Formula
+
+    # Homepage
+    homepage: "https://github.com/budimanr3101/nahkoda"
+
+    # Description
+    description: "Human-friendly Kubernetes navigator"
+
+    # SPDX identifier of your license.
+    license: "MIT"
+
+    # Packages to install
+    dependencies:
+      - name: kubectl
+        type: optional
+
+    # Custom install
+    install: |
+      bin.install "nahkoda"
