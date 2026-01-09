@@ -15,6 +15,32 @@ func Build(intent semantic.Intent) Plan {
 	// 1️⃣ AKSI → OPERATION
 	// ===============================
 	switch intent.Aksi {
+	// ===============================
+	// BIKIN → CREATE / RUN
+	// ===============================
+	case "bikin":
+		if intent.Objek == "geladak" {
+			plan.Operation = "create"
+			plan.Resource = "namespace"
+			// args: create namespace [target]
+		} else if intent.Objek == "kru" {
+			plan.Operation = "run"
+			plan.Resource = "" // run doesn't use "pod" resource mapping like get
+			// args: run [target] --image=nginx --restart=Never
+			plan.Flags = append(plan.Flags, "--image=nginx", "--restart=Never")
+		}
+
+	// ===============================
+	// PANTAU → TOP
+	// ===============================
+	case "pantau":
+		plan.Operation = "top"
+		if intent.Objek == "kru" {
+			plan.Resource = "pod"
+		} else if intent.Objek == "mesin" {
+			plan.Resource = "node"
+		}
+
 	case "liat":
 		plan.Operation = "get"
 	case "cek":

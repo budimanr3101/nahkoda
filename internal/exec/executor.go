@@ -25,6 +25,9 @@ func Execute(plan planner.Plan) error {
 	} else if plan.Operation == "logs" {
 		// logs specific: kubectl logs [target] [-n namespace]
 		args = append(args, "logs", plan.Target)
+	} else if plan.Operation == "run" {
+		// run specific: kubectl run [target] ... (Resource is empty)
+		args = append(args, "run", plan.Target)
 	} else {
 		// default: kubectl [operation] [resource] [target]
 		args = append(args, plan.Operation, plan.Resource)

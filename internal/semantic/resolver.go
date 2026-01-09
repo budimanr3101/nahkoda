@@ -165,6 +165,27 @@ func Resolve(ast parser.AST) (Intent, error) {
 		}
 
 	// ===============================
+	// BIKIN → CREATE / RUN
+	// ===============================
+	case "bikin":
+		// bikin geladak (create ns) or bikin kru (run pod)
+		if intent.Objek != "geladak" && intent.Objek != "kru" {
+			return intent, errors.NewUnknownObject()
+		}
+		if intent.Target == "" {
+			return intent, errors.NewMissingTarget(intent.Objek)
+		}
+
+	// ===============================
+	// PANTAU → TOP
+	// ===============================
+	case "pantau":
+		// pantau mesin (top node) or pantau kru (top pod)
+		if intent.Objek != "mesin" && intent.Objek != "kru" {
+			return intent, errors.NewUnknownObject()
+		}
+
+	// ===============================
 	// AKSI TIDAK DIKENAL
 	// ===============================
 	default:

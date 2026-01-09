@@ -25,7 +25,7 @@ func Parse(input string) (AST, error) {
 		switch tok {
 
 		// ===== AKSI =====
-		case "liat", "hapus", "cek", "pindah", "baca", "masuk":
+		case "liat", "hapus", "cek", "pindah", "baca", "masuk", "bikin", "pantau":
 			ast.Aksi = tok
 
 		// ===== OBJEK =====
@@ -54,6 +54,7 @@ func Parse(input string) (AST, error) {
 				"pindah": true,
 				"baca":   true,
 				"masuk":  true,
+				"bikin":  true,
 			}
 			if capturingActions[ast.Aksi] && ast.Target == "" {
 				ast.Target = tok
