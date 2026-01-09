@@ -77,6 +77,16 @@ mv nahkoda /usr/local/bin/
 | `nahkoda cek kru [pod]` | `kubectl describe pod [pod]` | Lihat detail/status pod |
 | `nahkoda cek mesin [node]` | `kubectl describe node [node]` | Lihat detail node |
 
+### 🛠️ Operation & Metrics (v0.10.0+)
+
+| Perintah Nahkoda | Ekuivalen Kubectl | Fungsi |
+| :--- | :--- | :--- |
+| `nahkoda bikin geladak [nama]` | `kubectl create namespace [nama]` | Buat namespace baru |
+| `nahkoda bikin kru [nama]` | `kubectl run [nama] --image=nginx...` | Buat pod baru (nginx) |
+| `nahkoda pantau kru` | `kubectl top pod` | Lihat penggunaan resource pod |
+| `nahkoda pantau mesin` | `kubectl top node` | Lihat penggunaan resource node |
+| `nahkoda hapus kru [nama]` | `kubectl delete pod [nama]` | Hapus pod |
+
 ---
 
 ## 🧠 Filosofi & Desain
@@ -90,9 +100,9 @@ Kami menggunakan metafora kapal untuk membuat Kubernetes lebih *approachable*:
 - **Jurnal** = Logs
 - **Berita** = Events
 
-### 2. **Strict tapi Ramah**
-Nahkoda didesain untuk **tidak menebak-nebak**.
-- Jika Anda mengetik `liat kruy`, Nahkoda akan error (bukan menebak `kru`).
+### 2. **Strict tapi Ramah (Typo Tolerance)**
+Nahkoda didesain untuk **tidak menebak-nebak secara liar**, tapi membantu Kapten yang sedang lelah.
+- Jika ada typo seperti `liat kur`, Nahkoda akan bertanya: *"Mungkin maksud Kapten: **kru**? (y/n)"*.
 - Jika resource tidak ada di namespace default, Nahkoda akan memberi **Tips** (*"Coba cek di geladak lain..."*).
 
 ### 3. **Native Go Implementation**
