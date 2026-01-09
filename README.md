@@ -6,6 +6,8 @@
 
 Nahkoda adalah CLI yang mengubah interaksi Kubernetes (kubectl) menjadi **Bahasa Indonesia** sehari-hari yang natural, ekspresif, dan tetap presisi. Sekarang dengan dukungan fitur **Bikin**, **Pantau**, dan **Toleransi Typo**.
 
+📖 **[Dokumentasi Lengkap (Web)](https://budimanr3101.github.io/nahkoda/)**
+
 ---
 
 ## 📥 Instalasi

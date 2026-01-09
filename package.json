@@ -1,0 +1,7 @@
+{
+    "name": "nahkoda-root",
+    "private": true,
+    "workspaces": [
+        "website"
+    ]
+}

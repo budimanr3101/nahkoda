@@ -1,0 +1,38 @@
+---
+title: Selamat Datang di Nahkoda
+description: Kubernetes dalam Bahasa Manusia.
+template: splash
+hero:
+  tagline: CLI yang mengubah interaksi Kubernetes (kubectl) menjadi Bahasa Indonesia sehari-hari yang natural.
+  image:
+    file: ../../../public/favicon.svg
+  actions:
+    - text: Mulai Berlayar
+      link: /nahkoda/instalasi/
+      icon: right-arrow
+      variant: primary
+    - text: Lihat di GitHub
+      link: https://github.com/budimanr3101/nahkoda
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Kenapa Nahkoda?
+
+Nahkoda bukan pengganti `kubectl`, tapi "penerjemah" agar perintah lebih mudah diingat dengan analogi pelayaran yang intuitif.
+
+<CardGrid stagger>
+	<Card title="Bahasa Manusia" icon="pencil">
+		Gunakan perintah seperti `liat kru rusak` daripada menghafal flag kubectl yang panjang.
+	</Card>
+	<Card title="Sangat Ringan" icon="rocket">
+		Ditulis dalam Pure Go tanpa dependensi berat. Binary hanya ~2.9MB.
+	</Card>
+	<Card title="Toleransi Typo" icon="magnifier">
+		Kapten lelah? Nahkoda paham typo seperti `kur` dan akan menyarankan `kru`.
+	</Card>
+	<Card title="Multi-Platform" icon="setting">
+		Dukungan penuh untuk macOS, Linux, dan Windows via Brew & Scoop.
+	</Card>
+</CardGrid>
