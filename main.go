@@ -108,8 +108,7 @@ func printHelp() {
 (Versi: %s, Commit: %s)
 
 Cara pakai:
-  nahkoda [kalimat perintah]
-`, Version, Version, Commit)
+  nahkoda [kalimat perintah]`, Version, Version, Commit)
 
 	fmt.Println(helpText)
 	fmt.Println(`Contoh:
@@ -121,6 +120,5 @@ Cara pakai:
   nahkoda liat berita
 
 Opsi:
-  -h, --help    Tampilkan bantuan ini
-`)
+  -h, --help    Tampilkan bantuan ini`)
 }
