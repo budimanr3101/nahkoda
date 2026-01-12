@@ -122,7 +122,10 @@ func Resolve(ast parser.AST) (Intent, error) {
 			return intent, errors.NewMissingTarget(intent.Objek)
 		}
 
-		// cek itu inspect 1 resource → tidak pakai filter
+	case "hapus":
+		if intent.Target == "" {
+			return intent, errors.NewMissingTarget(intent.Objek)
+		}
 		intent.Filter = ""
 		intent.IsDefaultFilter = false
 

@@ -48,6 +48,8 @@ func Parse(input string) (AST, error) {
 				"baca":   true,
 				"masuk":  true,
 				"bikin":  true,
+				"hapus":  true,
+				"pantau": true,
 			}
 			if capturingActions[ast.Aksi] && ast.Target == "" {
 				ast.Target = tok
