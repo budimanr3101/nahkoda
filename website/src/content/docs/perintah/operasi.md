@@ -21,6 +21,9 @@ Beberapa perintah operasi dan metrik yang didukung oleh Nahkoda.
 | `nahkoda liat penjaga` | `kubectl get daemonset -A` | List semua penjaga (daemonset) |
 | `nahkoda liat peta` | `kubectl get configmap -A` | List semua peta (configmap) |
 | `nahkoda liat sandi` | `kubectl get secret -A` | List semua sandi (secret) |
+| `nahkoda liat perbekalan kru` | *(Custom columns view)* | Intip jatah CPU/RAM kru |
+| `nahkoda baca jurnal [nama] terus` | `kubectl logs -f [nama]` | Streaming log (tail -f) |
+| `nahkoda baca jurnal [nama] kabin [c]` | `kubectl logs [nama] -c [c]` | Baca log dari kontainer spesifik |
 | `nahkoda atur armada [nama] ke [jumlah]` | `kubectl scale deployment [nama] --replicas=[jumlah]` | Atur jumlah replika armada |
 | `nahkoda tukar kru armada [nama]` | `kubectl rollout restart deployment [nama]` | Restart armada (deployment) |
 | `nahkoda cek kesehatan` | *(Multi-command aggregation)* | Audit kesehatan klaster secara menyeluruh |

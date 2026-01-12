@@ -15,6 +15,8 @@ type Intent struct {
 	Filter          string
 	Target          string
 	Nilai           string
+	SubTarget       string
+	Follow          bool
 	IsDefaultFilter bool
 }
 
@@ -48,19 +50,20 @@ func Resolve(ast parser.AST) (Intent, error) {
 	}
 	// Mapping Objek Nahkoda -> Kubernetes Standard
 	objekMap := map[string]string{
-		"kru":       "pod",
-		"mesin":     "node",
-		"kapal":     "kapal", // special handling
-		"jurnal":    "jurnal",
-		"berita":    "berita",
-		"geladak":   "namespace",
-		"armada":    "deployment",
-		"penjaga":   "daemonset",
-		"pelabuhan": "service",
-		"mercusuar": "ingress",
-		"peta":      "configmap",
-		"sandi":     "secret",
-		"kesehatan": "kesehatan",
+		"kru":        "pod",
+		"mesin":      "node",
+		"kapal":      "kapal", // special handling
+		"jurnal":     "jurnal",
+		"berita":     "berita",
+		"geladak":    "namespace",
+		"armada":     "deployment",
+		"penjaga":    "daemonset",
+		"pelabuhan":  "service",
+		"mercusuar":  "ingress",
+		"peta":       "configmap",
+		"sandi":      "secret",
+		"kesehatan":  "kesehatan",
+		"perbekalan": "perbekalan",
 	}
 	if mappedObj, ok := objekMap[ast.Objek]; ok {
 		intent.Objek = mappedObj
@@ -73,16 +76,19 @@ func Resolve(ast parser.AST) (Intent, error) {
 		intent.Lokasi = ast.Lokasi
 	} else {
 		// Default location logic
-		if intent.Aksi == "liat" {
+		// 'liat' biasanya ke semua geladak, KECUALI jika ada target spesifik
+		if intent.Aksi == "liat" && ast.Target == "" {
 			intent.Lokasi = "semua geladak"
 		} else {
 			intent.Lokasi = "geladak default"
 		}
 	}
 
-	// 5. TARGET & NILAI
+	// 5. TARGET, NILAI, SUBTARGET, FOLLOW
 	intent.Target = ast.Target
 	intent.Nilai = ast.Nilai
+	intent.SubTarget = ast.SubTarget
+	intent.Follow = ast.Follow
 
 	// 6. AKSI-SPECIFIC LOGIC
 	switch intent.Aksi {
@@ -94,8 +100,8 @@ func Resolve(ast parser.AST) (Intent, error) {
 			intent.Filter = ""
 			intent.IsDefaultFilter = false
 			break // Exit case "liat"
-		} else if intent.Objek == "kapal" {
-			// Already handled in planner
+		} else if intent.Objek == "perbekalan" {
+			// perbekalan doesn't mandatory need target, can list all
 			intent.Filter = ""
 			intent.IsDefaultFilter = false
 			break
@@ -181,6 +187,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 			"ingress":    true,
 			"configmap":  true,
 			"secret":     true,
+			"perbekalan": true,
 		}
 		if !allowedBikin[intent.Objek] {
 			return intent, errors.NewUnknownObject()

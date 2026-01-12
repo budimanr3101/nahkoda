@@ -41,6 +41,12 @@ func Build(intent semantic.Intent) Plan {
 		plan.Operation = "config"
 	case "baca":
 		plan.Operation = "logs"
+		if intent.Follow {
+			plan.Flags = append(plan.Flags, "-f")
+		}
+		if intent.SubTarget != "" {
+			plan.Flags = append(plan.Flags, "-c", intent.SubTarget)
+		}
 	case "atur":
 		plan.Operation = "scale"
 	case "masuk":
@@ -75,6 +81,30 @@ func Build(intent semantic.Intent) Plan {
 		plan.Resource = intent.Objek
 		if intent.Aksi == "cek" && intent.Objek == "kesehatan" {
 			plan.Operation = "audit"
+		}
+		if intent.Aksi == "liat" && intent.Objek == "perbekalan" {
+			// Perbekalan (Resource Management)
+			plan.Operation = "get"
+			// Mapping Nilai (resource type) -> Kubernetes Standard
+			resMap := map[string]string{
+				"kru":     "pod",
+				"armada":  "deployment",
+				"penjaga": "daemonset",
+			}
+			res := "pod" // default
+			if r, ok := resMap[intent.Nilai]; ok {
+				res = r
+			}
+			plan.Resource = res
+
+			jsonPath := ""
+			if res == "pod" {
+				jsonPath = "custom-columns=NAME:.metadata.name,CONTAINERS:.spec.containers[*].name,CPU_REQ:.spec.containers[*].resources.requests.cpu,MEM_REQ:.spec.containers[*].resources.requests.memory,CPU_LIM:.spec.containers[*].resources.limits.cpu,MEM_LIM:.spec.containers[*].resources.limits.memory"
+			} else {
+				// deployment/daemonset have resources in template
+				jsonPath = "custom-columns=NAME:.metadata.name,CONTAINERS:.spec.template.spec.containers[*].name,CPU_REQ:.spec.template.spec.containers[*].resources.requests.cpu,MEM_REQ:.spec.template.spec.containers[*].resources.requests.memory,CPU_LIM:.spec.template.spec.containers[*].resources.limits.cpu,MEM_LIM:.spec.template.spec.containers[*].resources.limits.memory"
+			}
+			plan.Flags = append(plan.Flags, "-o", jsonPath)
 		}
 	}
 

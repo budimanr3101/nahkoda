@@ -85,6 +85,33 @@ func TestResolve_ValidIntents(t *testing.T) {
 			wantErr:    false,
 		},
 		{
+			name: "baca jurnal - follow and container",
+			ast: parser.AST{
+				Aksi:      "baca",
+				Objek:     "jurnal",
+				Target:    "app-pod",
+				Follow:    true,
+				SubTarget: "sidecar",
+			},
+			wantAksi:   "baca",
+			wantObjek:  "jurnal",
+			wantLokasi: "geladak default",
+			wantErr:    false,
+		},
+		{
+			name: "liat perbekalan",
+			ast: parser.AST{
+				Aksi:   "liat",
+				Objek:  "perbekalan",
+				Nilai:  "kru",
+				Target: "my-pod",
+			},
+			wantAksi:   "liat",
+			wantObjek:  "perbekalan",
+			wantLokasi: "geladak default",
+			wantErr:    false,
+		},
+		{
 			name: "atur armada - scale",
 			ast: parser.AST{
 				Aksi:   "atur",
@@ -240,16 +267,25 @@ func TestResolve_DefaultLocationLogic(t *testing.T) {
 	tests := []struct {
 		name       string
 		aksi       string
+		target     string
 		wantLokasi string
 	}{
 		{
-			name:       "liat defaults to all namespaces",
+			name:       "liat defaults to all namespaces when no target",
 			aksi:       "liat",
+			target:     "",
 			wantLokasi: "semua geladak",
+		},
+		{
+			name:       "liat defaults to default namespace when target is specified",
+			aksi:       "liat",
+			target:     "test-pod",
+			wantLokasi: "geladak default",
 		},
 		{
 			name:       "cek defaults to default namespace",
 			aksi:       "cek",
+			target:     "test-pod",
 			wantLokasi: "geladak default",
 		},
 	}
@@ -259,7 +295,7 @@ func TestResolve_DefaultLocationLogic(t *testing.T) {
 			ast := parser.AST{
 				Aksi:   tt.aksi,
 				Objek:  "kru",
-				Target: "test-pod",
+				Target: tt.target,
 			}
 
 			intent, err := Resolve(ast)

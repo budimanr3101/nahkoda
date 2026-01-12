@@ -7,13 +7,15 @@ import (
 )
 
 type AST struct {
-	Aksi    string
-	Objek   string
-	Lokasi  string
-	Kondisi string
-	Target  string
-	Nilai   string
-	Unknown []string
+	Aksi      string
+	Objek     string
+	Lokasi    string
+	Kondisi   string
+	Target    string
+	Nilai     string
+	SubTarget string
+	Follow    bool
+	Unknown   []string
 }
 
 func Parse(input string) (AST, error) {
@@ -27,8 +29,16 @@ func Parse(input string) (AST, error) {
 		case "liat", "hapus", "cek", "pindah", "baca", "masuk", "bikin", "pantau", "atur", "tukar":
 			ast.Aksi = tok
 
-		case "kru", "mesin", "kapal", "jurnal", "berita", "geladak", "armada", "penjaga", "pelabuhan", "mercusuar", "peta", "sandi", "kesehatan":
-			ast.Objek = tok
+		case "kru", "mesin", "kapal", "jurnal", "berita", "geladak", "armada", "penjaga", "pelabuhan", "mercusuar", "peta", "sandi", "kesehatan", "perbekalan":
+			if ast.Objek == "perbekalan" {
+				// perbekalan [objek] -> capture the [objek] as a special sub-object
+				// here we can reuse SubTarget or Nilai, but let's add a new field if needed
+				// For now, let's use ast.Target as the resource type if it's empty
+				// actually, let's just use Nilai to store the resource type for perbekalan
+				ast.Nilai = tok
+			} else {
+				ast.Objek = tok
+			}
 
 		case "rusak", "bocor", "sehat", "terdampar", "siap", "mogok":
 			ast.Kondisi = tok
@@ -49,9 +59,21 @@ func Parse(input string) (AST, error) {
 				ast.Unknown = append(ast.Unknown, tok)
 			}
 
+		case "terus":
+			ast.Follow = true
+
+		case "kabin":
+			if i+1 < len(tokens) {
+				ast.SubTarget = tokens[i+1]
+				i += 1
+			} else {
+				ast.Unknown = append(ast.Unknown, tok)
+			}
+
 		default:
 			// khusus untuk aksi "cek", "pindah", "baca", "masuk", token terakhir dianggap target
 			capturingActions := map[string]bool{
+				"liat":   true,
 				"cek":    true,
 				"pindah": true,
 				"baca":   true,

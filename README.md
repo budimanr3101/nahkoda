@@ -1,13 +1,14 @@
-# ⚓ Nahkoda v1.1.1 ⚓🚀
+# ⚓ Nahkoda v1.2.0 ⚓🚀
 
 > **Kubernetes dalam Bahasa Manusia.**
 
 Nahkoda adalah CLI yang menerjemahkan perintah teks sederhana menjadi instruksi `kubectl`. Didesain untuk mereka yang ingin mengelola klaster Kubernetes dengan terminologi nautikal yang intuitif.
 
-### ✨ Fitur Unggulan v1.1.1
+### ✨ Fitur Unggulan v1.2.0
+- **Aksi Diagnostik Berkelas**: Streaming log dengan `terus` dan pilih kontainer dengan `kabin`.
+- **Manajemen Perbekalan**: Intip jatah CPU/Memory kru atau armada dengan `liat perbekalan`.
 - **Mode Interaktif (REPL)**: Jalankan perintah beruntun tanpa prefix `nahkoda`.
 - **Audit Kesehatan**: Scan klaster dan temukan masalah dalam satu perintah `cek kesehatan`.
-- **Tukar Kru (Restart)**: Segarkan armada atau penjaga dengan perintah `tukar kru`.
 
 📖 **[Dokumentasi Lengkap (Web)](https://budimanr3101.github.io/nahkoda/)**
 
@@ -83,6 +84,9 @@ Nahkoda menggunakan metafora pelayaran untuk mempermudah pemahaman resource Kube
 | :--- | :--- | :--- |
 | `nahkoda liat kapal` | `kubectl config get-contexts` | List semua cluster/context |
 | `nahkoda pindah kapal [nama]` | `kubectl config use-context [nama]` | Pindah cluster aktif |
+| `nahkoda liat perbekalan kru [nama]` | *(Custom resources view)* | Intip jatah CPU/RAM kru |
+| `nahkoda baca jurnal [nama] terus` | `kubectl logs -f [nama]` | Streaming log (tail -f) |
+| `nahkoda baca jurnal [nama] kabin [c]`| `kubectl logs [nama] -c [c]`| Baca log dari kontainer spesifik |
 | `nahkoda atur armada [nama] ke [jumlah]` | `kubectl scale deployment [nama] --replicas=[jumlah]` | Atur jumlah replika deployment |
 | `nahkoda tukar kru armada [nama]` | `kubectl rollout restart deployment [nama]` | Restart armada (deployment) |
 | `nahkoda cek kesehatan` | *(Multi-command aggregation)* | Audit kesehatan klaster secara menyeluruh |
