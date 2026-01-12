@@ -1,16 +1,18 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"strings"
 
+	"nahkoda/internal/completer"
 	"nahkoda/internal/errors"
 	"nahkoda/internal/exec"
 	"nahkoda/internal/parser"
 	"nahkoda/internal/planner"
 	"nahkoda/internal/semantic"
+
+	"github.com/c-bata/go-prompt"
 )
 
 func main() {
@@ -25,40 +27,52 @@ func main() {
 	}
 
 	input := strings.Join(os.Args[1:], " ")
-	executeCommand(input)
-}
-
-func runREPL() {
-	fmt.Println("⚓ Selamat datang di Geladak Nahkoda Interaktif!")
-	fmt.Println("   Ketik perintah Anda (contoh: 'liat kru') atau 'keluar' untuk mengakhiri.")
-	fmt.Println("")
-
-	scanner := bufio.NewScanner(os.Stdin)
-	for {
-		fmt.Print("⚓ > ")
-		if !scanner.Scan() {
-			break
-		}
-
-		input := strings.TrimSpace(scanner.Text())
-		if input == "" {
-			continue
-		}
-
-		if input == "keluar" || input == "exit" || input == "quit" {
-			fmt.Println("⚓ Kapal sedang membuang sauh. Sampai jumpa, Kapten!")
-			break
-		}
-
-		executeCommand(input)
+	if err := processCommand(input); err != nil {
+		fmt.Println("❌", err.Error())
+		os.Exit(1)
 	}
 }
 
+func runREPL() {
+	fmt.Println("⚓ Selamat datang di Anjungan Pintar Nahkoda!")
+	fmt.Println("   Ketik perintah Anda. Gunakan TAB untuk saran sakti.")
+	fmt.Println("   Ketik 'keluar' untuk mengakhiri pelayaran.")
+	fmt.Println("")
+
+	p := prompt.New(
+		executeCommand,
+		completer.Completer,
+		prompt.OptionPrefix("⚓ > "),
+		prompt.OptionTitle("Nahkoda Anjungan Pintar"),
+		prompt.OptionSuggestionBGColor(prompt.DarkGray),
+		prompt.OptionSelectedSuggestionBGColor(prompt.Blue),
+		prompt.OptionDescriptionBGColor(prompt.LightGray),
+		prompt.OptionSelectedDescriptionBGColor(prompt.Cyan),
+	)
+	p.Run()
+}
+
 func executeCommand(input string) {
+	input = strings.TrimSpace(input)
+	if input == "" {
+		return
+	}
+
+	if input == "keluar" || input == "exit" || input == "quit" {
+		fmt.Println("⚓ Kapal sedang membuang sauh. Sampai jumpa, Kapten!")
+		os.Exit(0)
+	}
+
+	if err := processCommand(input); err != nil {
+		fmt.Println("❌", err.Error())
+		// Stay in REPL, do not os.Exit(1)
+	}
+}
+
+func processCommand(input string) error {
 	ast, err := parser.Parse(input)
 	if err != nil {
-		fmt.Println("❌", err.Error())
-		os.Exit(1)
+		return err
 	}
 
 	intent, err := semantic.Resolve(ast)
@@ -73,21 +87,14 @@ func executeCommand(input string) {
 			if strings.ToLower(confirm) == "y" {
 				newInput := strings.Replace(input, ast.Unknown[0], nErr.Suggestion, 1)
 				fmt.Printf("⚓ Berlayar dengan: %s\n\n", newInput)
-				executeCommand(newInput)
-				return
+				return processCommand(newInput)
 			}
 		}
-
-		fmt.Println("❌", err.Error())
-		os.Exit(1)
+		return err
 	}
 
 	plan := planner.Build(intent)
-
-	if err := exec.Execute(plan); err != nil {
-		fmt.Println("❌", err.Error())
-		os.Exit(1)
-	}
+	return exec.Execute(plan)
 }
 
 func printHelp() {

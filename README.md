@@ -1,14 +1,14 @@
-# ⚓ Nahkoda v1.2.0 ⚓🚀
+# ⚓ Nahkoda v1.3.1 ⚓🚀✨
 
 > **Kubernetes dalam Bahasa Manusia.**
 
 Nahkoda adalah CLI yang menerjemahkan perintah teks sederhana menjadi instruksi `kubectl`. Didesain untuk mereka yang ingin mengelola klaster Kubernetes dengan terminologi nautikal yang intuitif.
 
-### ✨ Fitur Unggulan v1.2.0
+### ✨ Fitur Unggulan v1.3.0
+- **Anjungan Pintar (Auto-Suggestion)**: Saran perintah real-time dan autocomplete untuk nama kru/geladak di mode REPL.
 - **Aksi Diagnostik Berkelas**: Streaming log dengan `terus` dan pilih kontainer dengan `kabin`.
 - **Manajemen Perbekalan**: Intip jatah CPU/Memory kru atau armada dengan `liat perbekalan`.
 - **Mode Interaktif (REPL)**: Jalankan perintah beruntun tanpa prefix `nahkoda`.
-- **Audit Kesehatan**: Scan klaster dan temukan masalah dalam satu perintah `cek kesehatan`.
 
 📖 **[Dokumentasi Lengkap (Web)](https://budimanr3101.github.io/nahkoda/)**
 
