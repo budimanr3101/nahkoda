@@ -112,8 +112,7 @@ Cara pakai:
 `, Version, Version, Commit)
 
 	fmt.Println(helpText)
-	fmt.Println(`
-Contoh:
+	fmt.Println(`Contoh:
   nahkoda liat kru
   nahkoda liat kru rusak
   nahkoda liat kru di geladak auth
