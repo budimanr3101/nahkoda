@@ -23,6 +23,10 @@ export default defineConfig({
 					autogenerate: { directory: 'teknis' },
 				},
 				{
+					label: 'Objek & Filosofi',
+					autogenerate: { directory: 'objek' },
+				},
+				{
 					label: 'Panduan Perintah',
 					items: [
 						{ label: 'Navigasi (Context)', slug: 'perintah/navigasi' },
