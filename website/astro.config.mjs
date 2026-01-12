@@ -19,17 +19,18 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Dokumentasi Teknis',
+					autogenerate: { directory: 'teknis' },
+				},
+				{
 					label: 'Panduan Perintah',
 					items: [
 						{ label: 'Navigasi (Context)', slug: 'perintah/navigasi' },
 						{ label: 'Monitoring (Pods/Nodes)', slug: 'perintah/monitoring' },
 						{ label: 'Debugging', slug: 'perintah/debugging' },
 						{ label: 'Operasi & Metrik', slug: 'perintah/operasi' },
+						{ label: 'Sistem Error', slug: 'perintah/error-handling' },
 					],
-				},
-				{
-					label: 'Dokumentasi Teknis',
-					autogenerate: { directory: 'teknis' },
 				},
 			],
 		}),
