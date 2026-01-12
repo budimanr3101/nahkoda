@@ -10,6 +10,9 @@ export default defineConfig({
 		starlight({
 			title: 'Nahkoda',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/budimanr3101/nahkoda' }],
+			components: {
+				Sidebar: './src/components/Sidebar.astro',
+			},
 			sidebar: [
 				{
 					label: 'Mulai Dari Sini',

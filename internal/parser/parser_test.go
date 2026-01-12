@@ -25,6 +25,26 @@ func TestParse(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:  "Tukar armada backend",
+			input: "tukar kru armada backend",
+			want: AST{
+				Aksi:   "tukar",
+				Objek:  "armada",
+				Target: "backend",
+			},
+			wantErr: false,
+		},
+		{
+			name:  "Tukar penjaga logging",
+			input: "tukar penjaga logging",
+			want: AST{
+				Aksi:   "tukar",
+				Objek:  "penjaga",
+				Target: "logging",
+			},
+			wantErr: false,
+		},
+		{
 			name:  "List pod with condition",
 			input: "liat kru rusak",
 			want: AST{

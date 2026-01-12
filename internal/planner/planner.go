@@ -45,6 +45,8 @@ func Build(intent semantic.Intent) Plan {
 		plan.Operation = "scale"
 	case "masuk":
 		plan.Operation = "exec"
+	case "tukar":
+		plan.Operation = "rollout restart"
 	default:
 		plan.Operation = "unknown"
 		plan.Notes = append(plan.Notes, "aksi tidak dikenali")

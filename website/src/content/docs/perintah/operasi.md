@@ -22,6 +22,7 @@ Beberapa perintah operasi dan metrik yang didukung oleh Nahkoda.
 | `nahkoda liat peta` | `kubectl get configmap -A` | List semua peta (configmap) |
 | `nahkoda liat sandi` | `kubectl get secret -A` | List semua sandi (secret) |
 | `nahkoda atur armada [nama] ke [jumlah]` | `kubectl scale deployment [nama] --replicas=[jumlah]` | Atur jumlah replika armada |
+| `nahkoda tukar kru armada [nama]` | `kubectl rollout restart deployment [nama]` | Restart armada (deployment) |
 | `nahkoda cek kesehatan` | *(Multi-command aggregation)* | Audit kesehatan klaster secara menyeluruh |
 | `nahkoda bikin geladak [nama]` | `kubectl create namespace [nama]` | Buat namespace baru |
 | `nahkoda bikin kru [nama]` | `kubectl run [nama] --image=nginx...` | Buat pod baru (nginx) |

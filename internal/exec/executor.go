@@ -28,7 +28,9 @@ func Execute(plan planner.Plan) error {
 	} else if plan.Operation == "run" {
 		args = append(args, "run", plan.Target)
 	} else {
-		args = append(args, plan.Operation, plan.Resource)
+		ops := strings.Fields(plan.Operation)
+		args = append(args, ops...)
+		args = append(args, plan.Resource)
 		if plan.Target != "" {
 			args = append(args, plan.Target)
 		}

@@ -24,7 +24,7 @@ func Parse(input string) (AST, error) {
 		tok := tokens[i]
 
 		switch tok {
-		case "liat", "hapus", "cek", "pindah", "baca", "masuk", "bikin", "pantau", "atur":
+		case "liat", "hapus", "cek", "pindah", "baca", "masuk", "bikin", "pantau", "atur", "tukar":
 			ast.Aksi = tok
 
 		case "kru", "mesin", "kapal", "jurnal", "berita", "geladak", "armada", "penjaga", "pelabuhan", "mercusuar", "peta", "sandi", "kesehatan":
@@ -60,6 +60,7 @@ func Parse(input string) (AST, error) {
 				"hapus":  true,
 				"pantau": true,
 				"atur":   true,
+				"tukar":  true,
 			}
 			if capturingActions[ast.Aksi] && ast.Target == "" {
 				ast.Target = tok

@@ -1,0 +1,69 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import Default from '@astrojs/starlight/components/Sidebar.astro';
+---
+
+<div class="sidebar-container">
+  <div class="sidebar-content">
+    <Default {...Astro.props} />
+  </div>
+  
+  <div class="version-footer">
+    <div class="version-content">
+      <span class="anchor">⚓</span>
+      <span class="version-text">Nahkoda v1.1.1</span>
+      <span class="status-badge">Terbaru</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .sidebar-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    /* Ensure the container itself doesn't scroll, only the content div */
+    overflow: hidden;
+  }
+
+  .sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .version-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--sl-color-hairline);
+    background-color: var(--sl-color-bg-sidebar);
+    color: var(--sl-color-text-muted);
+    font-size: var(--sl-text-xs);
+    /* This pins it to the bottom of the flex container */
+    margin-top: auto;
+    z-index: 10;
+  }
+
+  .version-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .anchor {
+    font-size: 1rem;
+  }
+
+  .version-text {
+    font-weight: 600;
+    color: var(--sl-color-text);
+  }
+
+  .status-badge {
+    background-color: var(--sl-color-green-low);
+    color: var(--sl-color-green-high);
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+</style>

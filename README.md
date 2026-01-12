@@ -1,14 +1,13 @@
-[![Strict CI](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml/badge.svg)](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml)
-
-# ⚓ Nahkoda v1.1.0 ⚓🚀
+# ⚓ Nahkoda v1.1.1 ⚓🚀
 
 > **Kubernetes dalam Bahasa Manusia.**
 
 Nahkoda adalah CLI yang menerjemahkan perintah teks sederhana menjadi instruksi `kubectl`. Didesain untuk mereka yang ingin mengelola klaster Kubernetes dengan terminologi nautikal yang intuitif.
 
-### ✨ Fitur Unggulan v1.1.0
+### ✨ Fitur Unggulan v1.1.1
 - **Mode Interaktif (REPL)**: Jalankan perintah beruntun tanpa prefix `nahkoda`.
 - **Audit Kesehatan**: Scan klaster dan temukan masalah dalam satu perintah `cek kesehatan`.
+- **Tukar Kru (Restart)**: Segarkan armada atau penjaga dengan perintah `tukar kru`.
 
 📖 **[Dokumentasi Lengkap (Web)](https://budimanr3101.github.io/nahkoda/)**
 
@@ -85,6 +84,7 @@ Nahkoda menggunakan metafora pelayaran untuk mempermudah pemahaman resource Kube
 | `nahkoda liat kapal` | `kubectl config get-contexts` | List semua cluster/context |
 | `nahkoda pindah kapal [nama]` | `kubectl config use-context [nama]` | Pindah cluster aktif |
 | `nahkoda atur armada [nama] ke [jumlah]` | `kubectl scale deployment [nama] --replicas=[jumlah]` | Atur jumlah replika deployment |
+| `nahkoda tukar kru armada [nama]` | `kubectl rollout restart deployment [nama]` | Restart armada (deployment) |
 | `nahkoda cek kesehatan` | *(Multi-command aggregation)* | Audit kesehatan klaster secara menyeluruh |
 
 ### 📦 Monitoring (Pods & Nodes)

@@ -97,6 +97,13 @@ func TestResolve_ValidIntents(t *testing.T) {
 			wantLokasi: "geladak default",
 			wantErr:    false,
 		},
+		{
+			name:      "tukar kru armada backend",
+			ast:       parser.AST{Aksi: "tukar", Objek: "armada", Target: "backend"},
+			wantAksi:  "tukar", // will be mapped to rollout restart in planner
+			wantObjek: "deployment",
+			wantErr:   false,
+		},
 	}
 
 	for _, tt := range tests {

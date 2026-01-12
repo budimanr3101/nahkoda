@@ -207,6 +207,15 @@ func Resolve(ast parser.AST) (Intent, error) {
 			return intent, errors.New(errors.ErrInvalidSyntax, "jumlah replika harus ditentukan (contoh: ke 5)")
 		}
 
+	case "tukar":
+		// rollout restart
+		if intent.Objek != "deployment" && intent.Objek != "daemonset" {
+			return intent, errors.NewUnknownObject()
+		}
+		if intent.Target == "" {
+			return intent, errors.NewMissingTarget(intent.Objek)
+		}
+
 	default:
 		return intent, errors.NewUnknownAction()
 	}
