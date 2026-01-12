@@ -15,6 +15,10 @@ import (
 )
 
 func Execute(plan planner.Plan) error {
+	if plan.Operation == "audit" {
+		return runAudit()
+	}
+
 	args := []string{}
 
 	if plan.Operation == "exec" {
@@ -132,6 +136,70 @@ func Execute(plan planner.Plan) error {
 		checkAndPrintHint(stderrBuf.String(), plan)
 		return errors.NewKubectlFailed(err).WithContext("command", strings.Join(cmd.Args, " "))
 	}
+	return nil
+}
+
+func runAudit() error {
+	fmt.Println("🩺 Memulai Audit Kesehatan Kapal (Health Audit)...")
+	fmt.Println("=================================================")
+
+	// 1. Kru Bermasalah
+	fmt.Print("📋 Memeriksa Kru (Pods)... ")
+	cmdPods := exec.Command("kubectl", "get", "pods", "-A", "--field-selector", "status.phase!=Running,status.phase!=Succeeded")
+	outPods, _ := cmdPods.Output()
+	linesPods := strings.Split(strings.TrimSpace(string(outPods)), "\n")
+	if len(linesPods) <= 1 {
+		fmt.Println("✅ Semua kru sehat.")
+	} else {
+		fmt.Printf("⚠️  Ditemukan %d kru bermasalah:\n", len(linesPods)-1)
+		fmt.Println(string(outPods))
+	}
+
+	// 2. Mesin Mogok
+	fmt.Print("⚙️  Memeriksa Mesin (Nodes)... ")
+	cmdNodes := exec.Command("kubectl", "get", "nodes")
+	outNodes, _ := cmdNodes.Output()
+	if strings.Contains(string(outNodes), "NotReady") {
+		fmt.Println("⚠️  Ada mesin yang mogok (NotReady):")
+		// Grep NotReady lines
+		lines := strings.Split(string(outNodes), "\n")
+		for _, l := range lines {
+			if strings.Contains(l, "NotReady") {
+				fmt.Println("   - " + l)
+			}
+		}
+	} else {
+		fmt.Println("✅ Semua mesin siap berlayar.")
+	}
+
+	// 3. Berita Buruk (Events)
+	fmt.Print("📢 Memeriksa Berita Buruk (Warning Events)... ")
+	cmdEvents := exec.Command("kubectl", "get", "events", "-A", "--field-selector", "type=Warning", "--sort-by=.metadata.creationTimestamp")
+	outEvents, _ := cmdEvents.Output()
+	linesEvents := strings.Split(strings.TrimSpace(string(outEvents)), "\n")
+	if len(linesEvents) <= 1 {
+		fmt.Println("✅ Tidak ada berita buruk baru.")
+	} else {
+		fmt.Printf("⚠️  Ditemukan %d peringatan terbaru:\n", len(linesEvents)-1)
+		// Show last 3 events
+		slice := linesEvents
+		if len(slice) > 4 {
+			slice = slice[len(slice)-3:]
+		}
+		for _, e := range slice {
+			fmt.Println("   - " + e)
+		}
+	}
+
+	// 4. Beban (optional)
+	fmt.Print("📊 Memeriksa Beban (Metrics)... ")
+	cmdTop := exec.Command("kubectl", "top", "nodes")
+	if err := cmdTop.Run(); err != nil {
+		fmt.Println("⚠️  Layanan metrics tidak tersedia.")
+	}
+
+	fmt.Println("=================================================")
+	fmt.Println("⚓ Audit selesai. Tetap waspada, Kapten!")
 	return nil
 }
 

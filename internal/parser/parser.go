@@ -27,7 +27,7 @@ func Parse(input string) (AST, error) {
 		case "liat", "hapus", "cek", "pindah", "baca", "masuk", "bikin", "pantau", "atur":
 			ast.Aksi = tok
 
-		case "kru", "mesin", "kapal", "jurnal", "berita", "geladak", "armada", "penjaga", "pelabuhan", "mercusuar", "peta", "sandi":
+		case "kru", "mesin", "kapal", "jurnal", "berita", "geladak", "armada", "penjaga", "pelabuhan", "mercusuar", "peta", "sandi", "kesehatan":
 			ast.Objek = tok
 
 		case "rusak", "bocor", "sehat", "terdampar", "siap", "mogok":

@@ -69,8 +69,11 @@ func Build(intent semantic.Intent) Plan {
 		plan.Resource = "events"
 		plan.Flags = append(plan.Flags, "--sort-by=.metadata.creationTimestamp")
 	default:
-		// mapping sisa objek (pod, node, deployment, service, ingress, configmap, secret, daemonset, namespace)
+		// mapping sisa objek (pod, node, deployment, service, ingress, configmap, secret, daemonset, namespace, kesehatan)
 		plan.Resource = intent.Objek
+		if intent.Aksi == "cek" && intent.Objek == "kesehatan" {
+			plan.Operation = "audit"
+		}
 	}
 
 	// 3. LOKASI → NAMESPACE

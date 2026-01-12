@@ -60,6 +60,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 		"mercusuar": "ingress",
 		"peta":      "configmap",
 		"sandi":     "secret",
+		"kesehatan": "kesehatan",
 	}
 	if mappedObj, ok := objekMap[ast.Objek]; ok {
 		intent.Objek = mappedObj
@@ -120,6 +121,10 @@ func Resolve(ast parser.AST) (Intent, error) {
 		}
 
 	case "cek":
+		if intent.Objek == "kesehatan" {
+			// cek kesehatan doesn't need target
+			break
+		}
 		if intent.Target == "" {
 			return intent, errors.NewMissingTarget(intent.Objek)
 		}

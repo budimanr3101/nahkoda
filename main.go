@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -14,7 +15,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		printHelp()
+		runREPL()
 		return
 	}
 
@@ -25,6 +26,32 @@ func main() {
 
 	input := strings.Join(os.Args[1:], " ")
 	executeCommand(input)
+}
+
+func runREPL() {
+	fmt.Println("⚓ Selamat datang di Geladak Nahkoda Interaktif!")
+	fmt.Println("   Ketik perintah Anda (contoh: 'liat kru') atau 'keluar' untuk mengakhiri.")
+	fmt.Println("")
+
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Print("⚓ > ")
+		if !scanner.Scan() {
+			break
+		}
+
+		input := strings.TrimSpace(scanner.Text())
+		if input == "" {
+			continue
+		}
+
+		if input == "keluar" || input == "exit" || input == "quit" {
+			fmt.Println("⚓ Kapal sedang membuang sauh. Sampai jumpa, Kapten!")
+			break
+		}
+
+		executeCommand(input)
+	}
 }
 
 func executeCommand(input string) {
