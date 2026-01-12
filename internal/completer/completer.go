@@ -78,38 +78,106 @@ func Completer(d prompt.Document) []prompt.Suggest {
 
 // GetSuggestions is a testable pure function for command completion
 func GetSuggestions(textBefore, wordBefore string) []prompt.Suggest {
-	if wordBefore == "" {
-		// If at start or after a space, suggest based on context
-		args := strings.Fields(textBefore)
-		if len(args) == 0 {
-			return actions
-		}
+	args := strings.Fields(textBefore)
 
-		lastWord := args[len(args)-1]
-		if isAction(lastWord) {
-			return objects
-		}
-
-		if isObject(lastWord) {
-			return keywords
-		}
-
-		if lastWord == "di" {
-			return []prompt.Suggest{{Text: "geladak", Description: "Namespace (Wajib)"}}
-		}
-
-		if lastWord == "geladak" {
-			return getDynamicNamespaces()
-		}
-
-		if (lastWord == "kru" || lastWord == "jurnal" || lastWord == "cek" || lastWord == "masuk") && !isAction(lastWord) {
-			return getDynamicPods()
-		}
-
-		return keywords
+	// Case 1: Start of command
+	if len(args) == 0 {
+		return actions
 	}
 
-	return prompt.FilterHasPrefix(getAllSuggestions(), wordBefore, true)
+	// Case 2: Handing specific word progress (wordBefore is not empty)
+	if wordBefore != "" {
+		hasAction := false
+		for _, a := range args {
+			if isAction(a) && a != wordBefore {
+				hasAction = true
+				break
+			}
+		}
+
+		var all []prompt.Suggest
+		if !hasAction {
+			all = append(all, actions...)
+		}
+		all = append(all, objects...)
+		all = append(all, keywords...)
+
+		// If typing something that might be a resource name (pod/ns), add dynamic ones to filter
+		if len(args) > 1 {
+			lastArg := args[len(args)-2]
+			if lastArg == "geladak" {
+				all = append(all, getDynamicNamespaces()...)
+			} else if lastArg == "kru" || lastArg == "jurnal" {
+				all = append(all, getDynamicPods()...)
+			} else if lastArg == "armada" {
+				all = append(all, getDynamicDeployments()...)
+			}
+		}
+		return prompt.FilterHasPrefix(all, wordBefore, true)
+	}
+
+	// Case 3: Word is finished (wordBefore is empty), deciding NEXT word based on context
+	lastWord := args[len(args)-1]
+
+	// 3.1 Adaptive Action -> Object Mapping
+	switch lastWord {
+	case "baca":
+		return []prompt.Suggest{{Text: "jurnal", Description: "Log harian (logs)"}}
+	case "masuk":
+		return []prompt.Suggest{{Text: "kru", Description: "Pod (exec)"}}
+	case "atur":
+		return []prompt.Suggest{{Text: "armada", Description: "Deployment (scale)"}}
+	case "tukar":
+		return []prompt.Suggest{
+			{Text: "kru", Description: "Pod (rollout)"},
+			{Text: "armada", Description: "Deployment (rollout)"},
+		}
+	}
+
+	// 3.2 Action -> General Objects
+	if isAction(lastWord) {
+		return objects
+	}
+
+	// 3.3 Grammar Sequence: di -> geladak
+	if lastWord == "di" {
+		return []prompt.Suggest{{Text: "geladak", Description: "Namespace (Wajib)"}}
+	}
+
+	// 3.4 Resource Discovery (Dynamic) + Keywords
+	var res []prompt.Suggest
+	if lastWord == "geladak" {
+		res = getDynamicNamespaces()
+	} else if lastWord == "kru" || lastWord == "jurnal" {
+		res = getDynamicPods()
+	} else if lastWord == "armada" {
+		res = getDynamicDeployments()
+	} else if lastWord == "pelabuhan" {
+		res = getDynamicServices()
+	}
+
+	// Case 3.5: If we have an object or a resource name, suggest keywords as well
+	if isObject(lastWord) || len(res) > 0 || (!isAction(lastWord) && !isKeyword(lastWord)) {
+		hasDi := false
+		for _, a := range args {
+			if a == "di" {
+				hasDi = true
+				break
+			}
+		}
+
+		if !hasDi {
+			res = append(res, keywords...)
+		} else {
+			res = append(res, []prompt.Suggest{
+				{Text: "terus", Description: "Follow logs (-f)"},
+				{Text: "kabin", Description: "Container spesifik (-c)"},
+			}...)
+		}
+		return res
+	}
+
+	return res
 }
 
 func getDynamicNamespaces() []prompt.Suggest {
@@ -142,12 +210,49 @@ func getDynamicPods() []prompt.Suggest {
 	return suggestions
 }
 
+func getDynamicDeployments() []prompt.Suggest {
+	out, err := exec.Command("kubectl", "get", "deployments", "-A", "-o", "jsonpath={.items[*].metadata.name}").Output()
+	if err != nil {
+		return nil
+	}
+
+	deployList := strings.Fields(string(out))
+	var suggestions []prompt.Suggest
+	for _, d := range deployList {
+		suggestions = append(suggestions, prompt.Suggest{Text: d, Description: "Armada (Deployment)"})
+	}
+	return suggestions
+}
+
+func getDynamicServices() []prompt.Suggest {
+	out, err := exec.Command("kubectl", "get", "svc", "-A", "-o", "jsonpath={.items[*].metadata.name}").Output()
+	if err != nil {
+		return nil
+	}
+
+	svcList := strings.Fields(string(out))
+	var suggestions []prompt.Suggest
+	for _, s := range svcList {
+		suggestions = append(suggestions, prompt.Suggest{Text: s, Description: "Pelabuhan (Service)"})
+	}
+	return suggestions
+}
+
 func isAction(word string) bool {
 	return actionNames[word]
 }
 
 func isObject(word string) bool {
 	return objectNames[word]
+}
+
+func isKeyword(word string) bool {
+	for _, k := range keywords {
+		if k.Text == word {
+			return true
+		}
+	}
+	return false
 }
 
 func getAllSuggestions() []prompt.Suggest {

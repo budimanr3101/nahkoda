@@ -60,6 +60,27 @@ func TestCompleter(t *testing.T) {
 			shouldContain: "geladak",
 		},
 		{
+			name:          "Adaptive: 'baca' suggests 'jurnal'",
+			textBefore:    "baca ",
+			wordBefore:    "",
+			expectedCount: 1,
+			shouldContain: "jurnal",
+		},
+		{
+			name:          "Adaptive: 'atur' suggests 'armada'",
+			textBefore:    "atur ",
+			wordBefore:    "",
+			expectedCount: 1,
+			shouldContain: "armada",
+		},
+		{
+			name:          "Adaptive: 'masuk' suggests 'kru'",
+			textBefore:    "masuk ",
+			wordBefore:    "",
+			expectedCount: 1,
+			shouldContain: "kru",
+		},
+		{
 			name:       "After 'geladak' suggests namespaces",
 			textBefore: "liat kru di geladak ",
 			wordBefore: "",

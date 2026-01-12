@@ -1,11 +1,13 @@
-# ⚓ Nahkoda v1.3.2 ⚓🚀✨
+# ⚓ Nahkoda v1.4.0 ⚓🚀✨
 
 > **Kubernetes dalam Bahasa Manusia.**
 
 Nahkoda adalah CLI yang menerjemahkan perintah teks sederhana menjadi instruksi `kubectl`. Didesain untuk mereka yang ingin mengelola klaster Kubernetes dengan terminologi nautikal yang intuitif.
 
-### ✨ Fitur Unggulan v1.3.2
-- **Presisi Bahasa**: Autocomplete sekarang mewajibkan kata `geladak` muncul setelah `di` sebelum menyarankan nama Namespace.
+### ✨ Fitur Unggulan v1.4.0
+- **Anjungan Adaptif**: Auto-suggestion sekarang memahami konteks perintah (contoh: ketik `baca` langsung disarankan `jurnal`).
+- **Discovery Luas**: Autocomplete sekarang mendukung nama **Armada** (Deployment) dan **Pelabuhan** (Service) secara dinamis.
+- **Smart Filtering**: Menghilangkan saran yang tidak relevan berdasarkan apa yang sudah diketik.
 
 ### 🛡️ Hotfix v1.3.2: Presisi Bahasa
 - **Sequence Enforcement**: Memastikan urutan perintah nautikal tetap sakral. Autocomplete sekarang mewajibkan kata `geladak` muncul setelah `di` sebelum menyarankan nama Namespace.
