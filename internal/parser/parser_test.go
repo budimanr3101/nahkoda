@@ -151,6 +151,17 @@ func TestParse(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name:  "Tukar armada with geladak",
+			input: "tukar kru armada my-app di geladak production",
+			want: AST{
+				Aksi:   "tukar",
+				Objek:  "armada",
+				Target: "my-app",
+				Lokasi: "geladak production",
+			},
+			wantErr: false,
+		},
 	}
 
 	for _, tt := range tests {
