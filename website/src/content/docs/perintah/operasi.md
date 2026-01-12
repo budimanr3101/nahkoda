@@ -13,8 +13,10 @@ Beberapa perintah operasi dan metrik yang didukung oleh Nahkoda.
 | `nahkoda liat penjaga` | `kubectl get daemonset -A` | List semua penjaga (daemonset) |
 | `nahkoda liat peta` | `kubectl get configmap -A` | List semua peta (configmap) |
 | `nahkoda liat sandi` | `kubectl get secret -A` | List semua sandi (secret) |
+| `nahkoda atur armada [nama] ke [jumlah]` | `kubectl scale deployment [nama] --replicas=[jumlah]` | Scale deployment |
 | `nahkoda bikin geladak [nama]` | `kubectl create namespace [nama]` | Buat namespace baru |
 | `nahkoda bikin kru [nama]` | `kubectl run [nama] --image=nginx...` | Buat pod baru (nginx) |
 | `nahkoda pantau kru` | `kubectl top pod` | Lihat penggunaan resource pod |
 | `nahkoda pantau mesin` | `kubectl top node` | Lihat penggunaan resource node |
 | `nahkoda hapus kru [nama]` | `kubectl delete pod [nama]` | Hapus pod |
+```

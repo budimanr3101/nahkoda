@@ -27,6 +27,11 @@ func TestBuild_Operations(t *testing.T) {
 			intent: semantic.Intent{Aksi: "hapus", Objek: "pod"},
 			wantOp: "delete",
 		},
+		{
+			name:   "atur maps to scale",
+			intent: semantic.Intent{Aksi: "atur", Objek: "deployment", Target: "app"},
+			wantOp: "scale",
+		},
 	}
 
 	for _, tt := range tests {
@@ -185,6 +190,28 @@ func TestBuild_Target(t *testing.T) {
 
 	if plan.Target != "my-pod-123" {
 		t.Errorf("Target = %v, want %v", plan.Target, "my-pod-123")
+	}
+}
+
+func TestBuild_ScaleFlags(t *testing.T) {
+	intent := semantic.Intent{
+		Aksi:   "atur",
+		Objek:  "deployment",
+		Target: "backend",
+		Nilai:  "5",
+	}
+
+	plan := Build(intent)
+
+	found := false
+	for _, f := range plan.Flags {
+		if f == "--replicas=5" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("Flags = %v, want to contain --replicas=5", plan.Flags)
 	}
 }
 

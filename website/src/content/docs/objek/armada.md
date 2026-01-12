@@ -18,10 +18,10 @@ Berikut adalah beberapa perintah yang bisa Anda jalankan terhadap **Armada**:
 
 - `nahkoda liat armada` - Melihat semua kelompok kerja yang sedang aktif.
 - `nahkoda cek armada [nama]` - Melihat status replika dan strategi update.
+- `nahkoda atur armada [nama] ke [jumlah]` - Mengubah jumlah kru (scaling) secara instan.
 - `nahkoda hapus armada [nama]` - Menarik seluruh kelompok kerja dari tugasnya.
 
 ### ⚠️ Yang Belum Bisa Dilakukan
 Saat ini, Nahkoda belum mendukung:
-- Melakukan *Scaling* (menambah/mengurangi replika) melalui perintah teks (misal: `nahkoda atur armada ...`).
 - Melakukan *Rollback* ke versi sebelumnya.
 - Mengubah image container secara langsung melalui CLI Nahkoda.

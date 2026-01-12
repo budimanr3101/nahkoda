@@ -14,6 +14,7 @@ type Intent struct {
 	Kondisi         string
 	Filter          string
 	Target          string
+	Nilai           string
 	IsDefaultFilter bool
 }
 
@@ -78,8 +79,9 @@ func Resolve(ast parser.AST) (Intent, error) {
 		}
 	}
 
-	// 5. TARGET (UNTUK CEK)
+	// 5. TARGET & NILAI
 	intent.Target = ast.Target
+	intent.Nilai = ast.Nilai
 
 	// 6. AKSI-SPECIFIC LOGIC
 	switch intent.Aksi {
@@ -186,6 +188,18 @@ func Resolve(ast parser.AST) (Intent, error) {
 		// pantau mesin (top node) or pantau kru (top pod)
 		if intent.Objek != "node" && intent.Objek != "pod" {
 			return intent, errors.NewUnknownObject()
+		}
+
+	case "atur":
+		// atur armada (scale deployment)
+		if intent.Objek != "deployment" {
+			return intent, errors.NewUnknownObject()
+		}
+		if intent.Target == "" {
+			return intent, errors.NewMissingTarget(intent.Objek)
+		}
+		if intent.Nilai == "" {
+			return intent, errors.New(errors.ErrInvalidSyntax, "jumlah replika harus ditentukan (contoh: ke 5)")
 		}
 
 	default:

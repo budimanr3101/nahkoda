@@ -1,6 +1,6 @@
 [![Strict CI](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml/badge.svg)](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml)
 
-# ⚓ Nahkoda v1.0.0 ⚓🚀
+# ⚓ Nahkoda v1.0.1 ⚓🚀
 
 > **Kubernetes dalam Bahasa Manusia.**
 
@@ -80,6 +80,7 @@ Nahkoda menggunakan metafora pelayaran untuk mempermudah pemahaman resource Kube
 | :--- | :--- | :--- |
 | `nahkoda liat kapal` | `kubectl config get-contexts` | List semua cluster/context |
 | `nahkoda pindah kapal [nama]` | `kubectl config use-context [nama]` | Pindah cluster aktif |
+| `nahkoda atur armada [nama] ke [jumlah]` | `kubectl scale deployment [nama] --replicas=[jumlah]` | Atur jumlah replika deployment |
 
 ### 📦 Monitoring (Pods & Nodes)
 

@@ -84,6 +84,19 @@ func TestResolve_ValidIntents(t *testing.T) {
 			wantFilter: "",
 			wantErr:    false,
 		},
+		{
+			name: "atur armada - scale",
+			ast: parser.AST{
+				Aksi:   "atur",
+				Objek:  "armada",
+				Target: "backend",
+				Nilai:  "5",
+			},
+			wantAksi:   "atur",
+			wantObjek:  "deployment",
+			wantLokasi: "geladak default",
+			wantErr:    false,
+		},
 	}
 
 	for _, tt := range tests {

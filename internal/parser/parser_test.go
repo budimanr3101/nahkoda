@@ -109,6 +109,28 @@ func TestParse(t *testing.T) {
 			wantErr: true,
 			errType: errors.ErrUnknownAction,
 		},
+		{
+			name:  "Atur scale",
+			input: "atur armada backend ke 5",
+			want: AST{
+				Aksi:   "atur",
+				Objek:  "armada",
+				Target: "backend",
+				Nilai:  "5",
+			},
+			wantErr: false,
+		},
+		{
+			name:  "Atur without nilai",
+			input: "atur armada backend ke",
+			want: AST{
+				Aksi:    "atur",
+				Objek:   "armada",
+				Target:  "backend",
+				Unknown: []string{"ke"},
+			},
+			wantErr: false,
+		},
 	}
 
 	for _, tt := range tests {

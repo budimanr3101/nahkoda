@@ -41,6 +41,8 @@ func Build(intent semantic.Intent) Plan {
 		plan.Operation = "config"
 	case "baca":
 		plan.Operation = "logs"
+	case "atur":
+		plan.Operation = "scale"
 	case "masuk":
 		plan.Operation = "exec"
 	default:
@@ -114,6 +116,11 @@ func Build(intent semantic.Intent) Plan {
 			// Filter lain (jika ada support di masa depan) tetap server-side
 			plan.Filters[key] = value
 		}
+	}
+
+	// 6. REPLICAS (UNTUK ATUR)
+	if intent.Aksi == "atur" && intent.Nilai != "" {
+		plan.Flags = append(plan.Flags, "--replicas="+intent.Nilai)
 	}
 
 	return plan
