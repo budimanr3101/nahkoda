@@ -254,9 +254,3 @@ func isKeyword(word string) bool {
 	}
 	return false
 }
-
-func getAllSuggestions() []prompt.Suggest {
-	res := append(actions, objects...)
-	res = append(res, keywords...)
-	return res
-}
