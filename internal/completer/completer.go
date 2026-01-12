@@ -94,7 +94,11 @@ func GetSuggestions(textBefore, wordBefore string) []prompt.Suggest {
 			return keywords
 		}
 
-		if lastWord == "geladak" || lastWord == "di" {
+		if lastWord == "di" {
+			return []prompt.Suggest{{Text: "geladak", Description: "Namespace (Wajib)"}}
+		}
+
+		if lastWord == "geladak" {
 			return getDynamicNamespaces()
 		}
 

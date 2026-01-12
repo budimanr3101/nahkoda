@@ -52,6 +52,19 @@ func TestCompleter(t *testing.T) {
 			wordBefore:    "",
 			shouldContain: "kru",
 		},
+		{
+			name:          "After 'di' must suggest 'geladak'",
+			textBefore:    "liat kru di ",
+			wordBefore:    "",
+			expectedCount: 1,
+			shouldContain: "geladak",
+		},
+		{
+			name:       "After 'geladak' suggests namespaces",
+			textBefore: "liat kru di geladak ",
+			wordBefore: "",
+			// We don't check for 'default' because kubectl might not return anything in CI
+		},
 	}
 
 	for _, tt := range tests {
