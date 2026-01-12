@@ -32,6 +32,17 @@ NewResourceNotFound(r) // "resource \"x\" tidak ditemukan"
 | Unknown Condition | (already ID) | kondisi tidak dikenali |
 | Missing Target | (already ID) | cek X butuh nama X |
 
+## Kosa Kata v1.0.0
+
+| Kubernetes | Nahkoda | Filosofi |
+| :--- | :--- | :--- |
+| Deployment | Armada | Grup besar unit kerja. |
+| DaemonSet | Penjaga | Unit yang wajib ada di tiap titik. |
+| Service | Pelabuhan | Titik bongkar muat logistik/data. |
+| Ingress | Mercusuar | Pemandu arah dari luar. |
+| ConfigMap | Peta | Instruksi konfigurasi statis. |
+| Secret | Sandi | Data rahasia dan kunci keamanan. |
+
 ## Consistency
 
 All user-facing messages now use Bahasa Indonesia:

@@ -1,6 +1,6 @@
 [![Strict CI](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml/badge.svg)](https://github.com/budimanr3101/nahkoda/actions/workflows/ci.yaml)
 
-# ⚓ Nahkoda v0.9.6
+# ⚓ Nahkoda v1.0.0 ⚓🚀
 
 > **Kubernetes dalam Bahasa Manusia.**
 
@@ -49,6 +49,27 @@ mv nahkoda /usr/local/bin/
 
 ---
 
+## 📖 Kamus Nahkoda
+
+Nahkoda menggunakan metafora pelayaran untuk mempermudah pemahaman resource Kubernetes:
+
+| Komponen | Nama Nahkoda | Filosofi |
+| :--- | :--- | :--- |
+| **Cluster/Context** | **Kapal** | Kapal besar yang kita kendalikan. |
+| **Namespace** | **Geladak** | Lantai/ruangan spesifik di dalam kapal. |
+| **Node** | **Mesin** | Sumber tenaga (server) yang menjalankan kapal. |
+| **Pod** | **Kru** | Anggota yang melaksanakan pekerjaan. |
+| **Deployment** | **Armada** | Kelompok besar kapal/kru yang bergerak bersama. |
+| **DaemonSet** | **Penjaga** | Kru yang wajib ada di setiap unit mesin (Node). |
+| **Service** | **Pelabuhan** | Titik temu logistik agar kru bisa dihubungi. |
+| **Ingress** | **Mercusuar** | Pemandu trafik dari luar menuju pelabuhan. |
+| **ConfigMap** | **Peta** | Panduan konfigurasi/instruksi bagi kru. |
+| **Secret** | **Sandi** | Data rahasia dan kunci-kunci pengaman. |
+| **Logs** | **Jurnal** | Catatan kegiatan harian kru. |
+| **Events** | **Berita** | Kabar terbaru tentang kondisi kapal. |
+
+---
+
 ## 🚀 Panduan Cepat
 
 **Nahkoda** bukan pengganti `kubectl`, tapi "penerjemah" agar perintah lebih mudah diingat.
@@ -79,10 +100,16 @@ mv nahkoda /usr/local/bin/
 | `nahkoda cek kru [pod]` | `kubectl describe pod [pod]` | Lihat detail/status pod |
 | `nahkoda cek mesin [node]` | `kubectl describe node [node]` | Lihat detail node |
 
-### 🛠️ Operation & Metrics (v0.9.5+)
+### 🛠️ Operation & Metrics
 
 | Perintah Nahkoda | Ekuivalen Kubectl | Fungsi |
 | :--- | :--- | :--- |
+| `nahkoda liat armada` | `kubectl get deployment -A` | List semua armada (deployment) |
+| `nahkoda liat pelabuhan` | `kubectl get service -A` | List semua pelabuhan (service) |
+| `nahkoda liat mercusuar` | `kubectl get ingress -A` | List semua mercusuar (ingress) |
+| `nahkoda liat penjaga` | `kubectl get daemonset -A` | List semua penjaga (daemonset) |
+| `nahkoda liat peta` | `kubectl get configmap -A` | List semua peta (configmap) |
+| `nahkoda liat sandi` | `kubectl get secret -A` | List semua sandi (secret) |
 | `nahkoda bikin geladak [nama]` | `kubectl create namespace [nama]` | Buat namespace baru |
 | `nahkoda bikin kru [nama]` | `kubectl run [nama] --image=nginx...` | Buat pod baru (nginx) |
 | `nahkoda pantau kru` | `kubectl top pod` | Lihat penggunaan resource pod |

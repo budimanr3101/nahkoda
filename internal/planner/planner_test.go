@@ -14,17 +14,17 @@ func TestBuild_Operations(t *testing.T) {
 	}{
 		{
 			name:   "liat maps to get",
-			intent: semantic.Intent{Aksi: "liat", Objek: "kru"},
+			intent: semantic.Intent{Aksi: "liat", Objek: "pod"},
 			wantOp: "get",
 		},
 		{
 			name:   "cek maps to describe",
-			intent: semantic.Intent{Aksi: "cek", Objek: "kru", Target: "pod-1"},
+			intent: semantic.Intent{Aksi: "cek", Objek: "pod", Target: "pod-1"},
 			wantOp: "describe",
 		},
 		{
 			name:   "hapus maps to delete",
-			intent: semantic.Intent{Aksi: "hapus", Objek: "kru"},
+			intent: semantic.Intent{Aksi: "hapus", Objek: "pod"},
 			wantOp: "delete",
 		},
 	}
@@ -45,8 +45,8 @@ func TestBuild_Resources(t *testing.T) {
 		objek        string
 		wantResource string
 	}{
-		{"kru maps to pod", "kru", "pod"},
-		{"mesin maps to node", "mesin", "node"},
+		{"pod maps to pod", "pod", "pod"},
+		{"node maps to node", "node", "node"},
 	}
 
 	for _, tt := range tests {
@@ -191,7 +191,7 @@ func TestBuild_Target(t *testing.T) {
 func TestBuild_NoFilter(t *testing.T) {
 	intent := semantic.Intent{
 		Aksi:  "liat",
-		Objek: "mesin",
+		Objek: "node",
 	}
 
 	plan := Build(intent)

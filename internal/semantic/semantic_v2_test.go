@@ -18,12 +18,12 @@ func TestResolve_Features_V0_10_0(t *testing.T) {
 			name: "bikin geladak valid",
 			input: parser.AST{
 				Aksi:   "bikin",
-				Objek:  "geladak",
+				Objek:  "namespace",
 				Target: "baru",
 			},
 			want: Intent{
 				Aksi:   "bikin",
-				Objek:  "geladak",
+				Objek:  "namespace",
 				Target: "baru",
 				Lokasi: "geladak default",
 			},
@@ -33,12 +33,12 @@ func TestResolve_Features_V0_10_0(t *testing.T) {
 			name: "bikin kru valid",
 			input: parser.AST{
 				Aksi:   "bikin",
-				Objek:  "kru",
+				Objek:  "pod",
 				Target: "nginx-pod",
 			},
 			want: Intent{
 				Aksi:   "bikin",
-				Objek:  "kru",
+				Objek:  "pod",
 				Target: "nginx-pod",
 				Lokasi: "geladak default",
 			},
@@ -62,7 +62,7 @@ func TestResolve_Features_V0_10_0(t *testing.T) {
 			},
 			want: Intent{
 				Aksi:   "pantau",
-				Objek:  "mesin",
+				Objek:  "node",
 				Lokasi: "geladak default",
 			},
 			wantErr: false,
@@ -75,7 +75,7 @@ func TestResolve_Features_V0_10_0(t *testing.T) {
 			},
 			want: Intent{
 				Aksi:   "pantau",
-				Objek:  "kru",
+				Objek:  "pod",
 				Lokasi: "geladak default",
 			},
 			wantErr: false,

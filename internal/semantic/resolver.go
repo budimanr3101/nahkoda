@@ -45,7 +45,26 @@ func Resolve(ast parser.AST) (Intent, error) {
 	if ast.Objek == "" {
 		return intent, errors.NewUnknownObject()
 	}
-	intent.Objek = ast.Objek
+	// Mapping Objek Nahkoda -> Kubernetes Standard
+	objekMap := map[string]string{
+		"kru":       "pod",
+		"mesin":     "node",
+		"kapal":     "kapal", // special handling
+		"jurnal":    "jurnal",
+		"berita":    "berita",
+		"geladak":   "namespace",
+		"armada":    "deployment",
+		"penjaga":   "daemonset",
+		"pelabuhan": "service",
+		"mercusuar": "ingress",
+		"peta":      "configmap",
+		"sandi":     "secret",
+	}
+	if mappedObj, ok := objekMap[ast.Objek]; ok {
+		intent.Objek = mappedObj
+	} else {
+		intent.Objek = ast.Objek
+	}
 
 	// 4. LOKASI
 	if ast.Lokasi != "" {
@@ -92,7 +111,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 		} else {
 			// default: hanya kru yang dianggap "sehat" (running) secara default
 			// resource lain (node/mesin) ditampilkan apa adanya (tanpa filter)
-			if intent.Objek == "kru" {
+			if intent.Objek == "pod" {
 				intent.Filter = "status=Running"
 				intent.IsDefaultFilter = true
 			}
@@ -144,7 +163,16 @@ func Resolve(ast parser.AST) (Intent, error) {
 
 	case "bikin":
 		// bikin geladak (create ns) or bikin kru (run pod)
-		if intent.Objek != "geladak" && intent.Objek != "kru" {
+		allowedBikin := map[string]bool{
+			"namespace":  true,
+			"pod":        true,
+			"deployment": true,
+			"service":    true,
+			"ingress":    true,
+			"configmap":  true,
+			"secret":     true,
+		}
+		if !allowedBikin[intent.Objek] {
 			return intent, errors.NewUnknownObject()
 		}
 		if intent.Target == "" {
@@ -153,7 +181,7 @@ func Resolve(ast parser.AST) (Intent, error) {
 
 	case "pantau":
 		// pantau mesin (top node) or pantau kru (top pod)
-		if intent.Objek != "mesin" && intent.Objek != "kru" {
+		if intent.Objek != "node" && intent.Objek != "pod" {
 			return intent, errors.NewUnknownObject()
 		}
 

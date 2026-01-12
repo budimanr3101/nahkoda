@@ -14,24 +14,22 @@ func Build(intent semantic.Intent) Plan {
 	// 1. AKSI → OPERATION
 	switch intent.Aksi {
 	case "bikin":
-		if intent.Objek == "geladak" {
+		if intent.Objek == "namespace" {
 			plan.Operation = "create"
 			plan.Resource = "namespace"
-			// args: create namespace [target]
-		} else if intent.Objek == "kru" {
+		} else if intent.Objek == "pod" {
 			plan.Operation = "run"
 			plan.Resource = ""
-			// args: run [target] --image=nginx --restart=Never
 			plan.Flags = append(plan.Flags, "--image=nginx", "--restart=Never")
+		} else {
+			// standard bikin: create [resource] [target]
+			plan.Operation = "create"
+			plan.Resource = intent.Objek
 		}
 
 	case "pantau":
 		plan.Operation = "top"
-		if intent.Objek == "kru" {
-			plan.Resource = "pod"
-		} else if intent.Objek == "mesin" {
-			plan.Resource = "node"
-		}
+		plan.Resource = intent.Objek
 
 	case "liat":
 		plan.Operation = "get"
@@ -52,16 +50,9 @@ func Build(intent semantic.Intent) Plan {
 
 	// 2. OBJEK → RESOURCE
 	switch intent.Objek {
-	case "kru":
-		plan.Resource = "pod"
-
-	case "mesin":
-		plan.Resource = "node"
 	case "kapal":
-		// Jika aksi "liat" -> get-contexts
-		// Jika aksi "pindah" -> use-context
 		if intent.Aksi == "liat" {
-			plan.Operation = "config" // Override "get" from step 1
+			plan.Operation = "config"
 			plan.Resource = "get-contexts"
 		} else if intent.Aksi == "pindah" {
 			plan.Resource = "use-context"
@@ -70,16 +61,14 @@ func Build(intent semantic.Intent) Plan {
 			plan.Notes = append(plan.Notes, "aksi tidak valid untuk kapal")
 		}
 	case "jurnal":
-		plan.Resource = "pod" // kubectl logs [pod]
+		plan.Resource = "pod"
 	case "berita":
 		plan.Operation = "get"
 		plan.Resource = "events"
 		plan.Flags = append(plan.Flags, "--sort-by=.metadata.creationTimestamp")
-	case "geladak":
-		plan.Resource = "namespace"
 	default:
-		plan.Resource = "unknown"
-		plan.Notes = append(plan.Notes, "objek tidak dikenali")
+		// mapping sisa objek (pod, node, deployment, service, ingress, configmap, secret, daemonset, namespace)
+		plan.Resource = intent.Objek
 	}
 
 	// 3. LOKASI → NAMESPACE
