@@ -15,6 +15,12 @@ import (
 	"github.com/c-bata/go-prompt"
 )
 
+var (
+	Version = "dev"
+	Commit  = "none"
+	Date    = "unknown"
+)
+
 func main() {
 	if len(os.Args) < 2 {
 		runREPL()
@@ -98,11 +104,15 @@ func processCommand(input string) error {
 }
 
 func printHelp() {
-	helpText := `⚓ Nahkoda — Bahasa manusia untuk Kubernetes
+	helpText := fmt.Sprintf(`⚓ Nahkoda v%s — Bahasa manusia untuk Kubernetes
+(Versi: %s, Commit: %s)
 
 Cara pakai:
   nahkoda [kalimat perintah]
+`, Version, Version, Commit)
 
+	fmt.Println(helpText)
+	fmt.Println(`
 Contoh:
   nahkoda liat kru
   nahkoda liat kru rusak
@@ -113,6 +123,5 @@ Contoh:
 
 Opsi:
   -h, --help    Tampilkan bantuan ini
-`
-	fmt.Println(helpText)
+`)
 }
