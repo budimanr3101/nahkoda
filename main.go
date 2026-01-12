@@ -54,6 +54,7 @@ func runREPL() {
 		prompt.OptionSelectedSuggestionBGColor(prompt.Blue),
 		prompt.OptionDescriptionBGColor(prompt.LightGray),
 		prompt.OptionSelectedDescriptionBGColor(prompt.Cyan),
+		prompt.OptionCompletionOnDown(), // Only show suggestions when pressing Down arrow, not automatically
 	)
 	p.Run()
 }

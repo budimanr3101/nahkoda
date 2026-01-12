@@ -1,4 +1,4 @@
-# ⚓ Nahkoda v1.4.0 ⚓🚀✨
+# ⚓ Nahkoda v1.4.1 ⚓🚀✨
 
 > **Kubernetes dalam Bahasa Manusia.**
 
