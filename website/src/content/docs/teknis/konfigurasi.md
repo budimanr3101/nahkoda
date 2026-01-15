@@ -244,6 +244,6 @@ Hanya set default namespace, sisanya pakai default values.
 
 ## 📚 Related
 
-- [Instalasi](/instalasi) - Install Nahkoda
-- [Error Handling](/perintah/error-handling) - Debugging errors
-- [Bahasa](/teknis/bahasa) - Parser & AST internals
+- [Instalasi](../../instalasi) - Install Nahkoda
+- [Error Handling](../../perintah/error-handling) - Debugging errors
+- [Bahasa](../bahasa) - Parser & AST internals

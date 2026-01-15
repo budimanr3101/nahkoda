@@ -22,7 +22,7 @@ EOF
 
 **Catatan**: File config bersifat opsional. Jika tidak ada, Nahkoda menggunakan default values.
 
-📖 **[Dokumentasi Lengkap Konfigurasi →](/teknis/konfigurasi)**
+📖 **[Dokumentasi Lengkap Konfigurasi →](../teknis/konfigurasi)**
 
 ---
 
