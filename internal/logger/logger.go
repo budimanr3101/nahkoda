@@ -27,25 +27,25 @@ func LogError(err error, context map[string]interface{}) {
 	}
 
 	logDir := filepath.Join(home, ".nahkoda")
-	if err := os.MkdirAll(logDir, 0755); err != nil {
+	if mkdirErr := os.MkdirAll(logDir, 0755); mkdirErr != nil {
 		return
 	}
 
 	logPath := filepath.Join(logDir, "error.log")
-	file, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-	if err != nil {
+	file, openErr := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if openErr != nil {
 		return
 	}
 	defer file.Close()
 
 	entry := LogEntry{
 		Timestamp: time.Now(),
-		Error:     err.Error(),
+		Error:     err.Error(), // Now safe - err is still the original parameter
 		Context:   context,
 	}
 
 	encoder := json.NewEncoder(file)
-	if err := encoder.Encode(entry); err != nil {
+	if encodeErr := encoder.Encode(entry); encodeErr != nil {
 		// Ignore encoding errors
 		return
 	}

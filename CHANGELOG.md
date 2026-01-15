@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.5.1] - 2026-01-15
+
+### 🚨 CRITICAL HOTFIX
+
+**Fixed nil pointer dereference panic in logger**
+
+#### Bug Details
+- **Symptom**: Application crashed with panic when kubectl returned an error
+- **Root Cause**: Variable shadowing in `os.OpenFile()` overwrote the `err` function parameter
+- **Impact**: HIGH - Any kubectl error would crash the application
+
+#### Fix
+- Renamed variables to avoid shadowing: `openErr`, `mkdirErr`, `encodeErr`
+- Original `err` parameter now preserved throughout function
+- Error logging works correctly without crashes
+
+#### Testing
+- ✅ Reproduced bug: `cek kru nonexistent-pod`
+- ✅ Verified fix: No crash, error logged properly
+- ✅ All tests pass
+
+**Severity**: HIGH - Immediate upgrade recommended for all v1.5.0 users
+
+---
+
 ## [1.5.0] - 2026-01-15
 
 ### 🐛 Bug Fixes & Polish

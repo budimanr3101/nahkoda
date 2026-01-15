@@ -1,10 +1,10 @@
-# ⚓ Nahkoda v1.5.0 ⚓🚀✨
+# ⚓ Nahkoda v1.5.1 ⚓🚀✨
 
 > **Kubernetes dalam Bahasa Manusia.**
 
 Nahkoda adalah CLI yang menerjemahkan perintah teks sederhana menjadi instruksi `kubectl`. Didesain untuk mereka yang ingin mengelola klaster Kubernetes dengan terminologi nautikal yang intuitif.
 
-### ✨ Fitur Unggulan v1.5.0 - Production Ready! 🎉
+### ✨ Fitur Unggulan v1.5.1 - Production Ready! 🎉
 
 **🔧 Configuration Management**
 - Dukungan file konfigurasi `~/.nahkoda/config.json`
