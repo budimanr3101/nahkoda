@@ -38,7 +38,10 @@ func TestExecute_GeneratesCorrectCommand(t *testing.T) {
 		Namespace: "default",
 	}
 
-	executor.Execute(plan)
+	// Execute should not error
+	if err := executor.Execute(plan); err != nil {
+		t.Errorf("Execute() error = %v", err)
+	}
 
 	expected := "get pods -n default"
 	actual := strings.Join(mock.LastArgs, " ")
@@ -59,7 +62,10 @@ func TestExecute_WithFilter(t *testing.T) {
 		Filters:   map[string]string{"status.phase=": "Running"},
 	}
 
-	executor.Execute(plan)
+	// Execute should not error
+	if err := executor.Execute(plan); err != nil {
+		t.Errorf("Execute() error = %v", err)
+	}
 
 	// Note: Filter order is map iteration based, might need robust check.
 	// But here single key.

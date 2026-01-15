@@ -54,5 +54,5 @@ func LogError(err error, context map[string]interface{}) {
 // LogErrorf logs a formatted error
 func LogErrorf(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
-	LogError(fmt.Errorf(msg), nil)
+	LogError(fmt.Errorf("%s", msg), nil)
 }

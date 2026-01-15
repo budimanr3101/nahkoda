@@ -50,7 +50,9 @@ func TestLoad_ValidConfig(t *testing.T) {
 	defer os.Setenv("HOME", originalHome)
 
 	configDir := filepath.Join(tmpHome, ".nahkoda")
-	os.MkdirAll(configDir, 0755)
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		t.Fatal(err)
+	}
 
 	testConfig := &Config{
 		DefaultNamespace:  "production",
@@ -61,7 +63,9 @@ func TestLoad_ValidConfig(t *testing.T) {
 
 	configPath := filepath.Join(configDir, "config.json")
 	file, _ := os.Create(configPath)
-	json.NewEncoder(file).Encode(testConfig)
+	if err := json.NewEncoder(file).Encode(testConfig); err != nil {
+		t.Fatal(err)
+	}
 	file.Close()
 
 	cfg, err := Load()
@@ -84,10 +88,14 @@ func TestLoad_InvalidJSON(t *testing.T) {
 	defer os.Setenv("HOME", originalHome)
 
 	configDir := filepath.Join(tmpHome, ".nahkoda")
-	os.MkdirAll(configDir, 0755)
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		t.Fatal(err)
+	}
 
 	configPath := filepath.Join(configDir, "config.json")
-	os.WriteFile(configPath, []byte("invalid json"), 0644)
+	if err := os.WriteFile(configPath, []byte("invalid json"), 0644); err != nil {
+		t.Fatal(err)
+	}
 
 	_, err := Load()
 	if err == nil {

@@ -185,7 +185,7 @@ func (e *Executor) runAudit() error {
 	// 1. Kru Bermasalah
 	fmt.Print("📋 Memeriksa Kru (Pods)... ")
 	outBuf.Reset()
-	e.client.Run([]string{"get", "pods", "-A", "--field-selector", "status.phase!=Running,status.phase!=Succeeded"}, nil, &outBuf, nil)
+	_ = e.client.Run([]string{"get", "pods", "-A", "--field-selector", "status.phase!=Running,status.phase!=Succeeded"}, nil, &outBuf, nil)
 	linesPods := strings.Split(strings.TrimSpace(outBuf.String()), "\n")
 
 	if len(linesPods) <= 1 && (outBuf.Len() == 0 || linesPods[0] == "") {
@@ -204,7 +204,7 @@ func (e *Executor) runAudit() error {
 	// 2. Mesin Mogok
 	fmt.Print("⚙️  Memeriksa Mesin (Nodes)... ")
 	outBuf.Reset()
-	e.client.Run([]string{"get", "nodes"}, nil, &outBuf, nil)
+	_ = e.client.Run([]string{"get", "nodes"}, nil, &outBuf, nil)
 	if strings.Contains(outBuf.String(), "NotReady") {
 		fmt.Println("⚠️  Ada mesin yang mogok (NotReady):")
 		// Grep NotReady lines
@@ -221,7 +221,7 @@ func (e *Executor) runAudit() error {
 	// 3. Berita Buruk (Events)
 	fmt.Print("📢 Memeriksa Berita Buruk (Warning Events)... ")
 	outBuf.Reset()
-	e.client.Run([]string{"get", "events", "-A", "--field-selector", "type=Warning", "--sort-by=.metadata.creationTimestamp"}, nil, &outBuf, nil)
+	_ = e.client.Run([]string{"get", "events", "-A", "--field-selector", "type=Warning", "--sort-by=.metadata.creationTimestamp"}, nil, &outBuf, nil)
 	linesEvents := strings.Split(strings.TrimSpace(outBuf.String()), "\n")
 	if len(linesEvents) <= 1 {
 		fmt.Println("✅ Tidak ada berita buruk baru.")

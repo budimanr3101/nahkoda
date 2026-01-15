@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.5.0] - 2026-01-15
+
+### 🐛 Bug Fixes & Polish
+
+This is a maintenance release fixing all linter errors identified in CI/CD pipeline.
+
+#### Linter Fixes (10 total)
+- Fixed errcheck warnings in config tests (4 fixes)
+- Fixed errcheck warnings in executor (3 fixes)
+- Fixed errcheck warnings in executor tests (2 fixes)
+- Fixed staticcheck SA1006 in logger (1 fix)
+
+#### Changes
+- All `errcheck` linter errors resolved
+- All `staticcheck` warnings resolved
+- CI/CD pipeline now passes cleanly
+- No functional changes from v1.4.0
+
+**Full details**: See LINT_FIXES.md
+
+---
+
 ## [1.4.0] - 2026-01-15
 
 ### 🎉 Production Ready Release!
