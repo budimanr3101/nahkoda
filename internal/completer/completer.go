@@ -1,8 +1,11 @@
 package completer
 
 import (
+	"context"
 	"os/exec"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/c-bata/go-prompt"
 )
@@ -180,62 +183,178 @@ func GetSuggestions(textBefore, wordBefore string) []prompt.Suggest {
 	return res
 }
 
-func getDynamicNamespaces() []prompt.Suggest {
-	out, err := exec.Command("kubectl", "get", "ns", "-o", "jsonpath={.items[*].metadata.name}").Output()
-	if err != nil {
-		return nil
+var (
+	cache      = make(map[string][]prompt.Suggest)
+	cacheTime  = make(map[string]time.Time)
+	cacheMutex sync.RWMutex
+	cacheTTL   = 30 * time.Second
+)
+
+func getFromCacheOrFetch(key string, fetcher func() []prompt.Suggest) []prompt.Suggest {
+	cacheMutex.RLock()
+	data, ok := cache[key]
+	ts, okTime := cacheTime[key]
+	cacheMutex.RUnlock()
+
+	if ok && okTime && time.Since(ts) < cacheTTL {
+		return data
 	}
 
-	nsList := strings.Fields(string(out))
-	var suggestions []prompt.Suggest
-	for _, ns := range nsList {
-		suggestions = append(suggestions, prompt.Suggest{Text: ns, Description: "Geladak (Namespace)"})
+	// Double check locking for write
+	cacheMutex.Lock()
+	defer cacheMutex.Unlock()
+
+	// Re-check in case another goroutine updated it
+	if ts, okTime := cacheTime[key]; okTime && time.Since(ts) < cacheTTL {
+		return cache[key]
 	}
-	return suggestions
+
+	// Fetch new data
+	data = fetcher()
+	if data != nil {
+		cache[key] = data
+		cacheTime[key] = time.Now()
+	}
+	return data
+}
+
+func init() {
+	// Start background goroutine for cache cleanup
+	go func() {
+		ticker := time.NewTicker(1 * time.Minute)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			cleanupCache()
+		}
+	}()
+}
+
+func cleanupCache() {
+	cacheMutex.Lock()
+	defer cacheMutex.Unlock()
+
+	now := time.Now()
+	for key, ts := range cacheTime {
+		if now.Sub(ts) > 5*time.Minute {
+			delete(cache, key)
+			delete(cacheTime, key)
+		}
+	}
+}
+
+var (
+	currentContext     string
+	currentContextTime time.Time
+	contextCacheTTL    = 5 * time.Second
+	contextMutex       sync.RWMutex
+)
+
+func getCurrentContext() string {
+	contextMutex.RLock()
+	if time.Since(currentContextTime) < contextCacheTTL && currentContext != "" {
+		ctx := currentContext
+		contextMutex.RUnlock()
+		return ctx
+	}
+	contextMutex.RUnlock()
+
+	// Fetch new context with timeout
+	contextMutex.Lock()
+	defer contextMutex.Unlock()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, "kubectl", "config", "current-context")
+	out, err := cmd.Output()
+	if err != nil {
+		// Return cached on error, or default
+		if currentContext != "" {
+			return currentContext
+		}
+		return "default"
+	}
+
+	currentContext = strings.TrimSpace(string(out))
+	currentContextTime = time.Now()
+	return currentContext
+}
+
+func getCacheKey(resource string) string {
+	return getCurrentContext() + ":" + resource
+}
+
+func getDynamicNamespaces() []prompt.Suggest {
+	return getFromCacheOrFetch(getCacheKey("namespaces"), func() []prompt.Suggest {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		cmd := exec.CommandContext(ctx, "kubectl", "get", "ns", "-o", "jsonpath={.items[*].metadata.name}")
+		out, err := cmd.Output()
+		if err != nil {
+			return nil
+		}
+		nsList := strings.Fields(string(out))
+		var suggestions []prompt.Suggest
+		for _, ns := range nsList {
+			suggestions = append(suggestions, prompt.Suggest{Text: ns, Description: "Geladak (Namespace)"})
+		}
+		return suggestions
+	})
 }
 
 func getDynamicPods() []prompt.Suggest {
-	// For simplicity, we just get pods from default namespace or all-namespaces
-	// In a real scenario, we might want to look at the previous 'geladak' keyword
-	out, err := exec.Command("kubectl", "get", "pods", "-A", "-o", "jsonpath={.items[*].metadata.name}").Output()
-	if err != nil {
-		return nil
-	}
-
-	podList := strings.Fields(string(out))
-	var suggestions []prompt.Suggest
-	for _, pod := range podList {
-		suggestions = append(suggestions, prompt.Suggest{Text: pod, Description: "Kru (Pod)"})
-	}
-	return suggestions
+	return getFromCacheOrFetch(getCacheKey("pods"), func() []prompt.Suggest {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		cmd := exec.CommandContext(ctx, "kubectl", "get", "pods", "-A", "-o", "jsonpath={.items[*].metadata.name}")
+		out, err := cmd.Output()
+		if err != nil {
+			return nil
+		}
+		podList := strings.Fields(string(out))
+		var suggestions []prompt.Suggest
+		for _, pod := range podList {
+			suggestions = append(suggestions, prompt.Suggest{Text: pod, Description: "Kru (Pod)"})
+		}
+		return suggestions
+	})
 }
 
 func getDynamicDeployments() []prompt.Suggest {
-	out, err := exec.Command("kubectl", "get", "deployments", "-A", "-o", "jsonpath={.items[*].metadata.name}").Output()
-	if err != nil {
-		return nil
-	}
-
-	deployList := strings.Fields(string(out))
-	var suggestions []prompt.Suggest
-	for _, d := range deployList {
-		suggestions = append(suggestions, prompt.Suggest{Text: d, Description: "Armada (Deployment)"})
-	}
-	return suggestions
+	return getFromCacheOrFetch(getCacheKey("deployments"), func() []prompt.Suggest {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		cmd := exec.CommandContext(ctx, "kubectl", "get", "deployments", "-A", "-o", "jsonpath={.items[*].metadata.name}")
+		out, err := cmd.Output()
+		if err != nil {
+			return nil
+		}
+		deployList := strings.Fields(string(out))
+		var suggestions []prompt.Suggest
+		for _, d := range deployList {
+			suggestions = append(suggestions, prompt.Suggest{Text: d, Description: "Armada (Deployment)"})
+		}
+		return suggestions
+	})
 }
 
 func getDynamicServices() []prompt.Suggest {
-	out, err := exec.Command("kubectl", "get", "svc", "-A", "-o", "jsonpath={.items[*].metadata.name}").Output()
-	if err != nil {
-		return nil
-	}
-
-	svcList := strings.Fields(string(out))
-	var suggestions []prompt.Suggest
-	for _, s := range svcList {
-		suggestions = append(suggestions, prompt.Suggest{Text: s, Description: "Pelabuhan (Service)"})
-	}
-	return suggestions
+	return getFromCacheOrFetch(getCacheKey("services"), func() []prompt.Suggest {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		cmd := exec.CommandContext(ctx, "kubectl", "get", "svc", "-A", "-o", "jsonpath={.items[*].metadata.name}")
+		out, err := cmd.Output()
+		if err != nil {
+			return nil
+		}
+		svcList := strings.Fields(string(out))
+		var suggestions []prompt.Suggest
+		for _, s := range svcList {
+			suggestions = append(suggestions, prompt.Suggest{Text: s, Description: "Pelabuhan (Service)"})
+		}
+		return suggestions
+	})
 }
 
 func isAction(word string) bool {

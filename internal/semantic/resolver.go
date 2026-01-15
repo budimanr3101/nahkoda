@@ -20,9 +20,15 @@ type Intent struct {
 	IsDefaultFilter bool
 }
 
+// IntentResolver interface is defined in resolver_interface.go
+
 // Resolve menerjemahkan AST menjadi Intent secara STRICT.
 // Jika ada kata / struktur tidak dikenali → ERROR.
-func Resolve(ast parser.AST) (Intent, error) {
+func Resolve(ast parser.AST) (Intent, error) { // Sticking to original signature
+	return resolveInternal(ast)
+}
+
+func resolveInternal(ast parser.AST) (Intent, error) {
 	intent := Intent{}
 
 	// 1. UNKNOWN WORDS (STRICT)
@@ -31,8 +37,10 @@ func Resolve(ast parser.AST) (Intent, error) {
 		err := errors.NewUnknownWord(unknownStr)
 
 		// Coba cari saran untuk kata pertama yang tidak dikenal
-		if suggestion := FindSuggestion(ast.Unknown[0]); suggestion != "" {
-			err = err.WithSuggestion(suggestion)
+		if len(ast.Unknown) > 0 {
+			if suggestion := FindSuggestion(ast.Unknown[0]); suggestion != "" {
+				err = err.WithSuggestion(suggestion)
+			}
 		}
 
 		return intent, err
@@ -44,31 +52,38 @@ func Resolve(ast parser.AST) (Intent, error) {
 	}
 	intent.Aksi = ast.Aksi
 
-	// 3. OBJEK (WAJIB)
-	if ast.Objek == "" {
-		return intent, errors.NewUnknownObject()
-	}
-	// Mapping Objek Nahkoda -> Kubernetes Standard
-	objekMap := map[string]string{
-		"kru":        "pod",
-		"mesin":      "node",
-		"kapal":      "kapal", // special handling
-		"jurnal":     "jurnal",
-		"berita":     "berita",
-		"geladak":    "namespace",
-		"armada":     "deployment",
-		"penjaga":    "daemonset",
-		"pelabuhan":  "service",
-		"mercusuar":  "ingress",
-		"peta":       "configmap",
-		"sandi":      "secret",
-		"kesehatan":  "kesehatan",
-		"perbekalan": "perbekalan",
-	}
-	if mappedObj, ok := objekMap[ast.Objek]; ok {
-		intent.Objek = mappedObj
+	// 3. MAPPING OBJEK
+	// Note: Masuk action can have empty object initially (defaults to kru in resolver),
+	// but generic object mapping should run first if object is present.
+	if ast.Objek != "" {
+		objekMap := map[string]string{
+			"kru":        "pod",
+			"mesin":      "node",
+			"kapal":      "kapal",
+			"jurnal":     "jurnal",
+			"berita":     "berita",
+			"geladak":    "namespace",
+			"armada":     "deployment",
+			"penjaga":    "daemonset",
+			"pelabuhan":  "service",
+			"mercusuar":  "ingress",
+			"peta":       "configmap",
+			"sandi":      "secret",
+			"kesehatan":  "kesehatan",
+			"perbekalan": "perbekalan",
+		}
+		if mappedObj, ok := objekMap[ast.Objek]; ok {
+			intent.Objek = mappedObj
+		} else {
+			intent.Objek = ast.Objek
+		}
 	} else {
-		intent.Objek = ast.Objek
+		// Special case for 'Masuk' checked in specific resolver
+		if intent.Aksi == "masuk" {
+			// Let resolver handle default
+		} else {
+			return intent, errors.NewUnknownObject()
+		}
 	}
 
 	// 4. LOKASI
@@ -76,7 +91,6 @@ func Resolve(ast parser.AST) (Intent, error) {
 		intent.Lokasi = ast.Lokasi
 	} else {
 		// Default location logic
-		// 'liat' biasanya ke semua geladak, KECUALI jika ada target spesifik
 		if intent.Aksi == "liat" && ast.Target == "" {
 			intent.Lokasi = "semua geladak"
 		} else {
@@ -85,146 +99,44 @@ func Resolve(ast parser.AST) (Intent, error) {
 	}
 
 	// 5. TARGET, NILAI, SUBTARGET, FOLLOW
+	// Validation Security (P0)
+	if err := ValidateResourceName(ast.Target); err != nil {
+		return intent, err
+	}
+	if err := ValidateResourceName(ast.SubTarget); err != nil {
+		return intent, err
+	}
+	// Nilai is sometimes a resource name, sometimes numeric (scale 5). validator allows numbers.
+	if err := ValidateResourceName(ast.Nilai); err != nil {
+		return intent, err
+	}
+
 	intent.Target = ast.Target
 	intent.Nilai = ast.Nilai
 	intent.SubTarget = ast.SubTarget
 	intent.Follow = ast.Follow
 
-	// 6. AKSI-SPECIFIC LOGIC
-	switch intent.Aksi {
+	// 6. ACTION-SPECIFIC LOGIC via Strategy Pattern
+	resolvers := map[string]IntentResolver{
+		"liat":   &LiatResolver{},
+		"cek":    &CekResolver{},
+		"hapus":  &HapusResolver{},
+		"pindah": &PindahResolver{},
+		"baca":   &BacaResolver{},
+		"masuk":  &MasukResolver{},
+		"bikin":  &BikinResolver{},
+		"pantau": &PantauResolver{},
+		"atur":   &AturResolver{},
+		"tukar":  &TukarResolver{},
+	}
 
-	case "liat":
-		// Handle "liat berita"
-		if intent.Objek == "berita" {
-			// No filter needed for events usually, or maybe handled later
-			intent.Filter = ""
-			intent.IsDefaultFilter = false
-			break // Exit case "liat"
-		} else if intent.Objek == "perbekalan" {
-			// perbekalan doesn't mandatory need target, can list all
-			intent.Filter = ""
-			intent.IsDefaultFilter = false
-			break
-		}
-
-		if ast.Kondisi != "" {
-			intent.Kondisi = ast.Kondisi
-
-			filter, ok := ResolveCondition(ast.Kondisi)
-			if !ok {
-				return intent, errors.NewUnknownCondition(ast.Kondisi)
-			}
-
-			intent.Filter = filter
-			intent.IsDefaultFilter = false
-		} else {
-			// default: hanya kru yang dianggap "sehat" (running) secara default
-			// resource lain (node/mesin) ditampilkan apa adanya (tanpa filter)
-			if intent.Objek == "pod" {
-				intent.Filter = "status=Running"
-				intent.IsDefaultFilter = true
-			}
-		}
-
-	case "cek":
-		if intent.Objek == "kesehatan" {
-			// cek kesehatan doesn't need target
-			break
-		}
-		if intent.Target == "" {
-			return intent, errors.NewMissingTarget(intent.Objek)
-		}
-
-	case "hapus":
-		if intent.Target == "" {
-			return intent, errors.NewMissingTarget(intent.Objek)
-		}
-		intent.Filter = ""
-		intent.IsDefaultFilter = false
-
-	case "pindah":
-		if intent.Objek != "kapal" {
-			// Pindah hanya support kapal untuk saat ini
-			return intent, errors.NewUnknownObject()
-		}
-		if intent.Target == "" {
-			return intent, errors.NewMissingTarget(intent.Objek)
-		}
-
-	case "baca":
-		if intent.Objek != "jurnal" {
-			return intent, errors.NewUnknownObject()
-		}
-		if intent.Target == "" {
-			return intent, errors.NewMissingTarget(intent.Objek)
-		}
-		// "baca jurnal" itu logs 1 pod -> no filter needed usually
-		intent.Filter = ""
-		intent.IsDefaultFilter = false
-
-	case "masuk":
-		// User bisa bilang "masuk [target]" (objek kosong, default kru) atau "masuk kru [target]"
-		// Tapi Parser menaruh token non-keyword ke 'Target' hanya jika aksi=masuk & token terakhir.
-		// Jika Objek kosong, kita set ke "kru".
-		if intent.Objek == "" {
-			intent.Objek = "kru"
-		} else if intent.Objek != "kru" {
-			// masuk hanya support kru (pod)
-			return intent, errors.NewUnknownObject()
-		}
-
-		if intent.Target == "" {
-			return intent, errors.NewMissingTarget("kru")
-		}
-
-	case "bikin":
-		// bikin geladak (create ns) or bikin kru (run pod)
-		allowedBikin := map[string]bool{
-			"namespace":  true,
-			"pod":        true,
-			"deployment": true,
-			"service":    true,
-			"ingress":    true,
-			"configmap":  true,
-			"secret":     true,
-			"perbekalan": true,
-		}
-		if !allowedBikin[intent.Objek] {
-			return intent, errors.NewUnknownObject()
-		}
-		if intent.Target == "" {
-			return intent, errors.NewMissingTarget(intent.Objek)
-		}
-
-	case "pantau":
-		// pantau mesin (top node) or pantau kru (top pod)
-		if intent.Objek != "node" && intent.Objek != "pod" {
-			return intent, errors.NewUnknownObject()
-		}
-
-	case "atur":
-		// atur armada (scale deployment)
-		if intent.Objek != "deployment" {
-			return intent, errors.NewUnknownObject()
-		}
-		if intent.Target == "" {
-			return intent, errors.NewMissingTarget(intent.Objek)
-		}
-		if intent.Nilai == "" {
-			return intent, errors.New(errors.ErrInvalidSyntax, "jumlah replika harus ditentukan (contoh: ke 5)")
-		}
-
-	case "tukar":
-		// rollout restart
-		if intent.Objek != "deployment" && intent.Objek != "daemonset" {
-			return intent, errors.NewUnknownObject()
-		}
-		if intent.Target == "" {
-			return intent, errors.NewMissingTarget(intent.Objek)
-		}
-
-	default:
+	resolver, ok := resolvers[intent.Aksi]
+	if !ok {
 		return intent, errors.NewUnknownAction()
+	}
+
+	if err := resolver.Resolve(ast, &intent); err != nil {
+		return intent, err
 	}
 
 	return intent, nil

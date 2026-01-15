@@ -6,17 +6,29 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"regexp"
 	"strings"
 
 	"nahkoda/internal/errors"
+	"nahkoda/internal/logger"
 	"nahkoda/internal/planner"
 )
 
-func Execute(plan planner.Plan) error {
+// Executor handles the execution of plans using a KubectlClient.
+type Executor struct {
+	client  KubectlClient
+	DryRun  bool
+	Verbose bool
+}
+
+// NewExecutor creates a new Executor with the given client.
+func NewExecutor(client KubectlClient) *Executor {
+	return &Executor{client: client}
+}
+
+func (e *Executor) Execute(plan planner.Plan) error {
 	if plan.Operation == "audit" {
-		return runAudit()
+		return e.runAudit()
 	}
 
 	args := []string{}
@@ -60,49 +72,67 @@ func Execute(plan planner.Plan) error {
 	// Append generic Flags
 	args = append(args, plan.Flags...)
 
-	cmd := exec.Command("kubectl", args...)
+	// VERBOSE MODE
+	if e.Verbose {
+		fmt.Printf("[VERBOSE] Constructed command: kubectl %s\n", strings.Join(args, " "))
+		if plan.Grep != "" {
+			fmt.Printf("[VERBOSE] Client-side filter: grep '%s' (invert=%v)\n", plan.Grep, plan.GrepInvert)
+		}
+	}
+
+	// DRY-RUN CHECK
+	if e.DryRun {
+		fmt.Printf("⚓ [DRY-RUN] Akan menjalankan: kubectl %s\n", strings.Join(args, " "))
+		if plan.Grep != "" {
+			fmt.Printf("                          | grep '%s'\n", plan.Grep)
+		}
+		return nil
+	}
 
 	// Capture stderr for error analysis
 	var stderrBuf bytes.Buffer
-	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
 
 	if plan.Operation == "exec" {
-		cmd.Stdin = os.Stdin
-		cmd.Stdout = os.Stdout
-		fmt.Printf("⚓ Menjalankan (Interactive): %s\n", strings.Join(cmd.Args, " "))
-		if err := cmd.Run(); err != nil {
+		// Run interactive
+		fmt.Printf("⚓ Menjalankan (Interactive): kubectl %s\n", strings.Join(args, " "))
+
+		// Use os.Stderr/Stdout directly for interactive mode
+		if err := e.client.Run(args, os.Stdin, os.Stdout, io.MultiWriter(os.Stderr, &stderrBuf)); err != nil {
+			logger.LogError(err, map[string]interface{}{"command": "kubectl " + strings.Join(args, " "), "type": "interactive"})
 			checkAndPrintHint(stderrBuf.String(), plan)
-			return errors.NewKubectlFailed(err).WithContext("command", strings.Join(cmd.Args, " "))
+			return errors.NewKubectlFailed(err).WithContext("command", "kubectl "+strings.Join(args, " "))
 		}
 		return nil
 	}
 
 	if plan.Grep == "" {
-		cmd.Stdout = os.Stdout
-		fmt.Printf("⚓ Menjalankan: %s\n", strings.Join(cmd.Args, " "))
-		if err := cmd.Run(); err != nil {
+		fmt.Printf("⚓ Menjalankan: kubectl %s\n", strings.Join(args, " "))
+		if err := e.client.Run(args, nil, os.Stdout, io.MultiWriter(os.Stderr, &stderrBuf)); err != nil {
+			logger.LogError(err, map[string]interface{}{"command": "kubectl " + strings.Join(args, " ")})
 			checkAndPrintHint(stderrBuf.String(), plan)
-			return errors.NewKubectlFailed(err).WithContext("command", strings.Join(cmd.Args, " "))
+			return errors.NewKubectlFailed(err).WithContext("command", "kubectl "+strings.Join(args, " "))
 		}
 		return nil
 	}
 
 	// Client-side filtering (Grep)
-	fmt.Printf("⚓ Menjalankan: %s | grep '%s' (invert=%v)\n", strings.Join(cmd.Args, " "), plan.Grep, plan.GrepInvert)
+	fmt.Printf("⚓ Menjalankan: kubectl %s | grep '%s' (invert=%v)\n", strings.Join(args, " "), plan.Grep, plan.GrepInvert)
 
-	stdout, err := cmd.StdoutPipe()
+	// Better approach for filtering: Read all stdout into buffer, then scan it.
+	var stdoutBuf bytes.Buffer
+	var sharedStderr bytes.Buffer
+
+	err := e.client.Run(args, nil, &stdoutBuf, &sharedStderr)
+
+	// Even if err != nil, we might have output to grep? Usually not with kubectl.
 	if err != nil {
-		return err
+		logger.LogError(err, map[string]interface{}{"command": "kubectl " + strings.Join(args, " "), "grep": plan.Grep})
+		checkAndPrintHint(sharedStderr.String(), plan)
+		return errors.NewKubectlFailed(err).WithContext("command", "kubectl "+strings.Join(args, " "))
 	}
 
-	stderrBuf.Reset()
-	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
-
-	if err := cmd.Start(); err != nil {
-		return err
-	}
-
-	scanner := bufio.NewScanner(stdout)
+	// Process output from buffer
+	scanner := bufio.NewScanner(&stdoutBuf)
 	lineCount := 0
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -134,37 +164,51 @@ func Execute(plan planner.Plan) error {
 		lineCount++
 	}
 
-	if err := cmd.Wait(); err != nil {
-		checkAndPrintHint(stderrBuf.String(), plan)
-		return errors.NewKubectlFailed(err).WithContext("command", strings.Join(cmd.Args, " "))
-	}
 	return nil
 }
 
-func runAudit() error {
+func (e *Executor) runAudit() error {
+	if e.DryRun {
+		fmt.Println("⚓ [DRY-RUN] Akan menjalankan audit:")
+		fmt.Println("   - kubectl get pods -A --field-selector=status.phase!=Running,status.phase!=Succeeded")
+		fmt.Println("   - kubectl get nodes")
+		fmt.Println("   - kubectl get events -A --field-selector=type=Warning")
+		fmt.Println("   - kubectl top nodes")
+		return nil
+	}
+
 	fmt.Println("🩺 Memulai Audit Kesehatan Kapal (Health Audit)...")
 	fmt.Println("=================================================")
 
+	var outBuf bytes.Buffer
+
 	// 1. Kru Bermasalah
 	fmt.Print("📋 Memeriksa Kru (Pods)... ")
-	cmdPods := exec.Command("kubectl", "get", "pods", "-A", "--field-selector", "status.phase!=Running,status.phase!=Succeeded")
-	outPods, _ := cmdPods.Output()
-	linesPods := strings.Split(strings.TrimSpace(string(outPods)), "\n")
-	if len(linesPods) <= 1 {
+	outBuf.Reset()
+	e.client.Run([]string{"get", "pods", "-A", "--field-selector", "status.phase!=Running,status.phase!=Succeeded"}, nil, &outBuf, nil)
+	linesPods := strings.Split(strings.TrimSpace(outBuf.String()), "\n")
+
+	if len(linesPods) <= 1 && (outBuf.Len() == 0 || linesPods[0] == "") {
+		// Output empty or just header? Kubectl get usually outputs "No resources found" to stderr if none.
+		// If success and empty, implies no issues?
+		// Actually if no resources, kubectl output might be empty or specific message.
+		fmt.Println("✅ Semua kru sehat.")
+	} else if len(linesPods) <= 1 {
+		// Maybe just header
 		fmt.Println("✅ Semua kru sehat.")
 	} else {
 		fmt.Printf("⚠️  Ditemukan %d kru bermasalah:\n", len(linesPods)-1)
-		fmt.Println(string(outPods))
+		fmt.Println(outBuf.String())
 	}
 
 	// 2. Mesin Mogok
 	fmt.Print("⚙️  Memeriksa Mesin (Nodes)... ")
-	cmdNodes := exec.Command("kubectl", "get", "nodes")
-	outNodes, _ := cmdNodes.Output()
-	if strings.Contains(string(outNodes), "NotReady") {
+	outBuf.Reset()
+	e.client.Run([]string{"get", "nodes"}, nil, &outBuf, nil)
+	if strings.Contains(outBuf.String(), "NotReady") {
 		fmt.Println("⚠️  Ada mesin yang mogok (NotReady):")
 		// Grep NotReady lines
-		lines := strings.Split(string(outNodes), "\n")
+		lines := strings.Split(outBuf.String(), "\n")
 		for _, l := range lines {
 			if strings.Contains(l, "NotReady") {
 				fmt.Println("   - " + l)
@@ -176,9 +220,9 @@ func runAudit() error {
 
 	// 3. Berita Buruk (Events)
 	fmt.Print("📢 Memeriksa Berita Buruk (Warning Events)... ")
-	cmdEvents := exec.Command("kubectl", "get", "events", "-A", "--field-selector", "type=Warning", "--sort-by=.metadata.creationTimestamp")
-	outEvents, _ := cmdEvents.Output()
-	linesEvents := strings.Split(strings.TrimSpace(string(outEvents)), "\n")
+	outBuf.Reset()
+	e.client.Run([]string{"get", "events", "-A", "--field-selector", "type=Warning", "--sort-by=.metadata.creationTimestamp"}, nil, &outBuf, nil)
+	linesEvents := strings.Split(strings.TrimSpace(outBuf.String()), "\n")
 	if len(linesEvents) <= 1 {
 		fmt.Println("✅ Tidak ada berita buruk baru.")
 	} else {
@@ -195,8 +239,8 @@ func runAudit() error {
 
 	// 4. Beban (optional)
 	fmt.Print("📊 Memeriksa Beban (Metrics)... ")
-	cmdTop := exec.Command("kubectl", "top", "nodes")
-	if err := cmdTop.Run(); err != nil {
+	err := e.client.Run([]string{"top", "nodes"}, nil, os.Stdout, nil) // Direct to stdout
+	if err != nil {
 		fmt.Println("⚠️  Layanan metrics tidak tersedia.")
 	}
 

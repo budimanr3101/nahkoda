@@ -1,11 +1,13 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"strings"
 
 	"nahkoda/internal/completer"
+	"nahkoda/internal/config"
 	"nahkoda/internal/errors"
 	"nahkoda/internal/exec"
 	"nahkoda/internal/parser"
@@ -22,31 +24,64 @@ var (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		runREPL()
-		return
-	}
+	// Parse flags
+	dryRun := flag.Bool("dry-run", false, "Tampilkan perintah tanpa eksekusi")
+	verbose := flag.Bool("verbose", false, "Tampilkan detail eksekusi")
+	flag.BoolVar(verbose, "v", false, "Tampilkan detail eksekusi")
+	help := flag.Bool("help", false, "Tampilkan bantuan")
+	flag.BoolVar(help, "h", false, "Tampilkan bantuan")
 
-	if os.Args[1] == "-h" || os.Args[1] == "--help" {
+	flag.Usage = printHelp
+	flag.Parse()
+
+	if *help {
 		printHelp()
 		return
 	}
 
-	input := strings.Join(os.Args[1:], " ")
-	if err := processCommand(input); err != nil {
+	// Load Configuration
+	cfg, err := config.Load()
+	if err != nil {
+		fmt.Printf("⚠️  Gagal memuat konfigurasi: %v\n", err)
+		// Proceed with defaults
+		cfg = &config.Config{}
+	}
+
+	// Dependency Injection: Initialize standard client and executor
+	client := &exec.StandardKubectlClient{
+		KubectlPath: cfg.KubectlPath,
+	}
+	executor := exec.NewExecutor(client)
+	executor.DryRun = *dryRun
+	executor.Verbose = *verbose
+
+	args := flag.Args()
+
+	if len(args) < 1 {
+		runREPL(executor)
+		return
+	}
+
+	input := strings.Join(args, " ")
+	if err := processCommand(input, executor); err != nil {
 		fmt.Println("❌", err.Error())
 		os.Exit(1)
 	}
 }
 
-func runREPL() {
+func runREPL(executor *exec.Executor) {
 	fmt.Println("⚓ Selamat datang di Anjungan Pintar Nahkoda!")
 	fmt.Println("   Ketik perintah Anda. Gunakan TAB untuk saran sakti.")
 	fmt.Println("   Ketik 'keluar' untuk mengakhiri pelayaran.")
 	fmt.Println("")
 
+	// Closure to pass executor to executeCommand
+	executeCmd := func(input string) {
+		executeCommand(input, executor)
+	}
+
 	p := prompt.New(
-		executeCommand,
+		executeCmd,
 		completer.Completer,
 		prompt.OptionPrefix("⚓ > "),
 		prompt.OptionTitle("Nahkoda Anjungan Pintar"),
@@ -59,7 +94,7 @@ func runREPL() {
 	p.Run()
 }
 
-func executeCommand(input string) {
+func executeCommand(input string, executor *exec.Executor) {
 	input = strings.TrimSpace(input)
 	if input == "" {
 		return
@@ -70,13 +105,13 @@ func executeCommand(input string) {
 		os.Exit(0)
 	}
 
-	if err := processCommand(input); err != nil {
+	if err := processCommand(input, executor); err != nil {
 		fmt.Println("❌", err.Error())
 		// Stay in REPL, do not os.Exit(1)
 	}
 }
 
-func processCommand(input string) error {
+func processCommand(input string, executor *exec.Executor) error {
 	ast, err := parser.Parse(input)
 	if err != nil {
 		return err
@@ -94,14 +129,14 @@ func processCommand(input string) error {
 			if strings.ToLower(confirm) == "y" {
 				newInput := strings.Replace(input, ast.Unknown[0], nErr.Suggestion, 1)
 				fmt.Printf("⚓ Berlayar dengan: %s\n\n", newInput)
-				return processCommand(newInput)
+				return processCommand(newInput, executor)
 			}
 		}
 		return err
 	}
 
 	plan := planner.Build(intent)
-	return exec.Execute(plan)
+	return executor.Execute(plan)
 }
 
 func printHelp() {
@@ -121,5 +156,7 @@ Cara pakai:
   nahkoda liat berita
 
 Opsi:
-  -h, --help    Tampilkan bantuan ini`)
+  -h, --help       Tampilkan bantuan ini
+  --dry-run        Tampilkan perintah tanpa eksekusi
+  -v, --verbose    Tampilkan detail eksekusi`)
 }

@@ -1,23 +1,29 @@
-# ⚓ Nahkoda v1.4.1 ⚓🚀✨
+# ⚓ Nahkoda v1.4.0 ⚓🚀✨
 
 > **Kubernetes dalam Bahasa Manusia.**
 
 Nahkoda adalah CLI yang menerjemahkan perintah teks sederhana menjadi instruksi `kubectl`. Didesain untuk mereka yang ingin mengelola klaster Kubernetes dengan terminologi nautikal yang intuitif.
 
-### ✨ Fitur Unggulan v1.4.0
-- **Anjungan Adaptif**: Auto-suggestion sekarang memahami konteks perintah (contoh: ketik `baca` langsung disarankan `jurnal`).
-- **Discovery Luas**: Autocomplete sekarang mendukung nama **Armada** (Deployment) dan **Pelabuhan** (Service) secara dinamis.
-- **Smart Filtering**: Menghilangkan saran yang tidak relevan berdasarkan apa yang sudah diketik.
+### ✨ Fitur Unggulan v1.4.0 - Production Ready! 🎉
 
-### 🛡️ Hotfix v1.3.2: Presisi Bahasa
-- **Sequence Enforcement**: Memastikan urutan perintah nautikal tetap sakral. Autocomplete sekarang mewajibkan kata `geladak` muncul setelah `di` sebelum menyarankan nama Namespace.
+**🔧 Configuration Management**
+- Dukungan file konfigurasi `~/.nahkoda/config.json`
+- Customize kubectl path, default namespace, timeout, dan cache TTL
+- Validasi otomatis saat load config
 
-### 🛡️ Hotfix v1.3.1: Stabilitas Anjungan
-### ✨ Fitur Unggulan v1.3.0
-- **Anjungan Pintar (Auto-Suggestion)**: Saran perintah real-time dan autocomplete untuk nama kru/geladak di mode REPL.
-- **Aksi Diagnostik Berkelas**: Streaming log dengan `terus` dan pilih kontainer dengan `kabin`.
-- **Manajemen Perbekalan**: Intip jatah CPU/Memory kru atau armada dengan `liat perbekalan`.
-- **Mode Interaktif (REPL)**: Jalankan perintah beruntun tanpa prefix `nahkoda`.
+**🧪 Dry-Run & Verbose Mode**
+- `--dry-run`: Preview command tanpa eksekusi (konsisten di semua operasi termasuk audit)
+- `--verbose` / `-v`: Tampilkan detail eksekusi untuk debugging
+
+**⚡ Performance & Reliability**
+- Timeout 2 detik untuk semua kubectl calls (tidak hang lagi!)
+- Context caching dengan TTL 5 detik
+- Cluster-aware cache (otomatis update saat switch context)
+
+**📊 Observability**
+- Error logging otomatis ke `~/.nahkoda/error.log`
+- JSON format dengan timestamp dan context
+- Graceful error handling
 
 📖 **[Dokumentasi Lengkap (Web)](https://budimanr3101.github.io/nahkoda/)**
 
