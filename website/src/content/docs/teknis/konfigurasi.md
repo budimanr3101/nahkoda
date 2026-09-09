@@ -23,7 +23,7 @@ Jika tidak ada file config, Nahkoda menggunakan:
 | `kubectl_path` | `""` (auto-detect) | Path ke binary kubectl |
 | `default_namespace` | `"default"` | Namespace default untuk operasi |
 | `cache_ttl` | `30000000000` (30 detik) | Durasi cache autocomplete |
-| `timeout` | `30000000000` (30 detik) | Timeout untuk kubectl calls |
+| `timeout` | `30000000000` (30 detik) | Timeout untuk kubectl calls yang finite |
 | `enable_suggestions` | `true` | Toggle autocomplete/suggestions |
 
 ## 📝 Format Config
@@ -66,7 +66,7 @@ Berguna jika Anda menggunakan:
 
 ### 2. Default Namespace
 
-Atur namespace default agar tidak perlu `di geladak` setiap kali:
+Atur namespace default untuk command bertarget atau mutatif yang tidak menyebut `di geladak`:
 
 ```json
 {
@@ -76,13 +76,15 @@ Atur namespace default agar tidak perlu `di geladak` setiap kali:
 
 Sebelum:
 ```bash
-nahkoda liat kru di geladak staging
+nahkoda cek kru api-7 di geladak staging
 ```
 
 Sesudah (dengan config):
 ```bash
-nahkoda liat kru  # otomatis di staging
+nahkoda cek kru api-7  # otomatis memakai staging
 ```
+
+**Catatan**: command list tanpa target seperti `nahkoda liat kru` tetap melihat semua geladak (`-A`) agar perilaku lama tidak berubah.
 
 ### 3. Performance Tuning
 
@@ -101,6 +103,8 @@ Cache autocomplete selama 5 menit (lebih cepat, tapi kurang fresh).
 }
 ```
 Tunggu 1 menit sebelum timeout (cluster lambat tidak akan error terlalu cepat).
+
+Timeout ini berlaku untuk command yang selesai sendiri. `nahkoda masuk ...` dan `nahkoda baca jurnal ... terus` tetap berjalan sampai dihentikan pengguna. Discovery autocomplete memakai batas tetap 2 detik agar TAB tidak menggantung.
 
 ### 4. Disable Autocomplete
 

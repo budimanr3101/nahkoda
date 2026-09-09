@@ -164,6 +164,11 @@ func (e *Executor) Execute(plan planner.Plan) error {
 		lineCount++
 	}
 
+	if err := scanner.Err(); err != nil {
+		logger.LogError(err, map[string]interface{}{"command": "kubectl " + strings.Join(args, " "), "stage": "filter-output"})
+		return errors.NewKubectlFailed(err).WithContext("command", "kubectl "+strings.Join(args, " "))
+	}
+
 	return nil
 }
 
@@ -181,37 +186,50 @@ func (e *Executor) runAudit() error {
 	fmt.Println("=================================================")
 
 	var outBuf bytes.Buffer
+	var auditFailures []string
+
+	runCheck := func(name string, args []string, stdout io.Writer) error {
+		var stderrBuf bytes.Buffer
+		err := e.client.Run(args, nil, stdout, &stderrBuf)
+		if err == nil {
+			return nil
+		}
+
+		command := "kubectl " + strings.Join(args, " ")
+		logger.LogError(err, map[string]interface{}{
+			"command": command,
+			"check":   name,
+			"stderr":  strings.TrimSpace(stderrBuf.String()),
+		})
+		auditFailures = append(auditFailures, name+": "+err.Error())
+		return err
+	}
 
 	// 1. Kru Bermasalah
 	fmt.Print("📋 Memeriksa Kru (Pods)... ")
 	outBuf.Reset()
-	_ = e.client.Run([]string{"get", "pods", "-A", "--field-selector", "status.phase!=Running,status.phase!=Succeeded"}, nil, &outBuf, nil)
-	linesPods := strings.Split(strings.TrimSpace(outBuf.String()), "\n")
-
-	if len(linesPods) <= 1 && (outBuf.Len() == 0 || linesPods[0] == "") {
-		// Output empty or just header? Kubectl get usually outputs "No resources found" to stderr if none.
-		// If success and empty, implies no issues?
-		// Actually if no resources, kubectl output might be empty or specific message.
-		fmt.Println("✅ Semua kru sehat.")
-	} else if len(linesPods) <= 1 {
-		// Maybe just header
-		fmt.Println("✅ Semua kru sehat.")
+	if err := runCheck("pods", []string{"get", "pods", "-A", "--field-selector", "status.phase!=Running,status.phase!=Succeeded"}, &outBuf); err != nil {
+		fmt.Printf("❌ pemeriksaan gagal: %v\n", err)
 	} else {
-		fmt.Printf("⚠️  Ditemukan %d kru bermasalah:\n", len(linesPods)-1)
-		fmt.Println(outBuf.String())
+		linesPods := strings.Split(strings.TrimSpace(outBuf.String()), "\n")
+		if len(linesPods) <= 1 {
+			fmt.Println("✅ Semua kru sehat.")
+		} else {
+			fmt.Printf("⚠️  Ditemukan %d kru bermasalah:\n", len(linesPods)-1)
+			fmt.Println(outBuf.String())
+		}
 	}
 
 	// 2. Mesin Mogok
 	fmt.Print("⚙️  Memeriksa Mesin (Nodes)... ")
 	outBuf.Reset()
-	_ = e.client.Run([]string{"get", "nodes"}, nil, &outBuf, nil)
-	if strings.Contains(outBuf.String(), "NotReady") {
+	if err := runCheck("nodes", []string{"get", "nodes"}, &outBuf); err != nil {
+		fmt.Printf("❌ pemeriksaan gagal: %v\n", err)
+	} else if strings.Contains(outBuf.String(), "NotReady") {
 		fmt.Println("⚠️  Ada mesin yang mogok (NotReady):")
-		// Grep NotReady lines
-		lines := strings.Split(outBuf.String(), "\n")
-		for _, l := range lines {
-			if strings.Contains(l, "NotReady") {
-				fmt.Println("   - " + l)
+		for _, line := range strings.Split(outBuf.String(), "\n") {
+			if strings.Contains(line, "NotReady") {
+				fmt.Println("   - " + line)
 			}
 		}
 	} else {
@@ -221,30 +239,42 @@ func (e *Executor) runAudit() error {
 	// 3. Berita Buruk (Events)
 	fmt.Print("📢 Memeriksa Berita Buruk (Warning Events)... ")
 	outBuf.Reset()
-	_ = e.client.Run([]string{"get", "events", "-A", "--field-selector", "type=Warning", "--sort-by=.metadata.creationTimestamp"}, nil, &outBuf, nil)
-	linesEvents := strings.Split(strings.TrimSpace(outBuf.String()), "\n")
-	if len(linesEvents) <= 1 {
-		fmt.Println("✅ Tidak ada berita buruk baru.")
+	if err := runCheck("events", []string{"get", "events", "-A", "--field-selector", "type=Warning", "--sort-by=.metadata.creationTimestamp"}, &outBuf); err != nil {
+		fmt.Printf("❌ pemeriksaan gagal: %v\n", err)
 	} else {
-		fmt.Printf("⚠️  Ditemukan %d peringatan terbaru:\n", len(linesEvents)-1)
-		// Show last 3 events
-		slice := linesEvents
-		if len(slice) > 4 {
-			slice = slice[len(slice)-3:]
-		}
-		for _, e := range slice {
-			fmt.Println("   - " + e)
+		linesEvents := strings.Split(strings.TrimSpace(outBuf.String()), "\n")
+		if len(linesEvents) <= 1 {
+			fmt.Println("✅ Tidak ada berita buruk baru.")
+		} else {
+			fmt.Printf("⚠️  Ditemukan %d peringatan terbaru:\n", len(linesEvents)-1)
+			events := linesEvents
+			if len(events) > 4 {
+				events = events[len(events)-3:]
+			}
+			for _, event := range events {
+				fmt.Println("   - " + event)
+			}
 		}
 	}
 
-	// 4. Beban (optional)
+	// 4. Beban bersifat opsional karena metrics-server tidak selalu terpasang.
 	fmt.Print("📊 Memeriksa Beban (Metrics)... ")
-	err := e.client.Run([]string{"top", "nodes"}, nil, os.Stdout, nil) // Direct to stdout
-	if err != nil {
+	var metricsStderr bytes.Buffer
+	if err := e.client.Run([]string{"top", "nodes"}, nil, os.Stdout, &metricsStderr); err != nil {
+		logger.LogError(err, map[string]interface{}{
+			"command": "kubectl top nodes",
+			"check":   "metrics",
+			"stderr":  strings.TrimSpace(metricsStderr.String()),
+		})
 		fmt.Println("⚠️  Layanan metrics tidak tersedia.")
 	}
 
 	fmt.Println("=================================================")
+	if len(auditFailures) > 0 {
+		fmt.Printf("⚠️  Audit selesai dengan %d pemeriksaan utama gagal.\n", len(auditFailures))
+		return errors.NewKubectlFailed(fmt.Errorf("%s", strings.Join(auditFailures, "; ")))
+	}
+
 	fmt.Println("⚓ Audit selesai. Tetap waspada, Kapten!")
 	return nil
 }

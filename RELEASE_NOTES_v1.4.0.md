@@ -57,7 +57,7 @@ Semua error otomatis tercatat di `~/.nahkoda/error.log`:
 
 ## ⚡ Performance
 
-- ✅ **Timeout 2 detik** - tidak hang lagi saat cluster down
+- ✅ **Timeout configurable (default 30 detik)** untuk command finite; sesi interaktif dan follow logs tidak diputus otomatis
 - ✅ **Context caching** - TAB completion tidak blocking
 - ✅ **Cluster-aware cache** - otomatis update saat switch context
 

@@ -100,3 +100,10 @@ func TestResolve_Features_V0_10_0(t *testing.T) {
 		})
 	}
 }
+
+func TestResolve_BikinUnsupportedResource(t *testing.T) {
+	_, err := Resolve(parser.AST{Aksi: "bikin", Objek: "armada", Target: "api"})
+	if err == nil {
+		t.Fatal("bikin armada should fail until required image syntax is defined")
+	}
+}

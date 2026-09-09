@@ -46,7 +46,10 @@ func Load() (*Config, error) {
 	}
 	defer file.Close()
 
-	var config Config
+	// Decode di atas default agar field yang tidak ditulis tetap memakai nilai default.
+	// Ini penting untuk bool: config parsial tanpa enable_suggestions tidak boleh
+	// diam-diam mematikan autocomplete.
+	config := *Default()
 	if err := json.NewDecoder(file).Decode(&config); err != nil {
 		return nil, fmt.Errorf("failed to parse config: %w", err)
 	}

@@ -20,6 +20,7 @@ var actionNames = map[string]bool{
 	"pantau": true,
 	"hapus":  true,
 	"masuk":  true,
+	"pindah": true,
 }
 
 var actions = []prompt.Suggest{
@@ -32,12 +33,14 @@ var actions = []prompt.Suggest{
 	{Text: "pantau", Description: "Pantau penggunaan resource (top)"},
 	{Text: "hapus", Description: "Hapus resource (delete)"},
 	{Text: "masuk", Description: "Masuk ke dalam kru (exec)"},
+	{Text: "pindah", Description: "Pindah kapal/context (config use-context)"},
 	{Text: "keluar", Description: "Keluar dari Nahkoda"},
 }
 
 var objectNames = map[string]bool{
 	"kru":        true,
 	"mesin":      true,
+	"kapal":      true,
 	"armada":     true,
 	"pelabuhan":  true,
 	"mercusuar":  true,
@@ -54,6 +57,7 @@ var objectNames = map[string]bool{
 var objects = []prompt.Suggest{
 	{Text: "kru", Description: "Pod"},
 	{Text: "mesin", Description: "Node"},
+	{Text: "kapal", Description: "Cluster context"},
 	{Text: "armada", Description: "Deployment"},
 	{Text: "pelabuhan", Description: "Service"},
 	{Text: "mercusuar", Description: "Ingress"},
@@ -124,6 +128,18 @@ func GetSuggestions(textBefore, wordBefore string) []prompt.Suggest {
 
 	// 3.1 Adaptive Action -> Object Mapping
 	switch lastWord {
+	case "pindah":
+		return []prompt.Suggest{{Text: "kapal", Description: "Cluster context (use-context)"}}
+	case "bikin":
+		return []prompt.Suggest{
+			{Text: "geladak", Description: "Namespace"},
+			{Text: "kru", Description: "Pod nginx"},
+		}
+	case "pantau":
+		return []prompt.Suggest{
+			{Text: "kru", Description: "Pod metrics"},
+			{Text: "mesin", Description: "Node metrics"},
+		}
 	case "baca":
 		return []prompt.Suggest{{Text: "jurnal", Description: "Log harian (logs)"}}
 	case "masuk":
@@ -132,8 +148,8 @@ func GetSuggestions(textBefore, wordBefore string) []prompt.Suggest {
 		return []prompt.Suggest{{Text: "armada", Description: "Deployment (scale)"}}
 	case "tukar":
 		return []prompt.Suggest{
-			{Text: "kru", Description: "Pod (rollout)"},
-			{Text: "armada", Description: "Deployment (rollout)"},
+			{Text: "armada", Description: "Deployment (rollout restart)"},
+			{Text: "penjaga", Description: "DaemonSet (rollout restart)"},
 		}
 	}
 
@@ -181,6 +197,26 @@ func GetSuggestions(textBefore, wordBefore string) []prompt.Suggest {
 	}
 
 	return res
+}
+
+var configuredKubectlPath string
+
+// Configure applies runtime settings used by dynamic resource discovery.
+// Discovery keeps its own short 2-second timeout so TAB completion cannot
+// block the interactive shell even when normal kubectl commands allow longer.
+func Configure(path string, configuredCacheTTL time.Duration) {
+	configuredKubectlPath = path
+	if configuredCacheTTL > 0 {
+		cacheTTL = configuredCacheTTL
+	}
+}
+
+func kubectlCommand(ctx context.Context, args ...string) *exec.Cmd {
+	command := configuredKubectlPath
+	if command == "" {
+		command = "kubectl"
+	}
+	return exec.CommandContext(ctx, command, args...)
 }
 
 var (
@@ -266,7 +302,7 @@ func getCurrentContext() string {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	cmd := exec.CommandContext(ctx, "kubectl", "config", "current-context")
+	cmd := kubectlCommand(ctx, "config", "current-context")
 	out, err := cmd.Output()
 	if err != nil {
 		// Return cached on error, or default
@@ -289,7 +325,7 @@ func getDynamicNamespaces() []prompt.Suggest {
 	return getFromCacheOrFetch(getCacheKey("namespaces"), func() []prompt.Suggest {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
-		cmd := exec.CommandContext(ctx, "kubectl", "get", "ns", "-o", "jsonpath={.items[*].metadata.name}")
+		cmd := kubectlCommand(ctx, "get", "ns", "-o", "jsonpath={.items[*].metadata.name}")
 		out, err := cmd.Output()
 		if err != nil {
 			return nil
@@ -307,7 +343,7 @@ func getDynamicPods() []prompt.Suggest {
 	return getFromCacheOrFetch(getCacheKey("pods"), func() []prompt.Suggest {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
-		cmd := exec.CommandContext(ctx, "kubectl", "get", "pods", "-A", "-o", "jsonpath={.items[*].metadata.name}")
+		cmd := kubectlCommand(ctx, "get", "pods", "-A", "-o", "jsonpath={.items[*].metadata.name}")
 		out, err := cmd.Output()
 		if err != nil {
 			return nil
@@ -325,7 +361,7 @@ func getDynamicDeployments() []prompt.Suggest {
 	return getFromCacheOrFetch(getCacheKey("deployments"), func() []prompt.Suggest {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
-		cmd := exec.CommandContext(ctx, "kubectl", "get", "deployments", "-A", "-o", "jsonpath={.items[*].metadata.name}")
+		cmd := kubectlCommand(ctx, "get", "deployments", "-A", "-o", "jsonpath={.items[*].metadata.name}")
 		out, err := cmd.Output()
 		if err != nil {
 			return nil
@@ -343,7 +379,7 @@ func getDynamicServices() []prompt.Suggest {
 	return getFromCacheOrFetch(getCacheKey("services"), func() []prompt.Suggest {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
-		cmd := exec.CommandContext(ctx, "kubectl", "get", "svc", "-A", "-o", "jsonpath={.items[*].metadata.name}")
+		cmd := kubectlCommand(ctx, "get", "svc", "-A", "-o", "jsonpath={.items[*].metadata.name}")
 		out, err := cmd.Output()
 		if err != nil {
 			return nil

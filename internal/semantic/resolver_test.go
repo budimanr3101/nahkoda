@@ -310,3 +310,26 @@ func TestResolve_DefaultLocationLogic(t *testing.T) {
 		})
 	}
 }
+
+func TestResolveWithDefaultNamespace(t *testing.T) {
+	ast := parser.AST{Aksi: "cek", Objek: "kru", Target: "api-7"}
+	intent, err := ResolveWithDefaultNamespace(ast, "staging")
+	if err != nil {
+		t.Fatalf("ResolveWithDefaultNamespace() error = %v", err)
+	}
+	if intent.Lokasi != "geladak staging" {
+		t.Errorf("Lokasi = %q, want geladak staging", intent.Lokasi)
+	}
+
+	listIntent, err := ResolveWithDefaultNamespace(parser.AST{Aksi: "liat", Objek: "kru"}, "staging")
+	if err != nil {
+		t.Fatalf("list resolve error = %v", err)
+	}
+	if listIntent.Lokasi != "semua geladak" {
+		t.Errorf("list location = %q, want semua geladak", listIntent.Lokasi)
+	}
+
+	if _, err := ResolveWithDefaultNamespace(ast, "staging;rm"); err == nil {
+		t.Error("invalid configured namespace should fail")
+	}
+}

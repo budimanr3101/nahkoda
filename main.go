@@ -43,46 +43,57 @@ func main() {
 	cfg, err := config.Load()
 	if err != nil {
 		fmt.Printf("⚠️  Gagal memuat konfigurasi: %v\n", err)
-		// Proceed with defaults
-		cfg = &config.Config{}
+		// Invalid config must not leave runtime fields at unsafe zero values.
+		cfg = config.Default()
 	}
 
 	// Dependency Injection: Initialize standard client and executor
 	client := &exec.StandardKubectlClient{
 		KubectlPath: cfg.KubectlPath,
+		Timeout:     cfg.Timeout,
 	}
 	executor := exec.NewExecutor(client)
 	executor.DryRun = *dryRun
 	executor.Verbose = *verbose
+	completer.Configure(cfg.KubectlPath, cfg.CacheTTL)
 
 	args := flag.Args()
 
 	if len(args) < 1 {
-		runREPL(executor)
+		runREPL(executor, cfg.DefaultNamespace, cfg.EnableSuggestions)
 		return
 	}
 
 	input := strings.Join(args, " ")
-	if err := processCommand(input, executor); err != nil {
+	if err := processCommand(input, executor, cfg.DefaultNamespace, false); err != nil {
 		fmt.Println("❌", err.Error())
 		os.Exit(1)
 	}
 }
 
-func runREPL(executor *exec.Executor) {
+func runREPL(executor *exec.Executor, defaultNamespace string, enableSuggestions bool) {
 	fmt.Println("⚓ Selamat datang di Anjungan Pintar Nahkoda!")
-	fmt.Println("   Ketik perintah Anda. Gunakan TAB untuk saran sakti.")
+	if enableSuggestions {
+		fmt.Println("   Ketik perintah Anda. Gunakan TAB untuk saran sakti.")
+	} else {
+		fmt.Println("   Ketik perintah Anda. Autocomplete dinonaktifkan lewat config.")
+	}
 	fmt.Println("   Ketik 'keluar' untuk mengakhiri pelayaran.")
 	fmt.Println("")
 
-	// Closure to pass executor to executeCommand
+	// Closure to pass runtime configuration to command execution.
 	executeCmd := func(input string) {
-		executeCommand(input, executor)
+		executeCommand(input, executor, defaultNamespace)
+	}
+
+	completerFunc := completer.Completer
+	if !enableSuggestions {
+		completerFunc = func(prompt.Document) []prompt.Suggest { return nil }
 	}
 
 	p := prompt.New(
 		executeCmd,
-		completer.Completer,
+		completerFunc,
 		prompt.OptionPrefix("⚓ > "),
 		prompt.OptionTitle("Nahkoda Anjungan Pintar"),
 		prompt.OptionSuggestionBGColor(prompt.DarkGray),
@@ -94,7 +105,7 @@ func runREPL(executor *exec.Executor) {
 	p.Run()
 }
 
-func executeCommand(input string, executor *exec.Executor) {
+func executeCommand(input string, executor *exec.Executor, defaultNamespace string) {
 	input = strings.TrimSpace(input)
 	if input == "" {
 		return
@@ -105,21 +116,25 @@ func executeCommand(input string, executor *exec.Executor) {
 		os.Exit(0)
 	}
 
-	if err := processCommand(input, executor); err != nil {
+	if err := processCommand(input, executor, defaultNamespace, true); err != nil {
 		fmt.Println("❌", err.Error())
 		// Stay in REPL, do not os.Exit(1)
 	}
 }
 
-func processCommand(input string, executor *exec.Executor) error {
+func processCommand(input string, executor *exec.Executor, defaultNamespace string, interactive bool) error {
 	ast, err := parser.Parse(input)
 	if err != nil {
 		return err
 	}
 
-	intent, err := semantic.Resolve(ast)
+	intent, err := semantic.ResolveWithDefaultNamespace(ast, defaultNamespace)
 	if err != nil {
 		if nErr, ok := err.(*errors.NahkodaError); ok && nErr.Suggestion != "" {
+			if !interactive {
+				return fmt.Errorf("%s; mungkin maksud Kapten: %s", nErr.Message, nErr.Suggestion)
+			}
+
 			fmt.Printf("❓ %s\n", nErr.Message)
 			fmt.Printf("👉 Mungkin maksud Kapten: %s? (y/n): ", nErr.Suggestion)
 
@@ -129,7 +144,7 @@ func processCommand(input string, executor *exec.Executor) error {
 			if strings.ToLower(confirm) == "y" {
 				newInput := strings.Replace(input, ast.Unknown[0], nErr.Suggestion, 1)
 				fmt.Printf("⚓ Berlayar dengan: %s\n\n", newInput)
-				return processCommand(newInput, executor)
+				return processCommand(newInput, executor, defaultNamespace, true)
 			}
 		}
 		return err
