@@ -1,10 +1,10 @@
-# ⚓ Nahkoda v1.5.2 ⚓🚀✨
+# ⚓ Nahkoda v1.5.3 ⚓🚀✨
 
 > **Kubernetes dalam Bahasa Manusia.**
 
 Nahkoda adalah CLI yang menerjemahkan perintah teks sederhana menjadi instruksi `kubectl`. Didesain untuk mereka yang ingin mengelola klaster Kubernetes dengan terminologi nautikal yang intuitif.
 
-### ✨ Fitur Unggulan v1.5.2 - Production Ready! 🎉
+### ✨ Fitur Unggulan v1.5.3 - Production Ready! 🎉
 
 **🔧 Configuration Management**
 - Dukungan file konfigurasi `~/.nahkoda/config.json`
@@ -19,6 +19,7 @@ Nahkoda adalah CLI yang menerjemahkan perintah teks sederhana menjadi instruksi 
 
 **⚡ Performance & Reliability**
 - Timeout configurable (default 30 detik) untuk kubectl calls yang finite; `exec` dan `logs -f` tetap berjalan sampai dihentikan pengguna
+- Gagal cepat saat tidak ada context aktif; command yang lambat menampilkan status menunggu setelah 2 detik
 - Context caching dengan TTL 5 detik
 - Cluster-aware cache (otomatis update saat switch context)
 
