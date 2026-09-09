@@ -7,6 +7,10 @@ sidebar:
 
 Nahkoda dirancang agar Kapten bisa mengemudikan kapal (klaster) tanpa harus mengingat parameter `kubectl` yang rumit.
 
+:::note[Context dan koneksi cluster]
+Saat REPL dibuka, Nahkoda memperingatkan jika belum ada context Kubernetes aktif. Operasi cluster juga gagal cepat dengan petunjuk `liat kapal` dan `pindah kapal <nama>`. Jika context ada tetapi kubectl belum merespons, status menunggu muncul setelah 2 detik dan command finite dihentikan sesuai timeout konfigurasi.
+:::
+
 :::caution[Perintah mutatif]
 `bikin`, `hapus`, `atur`, dan `tukar` langsung mengubah klaster tanpa prompt konfirmasi tambahan. Gunakan `nahkoda --dry-run ...` terlebih dahulu, terutama pada klaster production.
 :::

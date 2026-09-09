@@ -79,6 +79,10 @@ func runREPL(executor *exec.Executor, defaultNamespace string, enableSuggestions
 		fmt.Println("   Ketik perintah Anda. Autocomplete dinonaktifkan lewat config.")
 	}
 	fmt.Println("   Ketik 'keluar' untuk mengakhiri pelayaran.")
+	if err := executor.CheckActiveContext(); err != nil {
+		fmt.Printf("⚠️  %s\n", err)
+		fmt.Println("   Perintah 'liat kapal' dan 'pindah kapal <nama>' tetap bisa digunakan.")
+	}
 	fmt.Println("")
 
 	// Closure to pass runtime configuration to command execution.
@@ -100,7 +104,7 @@ func runREPL(executor *exec.Executor, defaultNamespace string, enableSuggestions
 		prompt.OptionSelectedSuggestionBGColor(prompt.Blue),
 		prompt.OptionDescriptionBGColor(prompt.LightGray),
 		prompt.OptionSelectedDescriptionBGColor(prompt.Cyan),
-		prompt.OptionCompletionOnDown(), // Only show suggestions when pressing Down arrow, not automatically
+		prompt.OptionCompletionOnDown(), // Allow Down arrow to trigger completion in addition to TAB.
 	)
 	p.Run()
 }

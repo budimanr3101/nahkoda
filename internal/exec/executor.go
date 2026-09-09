@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"nahkoda/internal/errors"
 	"nahkoda/internal/logger"
@@ -16,17 +17,85 @@ import (
 
 // Executor handles the execution of plans using a KubectlClient.
 type Executor struct {
-	client  KubectlClient
-	DryRun  bool
-	Verbose bool
+	client          KubectlClient
+	DryRun          bool
+	Verbose         bool
+	slowNoticeDelay time.Duration
+	noticeWriter    io.Writer
 }
 
 // NewExecutor creates a new Executor with the given client.
 func NewExecutor(client KubectlClient) *Executor {
-	return &Executor{client: client}
+	return &Executor{
+		client:          client,
+		slowNoticeDelay: 2 * time.Second,
+		noticeWriter:    os.Stdout,
+	}
+}
+
+func (e *Executor) runFinite(args []string, stdin io.Reader, stdout, stderr io.Writer) error {
+	done := make(chan error, 1)
+	go func() {
+		done <- e.client.Run(args, stdin, stdout, stderr)
+	}()
+
+	if e.slowNoticeDelay <= 0 {
+		return <-done
+	}
+
+	timer := time.NewTimer(e.slowNoticeDelay)
+	defer timer.Stop()
+
+	select {
+	case err := <-done:
+		return err
+	case <-timer.C:
+		writer := e.noticeWriter
+		if writer == nil {
+			writer = os.Stdout
+		}
+		fmt.Fprintln(writer, "⏳ Kubectl belum merespons; masih menunggu sampai batas timeout...")
+		return <-done
+	}
+}
+
+// CheckActiveContext verifies the local kubeconfig has a selected context.
+// It intentionally uses `kubectl config current-context`: this is a local,
+// non-mutating check and does not contact the cluster API.
+func (e *Executor) CheckActiveContext() error {
+	var stdoutBuf bytes.Buffer
+	var stderrBuf bytes.Buffer
+
+	err := e.runFinite([]string{"config", "current-context"}, nil, &stdoutBuf, &stderrBuf)
+	contextName := strings.TrimSpace(stdoutBuf.String())
+	if err == nil && contextName != "" {
+		return nil
+	}
+
+	detail := strings.TrimSpace(stderrBuf.String())
+	combined := strings.ToLower(detail)
+	if err != nil {
+		combined += " " + strings.ToLower(err.Error())
+	}
+	if err == nil || strings.Contains(combined, "current-context is not set") || strings.Contains(combined, "no current context") {
+		return errors.NewNoActiveContext()
+	}
+
+	if detail == "" {
+		detail = err.Error()
+	}
+	return errors.NewKubectlFailed(fmt.Errorf("gagal memeriksa context Kubernetes: %s", detail))
 }
 
 func (e *Executor) Execute(plan planner.Plan) error {
+	// Dry-run tidak membutuhkan kubeconfig aktif. Command config juga harus tetap
+	// tersedia agar pengguna bisa melihat dan memilih context untuk memulihkan keadaan.
+	if !e.DryRun && plan.Operation != "config" {
+		if err := e.CheckActiveContext(); err != nil {
+			return err
+		}
+	}
+
 	if plan.Operation == "audit" {
 		return e.runAudit()
 	}
@@ -105,9 +174,19 @@ func (e *Executor) Execute(plan planner.Plan) error {
 		return nil
 	}
 
+	if isLongRunningCommand(args) {
+		fmt.Printf("⚓ Menjalankan (Streaming): kubectl %s\n", strings.Join(args, " "))
+		if err := e.client.Run(args, nil, os.Stdout, io.MultiWriter(os.Stderr, &stderrBuf)); err != nil {
+			logger.LogError(err, map[string]interface{}{"command": "kubectl " + strings.Join(args, " "), "type": "streaming"})
+			checkAndPrintHint(stderrBuf.String(), plan)
+			return errors.NewKubectlFailed(err).WithContext("command", "kubectl "+strings.Join(args, " "))
+		}
+		return nil
+	}
+
 	if plan.Grep == "" {
 		fmt.Printf("⚓ Menjalankan: kubectl %s\n", strings.Join(args, " "))
-		if err := e.client.Run(args, nil, os.Stdout, io.MultiWriter(os.Stderr, &stderrBuf)); err != nil {
+		if err := e.runFinite(args, nil, os.Stdout, io.MultiWriter(os.Stderr, &stderrBuf)); err != nil {
 			logger.LogError(err, map[string]interface{}{"command": "kubectl " + strings.Join(args, " ")})
 			checkAndPrintHint(stderrBuf.String(), plan)
 			return errors.NewKubectlFailed(err).WithContext("command", "kubectl "+strings.Join(args, " "))
@@ -122,7 +201,7 @@ func (e *Executor) Execute(plan planner.Plan) error {
 	var stdoutBuf bytes.Buffer
 	var sharedStderr bytes.Buffer
 
-	err := e.client.Run(args, nil, &stdoutBuf, &sharedStderr)
+	err := e.runFinite(args, nil, &stdoutBuf, io.MultiWriter(os.Stderr, &sharedStderr))
 
 	// Even if err != nil, we might have output to grep? Usually not with kubectl.
 	if err != nil {
@@ -190,7 +269,7 @@ func (e *Executor) runAudit() error {
 
 	runCheck := func(name string, args []string, stdout io.Writer) error {
 		var stderrBuf bytes.Buffer
-		err := e.client.Run(args, nil, stdout, &stderrBuf)
+		err := e.runFinite(args, nil, stdout, &stderrBuf)
 		if err == nil {
 			return nil
 		}
@@ -260,7 +339,7 @@ func (e *Executor) runAudit() error {
 	// 4. Beban bersifat opsional karena metrics-server tidak selalu terpasang.
 	fmt.Print("📊 Memeriksa Beban (Metrics)... ")
 	var metricsStderr bytes.Buffer
-	if err := e.client.Run([]string{"top", "nodes"}, nil, os.Stdout, &metricsStderr); err != nil {
+	if err := e.runFinite([]string{"top", "nodes"}, nil, os.Stdout, &metricsStderr); err != nil {
 		logger.LogError(err, map[string]interface{}{
 			"command": "kubectl top nodes",
 			"check":   "metrics",

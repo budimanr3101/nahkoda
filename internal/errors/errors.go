@@ -17,6 +17,7 @@ const (
 
 	ErrKubectlFailed
 	ErrKubectlNotFound
+	ErrNoActiveContext
 	ErrResourceNotFound
 )
 
@@ -104,6 +105,13 @@ func NewMissingTarget(objek string) *NahkodaError {
 
 func NewKubectlFailed(err error) *NahkodaError {
 	return Wrap(ErrKubectlFailed, "perintah kubectl gagal", err)
+}
+
+func NewNoActiveContext() *NahkodaError {
+	return New(
+		ErrNoActiveContext,
+		"tidak ada context Kubernetes aktif; gunakan 'liat kapal' untuk melihat daftar, lalu 'pindah kapal <nama>' untuk memilih context",
+	)
 }
 
 func NewResourceNotFound(resource string) *NahkodaError {

@@ -3,6 +3,13 @@
 
 ## [Unreleased]
 
+## [1.5.3] - 2026-09-09
+
+### Fixed
+- Operasi cluster memeriksa active context terlebih dahulu dan gagal cepat dengan petunjuk `liat kapal`/`pindah kapal` jika belum ada context terpilih.
+- Kubectl command finite yang belum merespons setelah 2 detik sekarang menampilkan status menunggu alih-alih terlihat hang; timeout konfigurasi tetap menjadi batas akhirnya.
+- Stderr command dengan client-side filtering sekarang langsung terlihat oleh pengguna.
+
 ## [1.5.2] - 2026-09-09
 
 ### Fixed
