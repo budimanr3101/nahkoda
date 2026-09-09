@@ -32,11 +32,14 @@ func LogError(err error, context map[string]interface{}) {
 	}
 
 	logPath := filepath.Join(logDir, "error.log")
-	file, openErr := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	file, openErr := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
 	if openErr != nil {
 		return
 	}
 	defer file.Close()
+	if chmodErr := file.Chmod(0600); chmodErr != nil {
+		return
+	}
 
 	entry := LogEntry{
 		Timestamp: time.Now(),

@@ -1,7 +1,9 @@
 package completer
 
 import (
+	"context"
 	"testing"
+	"time"
 )
 
 func TestCompleter(t *testing.T) {
@@ -105,6 +107,63 @@ func TestCompleter(t *testing.T) {
 			}
 			if tt.shouldContain != "" && !found {
 				t.Errorf("suggestions did not contain %q", tt.shouldContain)
+			}
+		})
+	}
+}
+
+func TestTukarSuggestionsMatchResolver(t *testing.T) {
+	suggestions := GetSuggestions("tukar ", "")
+	found := map[string]bool{}
+	for _, suggestion := range suggestions {
+		found[suggestion.Text] = true
+	}
+	if !found["armada"] || !found["penjaga"] {
+		t.Fatalf("tukar suggestions = %v, want armada and penjaga", suggestions)
+	}
+	if found["kru"] {
+		t.Fatalf("tukar suggestions must not include unsupported kru: %v", suggestions)
+	}
+}
+
+func TestConfigure(t *testing.T) {
+	oldPath, oldTTL := configuredKubectlPath, cacheTTL
+	t.Cleanup(func() { Configure(oldPath, oldTTL) })
+
+	Configure("/custom/kubectl", 45*time.Second)
+	if cacheTTL != 45*time.Second {
+		t.Errorf("cacheTTL = %v, want 45s", cacheTTL)
+	}
+	cmd := kubectlCommand(context.Background(), "version")
+	if cmd.Path != "/custom/kubectl" {
+		t.Errorf("command path = %q, want /custom/kubectl", cmd.Path)
+	}
+}
+
+func TestAdaptiveActionSuggestions(t *testing.T) {
+	tests := []struct {
+		input string
+		want  []string
+	}{
+		{input: "pindah ", want: []string{"kapal"}},
+		{input: "bikin ", want: []string{"geladak", "kru"}},
+		{input: "pantau ", want: []string{"kru", "mesin"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			suggestions := GetSuggestions(tt.input, "")
+			found := map[string]bool{}
+			for _, suggestion := range suggestions {
+				found[suggestion.Text] = true
+			}
+			for _, want := range tt.want {
+				if !found[want] {
+					t.Errorf("suggestions for %q = %v, missing %q", tt.input, suggestions, want)
+				}
+			}
+			if len(suggestions) != len(tt.want) {
+				t.Errorf("suggestions for %q = %v, want only %v", tt.input, suggestions, tt.want)
 			}
 		})
 	}

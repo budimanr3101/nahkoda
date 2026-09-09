@@ -135,3 +135,16 @@ func TestTokenize(t *testing.T) {
 		})
 	}
 }
+
+func TestParse_ObjectTypoIsUnknown(t *testing.T) {
+	ast, err := Parse("liat kur")
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if ast.Target != "" {
+		t.Fatalf("typo object was captured as target: %q", ast.Target)
+	}
+	if !reflect.DeepEqual(ast.Unknown, []string{"kur"}) {
+		t.Fatalf("Unknown = %v, want [kur]", ast.Unknown)
+	}
+}

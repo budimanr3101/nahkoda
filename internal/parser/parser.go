@@ -115,7 +115,10 @@ func Parse(input string) (AST, error) {
 			// 1. We have a valid action that needs target
 			// 2. Target is currently empty
 			// 3. It's not a keyword (already checked by switch cases)
-			if capturingActions[ast.Aksi] && ast.Target == "" {
+			// Target hanya boleh ditangkap setelah objek dikenali. Pengecualian:
+			// `masuk <pod>` memang sengaja mengizinkan objek implisit.
+			canCaptureTarget := ast.Objek != "" || ast.Aksi == "masuk"
+			if capturingActions[ast.Aksi] && canCaptureTarget && ast.Target == "" {
 				ast.Target = rawTok // Preserve original case (e.g. "MyPod")
 			} else {
 				ast.Unknown = append(ast.Unknown, rawTok)

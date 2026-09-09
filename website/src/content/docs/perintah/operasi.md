@@ -7,6 +7,10 @@ sidebar:
 
 Nahkoda dirancang agar Kapten bisa mengemudikan kapal (klaster) tanpa harus mengingat parameter `kubectl` yang rumit.
 
+:::caution[Perintah mutatif]
+`bikin`, `hapus`, `atur`, dan `tukar` langsung mengubah klaster tanpa prompt konfirmasi tambahan. Gunakan `nahkoda --dry-run ...` terlebih dahulu, terutama pada klaster production.
+:::
+
 ## ⌨️ Mode Interaktif (REPL)
 
 Jika Kapten menjalankan `nahkoda` tanpa argumen apapun, Kapten akan masuk ke **Mode Interaktif**. Di sini, Kapten bisa mengetik perintah beruntun tanpa perlu mengetik prefix `nahkoda` lagi. Ketik `keluar` untuk kembali ke daratan.

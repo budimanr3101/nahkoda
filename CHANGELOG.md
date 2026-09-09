@@ -1,5 +1,25 @@
 # Changelog
 
+
+## [Unreleased]
+
+## [1.5.2] - 2026-09-09
+
+### Fixed
+- Runtime config kini benar-benar mengatur kubectl path, default namespace, cache autocomplete, timeout command finite, dan toggle suggestions.
+- Config parsial mempertahankan default untuk field yang tidak ditulis.
+- `exec -it` dan `logs -f` tidak diputus oleh timeout global.
+- Audit kesehatan mengembalikan error bila pemeriksaan pods, nodes, atau events gagal.
+- One-shot command dengan typo menampilkan suggestion tanpa menunggu input interaktif.
+- Typo objek seperti `liat kur` tidak lagi salah dianggap sebagai nama target.
+- Autocomplete kini selaras dengan resolver untuk `tukar`, `bikin`, `pantau`, dan `pindah kapal`.
+- `bikin` menolak resource yang belum memiliki sintaks parameter wajib daripada menghasilkan command invalid.
+- Linker metadata GoReleaser menggunakan nama symbol yang benar.
+- Error log dipaksa memakai permission `0600`.
+
+### Documentation
+- Klaim timeout diselaraskan ke default 30 detik untuk command finite.
+- Contoh default namespace dan versi website diperbarui.
 ## [1.5.1] - 2026-01-15
 
 ### 🚨 CRITICAL HOTFIX
@@ -83,7 +103,7 @@ This release focuses on production readiness with complete configuration managem
 
 ### ⚡ Performance Improvements
 
-- **Timeout handling**: 2-second timeout for all kubectl calls (prevents hanging)
+- **Timeout handling**: Configurable timeout (default 30 seconds) for finite kubectl calls; interactive exec and follow logs are exempt
 - **Context caching**: getCurrentContext() cached with 5-second TTL
 - **Cluster-aware cache**: Cache keys include context (fixes stale data on cluster switch)
 - **Graceful degradation**: Returns cached data on kubectl errors
@@ -147,7 +167,7 @@ Error logs now saved to `~/.nahkoda/error.log` for debugging.
 - Dry-run support in executor
 - Verbose mode support
 - Context caching with TTL
-- Timeout handling for all kubectl calls
+- Configurable timeout handling for finite kubectl calls; interactive exec and follow logs remain user-controlled
 - Input validation for security
 
 **Changed:**

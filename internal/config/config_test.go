@@ -207,3 +207,31 @@ func TestInitDefault(t *testing.T) {
 		t.Errorf("Expected default namespace, got %s", loaded.DefaultNamespace)
 	}
 }
+
+func TestLoad_PartialConfigKeepsDefaults(t *testing.T) {
+	tmpHome := t.TempDir()
+	t.Setenv("HOME", tmpHome)
+
+	configDir := filepath.Join(tmpHome, ".nahkoda")
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	configPath := filepath.Join(configDir, "config.json")
+	if err := os.WriteFile(configPath, []byte(`{"default_namespace":"staging"}`), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("Load() failed: %v", err)
+	}
+	if cfg.DefaultNamespace != "staging" {
+		t.Errorf("DefaultNamespace = %q, want staging", cfg.DefaultNamespace)
+	}
+	if cfg.CacheTTL != 30*time.Second || cfg.Timeout != 30*time.Second {
+		t.Errorf("duration defaults not preserved: cache=%v timeout=%v", cfg.CacheTTL, cfg.Timeout)
+	}
+	if !cfg.EnableSuggestions {
+		t.Error("missing enable_suggestions should preserve default true")
+	}
+}

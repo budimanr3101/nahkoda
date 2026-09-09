@@ -1,6 +1,7 @@
 package exec
 
 import (
+	stderrors "errors"
 	"io"
 	"nahkoda/internal/planner"
 	"os/exec"
@@ -71,5 +72,26 @@ func TestExecute_WithFilter(t *testing.T) {
 	// But here single key.
 	if !strings.Contains(strings.Join(mock.LastArgs, " "), "--field-selector=status.phase=Running") {
 		t.Errorf("Expected field selector, got %s", mock.LastArgs)
+	}
+}
+
+type failingKubectlClient struct{}
+
+func (failingKubectlClient) Run(args []string, stdin io.Reader, stdout, stderr io.Writer) error {
+	if stderr != nil {
+		_, _ = stderr.Write([]byte("cluster unavailable"))
+	}
+	return stderrors.New("cluster unavailable")
+}
+
+func (failingKubectlClient) Start(args []string, stdout, stderr io.Writer) (*exec.Cmd, error) {
+	return nil, stderrors.New("cluster unavailable")
+}
+
+func TestRunAudit_PropagatesCriticalErrors(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	executor := NewExecutor(failingKubectlClient{})
+	if err := executor.Execute(planner.Plan{Operation: "audit"}); err == nil {
+		t.Fatal("audit should fail when core kubectl checks fail")
 	}
 }

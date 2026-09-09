@@ -116,18 +116,12 @@ func (r *MasukResolver) Resolve(ast parser.AST, intent *Intent) error {
 type BikinResolver struct{}
 
 func (r *BikinResolver) Resolve(ast parser.AST, intent *Intent) error {
-	allowedBikin := map[string]bool{
-		"namespace":  true,
-		"pod":        true,
-		"deployment": true,
-		"service":    true,
-		"ingress":    true,
-		"configmap":  true,
-		"secret":     true,
-		"perbekalan": true,
-	}
-	if !allowedBikin[intent.Objek] {
-		return errors.NewUnknownObject()
+	// Planner saat ini hanya memiliki sintaks create yang lengkap untuk namespace
+	// dan pod nginx. Resource lain memerlukan parameter wajib yang belum ada dalam
+	// grammar (mis. image, port, atau literal), jadi jangan menghasilkan command
+	// kubectl yang pasti gagal.
+	if intent.Objek != "namespace" && intent.Objek != "pod" {
+		return errors.New(errors.ErrInvalidSyntax, "bikin saat ini hanya mendukung geladak dan kru")
 	}
 	if intent.Target == "" {
 		return errors.NewMissingTarget(intent.Objek)

@@ -24,11 +24,22 @@ type Intent struct {
 
 // Resolve menerjemahkan AST menjadi Intent secara STRICT.
 // Jika ada kata / struktur tidak dikenali → ERROR.
-func Resolve(ast parser.AST) (Intent, error) { // Sticking to original signature
-	return resolveInternal(ast)
+func Resolve(ast parser.AST) (Intent, error) {
+	return ResolveWithDefaultNamespace(ast, "default")
 }
 
-func resolveInternal(ast parser.AST) (Intent, error) {
+// ResolveWithDefaultNamespace menerjemahkan AST dengan namespace runtime dari config.
+func ResolveWithDefaultNamespace(ast parser.AST, defaultNamespace string) (Intent, error) {
+	if defaultNamespace == "" {
+		defaultNamespace = "default"
+	}
+	if err := ValidateResourceName(defaultNamespace); err != nil {
+		return Intent{}, errors.Wrap(errors.ErrInvalidSyntax, "default namespace tidak valid", err)
+	}
+	return resolveInternal(ast, defaultNamespace)
+}
+
+func resolveInternal(ast parser.AST, defaultNamespace string) (Intent, error) {
 	intent := Intent{}
 
 	// 1. UNKNOWN WORDS (STRICT)
@@ -90,11 +101,12 @@ func resolveInternal(ast parser.AST) (Intent, error) {
 	if ast.Lokasi != "" {
 		intent.Lokasi = ast.Lokasi
 	} else {
-		// Default location logic
+		// List tanpa target tetap lintas namespace sesuai perilaku lama.
+		// Command bertarget/mutatif memakai namespace dari konfigurasi runtime.
 		if intent.Aksi == "liat" && ast.Target == "" {
 			intent.Lokasi = "semua geladak"
 		} else {
-			intent.Lokasi = "geladak default"
+			intent.Lokasi = "geladak " + defaultNamespace
 		}
 	}
 
